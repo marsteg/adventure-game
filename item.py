@@ -18,9 +18,6 @@ class Item(RectShape):
         self.stashed = False
         
 
-
-    containers = []      
-
     def draw(self, screen):
         pygame.draw.rect(screen, "purple", self.rect)
         screen.blit(self.image, self.rect)
@@ -38,6 +35,14 @@ class Item(RectShape):
     def move_ip(self, rel):
         return self.rect.move_ip(rel)
     
-    def stash(self):
+    def stash(self,inventory):
+        inventory.items[self.id] = self
         self.stashed = True
-        print("Item stashed: ", self.id)
+        print("Item ID stashed: ", self.id)
+        print("Inventory items: ", inventory.items)
+
+    def unstash(self,inventory):
+        del inventory.items[self.id]
+        self.stashed = False
+        print("Item ID stashed: ", self.id)
+        print("Inventory items: ", inventory.items)

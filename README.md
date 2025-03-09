@@ -8,12 +8,15 @@ You will need the pygame library. Then just run:
 
 # todo: 
 
-- Items should be tracked when added to the inventory
+- hitting space makes items shine
 - I need to create room objects
 	- rooms have items in them
-	- once collected, item should not appear
-
+	- once collected, item should not appear anymore in the room. 
+		- in a room, i should only see items, that are not stashed
+- need to find a clean way to assign and create doors and rooms and assign items (currently in main func)
 
 ## inventory
 - items should get ordered / aligned in the inventory
+
+
 

@@ -5,6 +5,7 @@ from constants import *
 
 class Inventory(pygame.sprite.Sprite):
     containers = []
+    items = {}
     def __init__(self):
         pygame.sprite.Sprite.__init__(self, self.containers)
         self.rect = pygame.Rect(0, SCREEN_HEIGHT-INVENTORY_HEIGHT, SCREEN_WIDTH, INVENTORY_HEIGHT)
