@@ -4,11 +4,11 @@ an attempt to create a point and click adventure game in python  with pygame
 You will need the pygame library. Then just run:
 	 python3 main.py
 
+## Features
+- hitting space makes items, doors and actions shine
 
 
 # todo: 
-
-- hitting space makes items shine
 - how can items go back out of the inventory?
 - items should not be movable off the screen
 - need to find a clean way to assign and create doors and rooms and assign items (currently in main func)
@@ -20,6 +20,7 @@ You will need the pygame library. Then just run:
 
 
 ## actions
-- actions work now, but i need more functions:
+- actions work now, but i need more functions
+	
 
 

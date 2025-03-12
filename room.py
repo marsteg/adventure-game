@@ -33,9 +33,16 @@ class Room(pygame.sprite.Sprite):
             door.draw(screen)
         for item in self.items:
             item.draw(screen)
-            #screen.blit(item.image, item.rect)
         for action in self.actions:
             action.draw(screen)
+
+    def shine(self, screen):
+        for item in self.items:
+            item.shine(screen)
+        for door in self.doors:
+            door.shine(screen)
+        for action in self.actions:
+            action.shine(screen)
 
     def spawn(self, radius, position, velocity):
         pass # sub-classes must override - could be useful for minigame style rooms

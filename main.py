@@ -91,13 +91,15 @@ def main():
         if drawable_room == active_room:
           drawable_room.draw(screen)
 
-      #for drawable_object in drawable:
-      #  drawable_object.draw(screen)    
+  
       keys = pygame.key.get_pressed()
       if keys[pygame.K_SPACE]:
             print("Space key pressed")
             for num, item in inventory.items.items():
                 print("Item ID: ", item.id, " Item position: ", item.position)
+            for drawable_room in rooms:
+              if drawable_room == active_room:
+                drawable_room.shine(screen)
 
     
     # events

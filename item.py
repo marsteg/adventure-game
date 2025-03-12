@@ -22,6 +22,12 @@ class Item(RectShape):
         pygame.draw.rect(screen, "purple", self.rect)
         screen.blit(self.image, self.rect)
 
+    def shine(self, screen):
+        shiner = pygame.Surface((self.rect.width, self.rect.height))
+        shiner.fill((255, 255, 255))
+        shiner.set_alpha(100)
+        screen.blit(shiner, self.rect.topleft)
+
     def update(self, dt):
         pass
 
