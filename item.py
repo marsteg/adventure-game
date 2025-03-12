@@ -33,16 +33,20 @@ class Item(RectShape):
         return self.rect.collidepoint(pos)
     
     def move_ip(self, rel):
-        return self.rect.move_ip(rel)
+        self.rect.move_ip(rel)
+        self.position = pygame.Vector2(self.rect.topleft)
+        #return self.rect.move_ip(rel)
     
-    def stash(self,inventory):
+    def stash(self, inventory):
         inventory.items[self.id] = self
-        self.stashed = True
+        #self.stashed = True
         print("Item ID stashed: ", self.id)
         print("Inventory items: ", inventory.items)
 
-    def unstash(self,inventory):
+    def unstash(self, inventory, pos):
         del inventory.items[self.id]
         self.stashed = False
-        print("Item ID stashed: ", self.id)
+        self.rect.topleft = pos
+        self.position = pygame.Vector2(pos)
+        print("Item ID unstashed: ", self.id)
         print("Inventory items: ", inventory.items)

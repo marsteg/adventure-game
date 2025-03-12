@@ -9,14 +9,17 @@ You will need the pygame library. Then just run:
 # todo: 
 
 - hitting space makes items shine
-- I need to create room objects
-	- rooms have items in them
-	- once collected, item should not appear anymore in the room. 
-		- in a room, i should only see items, that are not stashed
+- how can items go back out of the inventory?
+- items should not be movable off the screen
 - need to find a clean way to assign and create doors and rooms and assign items (currently in main func)
 
 ## inventory
+- items need to be draggable out of the inventory. currently, they remain there.
 - items should get ordered / aligned in the inventory
+- the inventory will need slots 
 
+
+## actions
+- actions work now, but i need more functions:
 
 
