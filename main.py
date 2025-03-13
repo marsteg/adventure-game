@@ -39,18 +39,21 @@ def main():
     room2 = Room("assets/rooms/LivingRoom.png")
     missile = Item(100, 100, 50, 50, "assets/items/missile.png")
     missile2 = Item(200, 200, 50, 50, "assets/items/missile2.png")
-    door1 = Door(80, 300, 100, 200, "assets/doors/door1.png", room2, True, missile)
-    door2 = Door(480, 300, 100, 200, "assets/doors/door1.png", room1, False, None)
+    button1 = Action(800, 100, 50, 50, "assets/actions/button.png", False, None)
+   
+    Room1door1 = Door(80, 300, 100, 200, "assets/doors/door1.png", room2, True, missile)
+    Room1door2 = Door(880, 300, 100, 200, "assets/doors/door1.png", room2, True, button1)
+    Room2door2 = Door(480, 300, 100, 200, "assets/doors/door1.png", room1, False, None)
     titledoor = Door(300, 300, 100, 200, "assets/doors/door1.png", room1, False, None)
     title.doors.append(titledoor)
    
-    room2.doors.append(door2)
-
-    button1 = Action(800, 100, 50, 50, "assets/actions/button.png", False, None)
     button1.add_function(ChangePicture, button1, "assets/actions/button2.png", "assets/actions/button.png", None) 
     button1.add_function(LogText, "Text Logged")
-    button1.add_function(UnlockDoor, missile, door1)
-    room1.doors.append(door1)
+    button1.add_function(UnlockDoor, button1, Room1door2)
+
+    room2.doors.append(Room2door2)
+    room1.doors.append(Room1door1)
+    room1.doors.append(Room1door2)
     room1.items.append(missile)
     room1.actions.append(button1)
     room2.items.append(missile2)
@@ -71,6 +74,7 @@ def main():
     active_room = title
     active_box = None
     active_click = None
+    last_active_click = None
     
     # game loop
     run = True
@@ -97,6 +101,9 @@ def main():
 
     
     # events
+      FPS = 60
+      dt = clock.tick(FPS)
+
       for event in pygame.event.get():
         if event.type == pygame.MOUSEBUTTONDOWN:
           if event.button == 1:
@@ -135,9 +142,13 @@ def main():
                 if isinstance(door, Door) and active_click == door:
                   if not door.locked:
                     active_room = door.target_room
+                  else:
+                    print("Door is locked in position: ", door.position)
+                  last_active_click = active_click
                   active_click = None
                   print("Button pressed in position: ", door.position)
                 else:
+                  last_active_click = active_click
                   active_click = None
 
             for action in active_room.actions:
@@ -145,8 +156,10 @@ def main():
                 if isinstance(action, Action) and active_click == action:
                   action.action()
                   print("Button pressed in position: ", action.position)
+                  last_active_click = active_click
                   active_click = None
                 else:
+                  last_active_click = active_click
                   active_click = None
 
         if event.type == pygame.MOUSEMOTION:

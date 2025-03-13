@@ -18,6 +18,7 @@ You will need the pygame library. Then just run:
 	- go back to their room to make them "re-findable?"
 - how can items interact with Actions?
 	- validate unlocking of Actions
+	- should unlock of an action also execute it's actionfuncs?
 - doubleclick on items for fast collecting
 - items should not be movable off the screen
 - need to find a clean way to assign and create doors and rooms and assign items (currently in main func)
