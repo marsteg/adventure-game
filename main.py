@@ -35,22 +35,27 @@ def main():
    
 
     # room and door and item assignments specifics...
+    # rooms require nothing
     room1 = Room("assets/rooms/RektorOffice.png")
     room2 = Room("assets/rooms/LivingRoom.png")
+    # items require nothing
     missile = Item(100, 100, 50, 50, "assets/items/missile.png")
     missile2 = Item(200, 200, 50, 50, "assets/items/missile2.png")
+    # actions might require items
     button1 = Action(800, 100, 50, 50, "assets/actions/button.png", False, None)
-   
+   # doors require rooms and might require items
     Room1door1 = Door(80, 300, 100, 200, "assets/doors/door1.png", room2, True, missile)
     Room1door2 = Door(880, 300, 100, 200, "assets/doors/door1.png", room2, True, button1)
     Room2door2 = Door(480, 300, 100, 200, "assets/doors/door1.png", room1, False, None)
     titledoor = Door(300, 300, 100, 200, "assets/doors/door1.png", room1, False, None)
-    title.doors.append(titledoor)
-   
+
+   # action funcs require items, doors, and actions
     button1.add_function(ChangePicture, button1, "assets/actions/button2.png", "assets/actions/button.png", None) 
     button1.add_function(LogText, "Text Logged")
     button1.add_function(UnlockDoor, button1, Room1door2)
 
+  # appendings doors, items and actions to rooms
+    title.doors.append(titledoor)
     room2.doors.append(Room2door2)
     room1.doors.append(Room1door1)
     room1.doors.append(Room1door2)

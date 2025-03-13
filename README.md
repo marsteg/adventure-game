@@ -26,6 +26,8 @@ You will need the pygame library. Then just run:
 	- single line talking
 	- conversations
 - Sound
+- Gamestate:
+	- how to save and load the game?
 - Player Character?
 
 ## inventory
