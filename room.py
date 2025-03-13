@@ -26,15 +26,20 @@ class Room(pygame.sprite.Sprite):
         self.actions = []
         
 
-    def draw(self, screen):
+    def draw(self, screen, inventory):
         pygame.draw.rect(screen, "purple", self.rect)
         screen.blit(self.image, self.rect)
+        inventory.draw(screen, inventory)
         for door in self.doors:
             door.draw(screen)
         for item in self.items:
             item.draw(screen)
+            for inventory_item in inventory.items.values():
+                inventory_item.draw(screen)
         for action in self.actions:
             action.draw(screen)
+        
+        
 
     def shine(self, screen):
         for item in self.items:

@@ -27,7 +27,7 @@ def main():
     Door.containers = (updatable, clickable)
     Item.containers = (updatable, dragable)
     Action.containers = (updatable, clickable)
-    Inventory.containers = (updatable, drawable)
+    Inventory.containers = (updatable)
     inventory = Inventory()
 
     rooms = pygame.sprite.Group()
@@ -58,8 +58,6 @@ def main():
     room1.actions.append(button1)
     room2.items.append(missile2)
 
-    
-    
 
     
     for i in range(5):
@@ -84,13 +82,12 @@ def main():
 
       for updatable_object in updatable:
         updatable_object.update(dt)
-    
-      inventory.draw(screen, inventory)
-
-      for drawable_room in rooms:
-        if drawable_room == active_room:
-          drawable_room.draw(screen)
-
+      
+      # draw screen
+      #for drawable_room in rooms:
+      #  if drawable_room == active_room:
+      #    drawable_room.draw(screen, inventory)
+      active_room.draw(screen, inventory)
   
       keys = pygame.key.get_pressed()
       if keys[pygame.K_SPACE]:
@@ -109,6 +106,7 @@ def main():
             for num, box in enumerate(dragable):
               if box.rect.collidepoint(event.pos):
                 active_box = box
+                print("Box pressed in position: ", box.position, "event pos: ", event.pos)
 
             for num, door in enumerate(clickable):
               if door.rect.collidepoint(event.pos):
@@ -118,7 +116,6 @@ def main():
           if event.button == 1:
             for num, box in enumerate(dragable):
               if box.rect.collidepoint(event.pos):
-                
                 for num, clickable_item in enumerate(clickable):
                   if clickable_item.collides_with(box):
                     clickable_item.unlock(box)
@@ -150,6 +147,8 @@ def main():
           run = False
 
       pygame.display.flip()
+      pygame.display.update()
+      
 
 pygame.quit()
 
