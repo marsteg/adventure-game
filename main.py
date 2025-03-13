@@ -20,13 +20,10 @@ def main():
     dt = 0
     updatable = pygame.sprite.Group()
     
-    drawable = pygame.sprite.Group()
-    dragable = pygame.sprite.Group()
-    clickable = pygame.sprite.Group()
     items = pygame.sprite.Group()   
-    Door.containers = (updatable, clickable)
-    Item.containers = (updatable, dragable)
-    Action.containers = (updatable, clickable)
+    Door.containers = (updatable)
+    Item.containers = (updatable)
+    Action.containers = (updatable)
     Inventory.containers = (updatable)
     inventory = Inventory()
 
@@ -104,7 +101,7 @@ def main():
         if event.type == pygame.MOUSEBUTTONDOWN:
           if event.button == 1:
             # dragging items
-            for box in active_room.items:
+            for box in active_room.items + list(inventory.items.values()):
               if box.rect.collidepoint(event.pos):
                 active_box = box
                 print("Box pressed in position: ", box.position, "event pos: ", event.pos)
@@ -120,9 +117,11 @@ def main():
 
         if event.type == pygame.MOUSEBUTTONUP:
           if event.button == 1:
-            for num, box in enumerate(dragable):
+            clickable = active_room.doors + active_room.actions
+            dragable = list(active_room.items) + list(inventory.items.values())
+            for box in dragable:
               if box.rect.collidepoint(event.pos):
-                for num, clickable_item in enumerate(clickable):
+                for clickable_item in clickable:
                   if clickable_item.collides_with(box):
                     clickable_item.unlock(box)
                 if box.collides_with(inventory):
