@@ -9,14 +9,20 @@ You will need the pygame library. Then just run:
 
 
 # todo: 
-- how can items go back out of the inventory?
+- how can items interact with Actions?
+	- validate unlocking of actions
+- doubleclick on items for fast collecting
 - items should not be movable off the screen
 - need to find a clean way to assign and create doors and rooms and assign items (currently in main func)
+- NPCs
+	- single line talking
+	- conversations
+- Sound
+- Player Character?
 
 ## inventory
-- items need to be draggable out of the inventory. currently, they remain there.
 - items should get ordered / aligned in the inventory
-- the inventory will need slots 
+	- the inventory will need slots 
 
 
 ## actions
