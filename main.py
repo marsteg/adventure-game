@@ -27,8 +27,7 @@ def main():
     Inventory.containers = (updatable)
     inventory = Inventory()
 
-    rooms = pygame.sprite.Group()
-    Room.containers = (updatable, rooms)
+    Room.containers = (updatable)
 
     # title screen
     title = Room("assets/rooms/TitleScreen.png")
@@ -40,11 +39,11 @@ def main():
     room2 = Room("assets/rooms/LivingRoom.png")
     # items require nothing
     missile = Item(100, 100, 50, 50, "assets/items/missile.png")
-    missile2 = Item(200, 200, 50, 50, "assets/items/missile2.png")
+    missile2 = Item(200, 200, 50, 50, "assets/items/missile2.png", True)
     # actions might require items
     button1 = Action(800, 100, 50, 50, "assets/actions/button.png", False, None)
    # doors require rooms and might require items
-    Room1door1 = Door(80, 300, 100, 200, "assets/doors/door1.png", room2, True, missile)
+    Room1door1 = Door(80, 300, 100, 200, "assets/doors/door1.png", room2, True, missile2)
     Room1door2 = Door(880, 300, 100, 200, "assets/doors/door1.png", room2, True, button1)
     Room2door2 = Door(480, 300, 100, 200, "assets/doors/door1.png", room1, False, None)
     titledoor = Door(300, 300, 100, 200, "assets/doors/door1.png", room1, False, None)
@@ -55,13 +54,13 @@ def main():
     button1.add_function(UnlockDoor, button1, Room1door2)
 
   # appendings doors, items and actions to rooms
-    title.doors.append(titledoor)
-    room2.doors.append(Room2door2)
-    room1.doors.append(Room1door1)
-    room1.doors.append(Room1door2)
-    room1.items.append(missile)
-    room1.actions.append(button1)
-    room2.items.append(missile2)
+    title.doors[titledoor.id] = titledoor
+    room2.doors[Room2door2.id] = Room2door2
+    room1.doors[Room1door1.id] = Room1door1
+    room1.doors[Room1door2.id] = Room1door2
+    room1.items[missile.id] = missile
+    room1.actions[button1.id] = button1
+    room2.items[missile2.id] = missile2
 
 
     
@@ -72,7 +71,7 @@ def main():
       h = random.randint(35, 65)
       image = 'assets/items/missile.png'
       item = Item(x, y, w, h, image)
-      room2.items.append(item)
+      room2.items[item.id] = item
 
 
     # initial state
@@ -113,36 +112,36 @@ def main():
         if event.type == pygame.MOUSEBUTTONDOWN:
           if event.button == 1:
             # dragging items
-            for box in active_room.items + list(inventory.items.values()):
+            for box in list(active_room.items.values()) + list(inventory.items.values()):
               if box.rect.collidepoint(event.pos):
                 active_box = box
                 print("Box pressed in position: ", box.position, "event pos: ", event.pos)
 
             # clicking doors
-            for door in active_room.doors:
+            for door in active_room.doors.values():
               if door.rect.collidepoint(event.pos):
                 active_click = door
             # clicking actions
-            for action in active_room.actions:
+            for action in active_room.actions.values():
               if action.rect.collidepoint(event.pos):
                 active_click = action
 
         if event.type == pygame.MOUSEBUTTONUP:
           if event.button == 1:
-            clickable = active_room.doors + active_room.actions
-            dragable = list(active_room.items) + list(inventory.items.values())
+            clickable = list(active_room.doors.values()) + list(active_room.actions.values())
+            dragable = list(active_room.items.values()) + list(inventory.items.values())
             for box in dragable:
               if box.rect.collidepoint(event.pos):
                 for clickable_item in clickable:
                   if clickable_item.collides_with(box):
-                    clickable_item.unlock(box)
+                    clickable_item.unlock(box, inventory, Room.rooms)
                 if box.collides_with(inventory):
                   box.stash(inventory)   
                 elif box.stashed:
                     box.unstash(inventory, event.pos) 
             active_box = None
             
-            for door in active_room.doors:
+            for door in active_room.doors.values():
               if door.rect.collidepoint(event.pos):
                 if isinstance(door, Door) and active_click == door:
                   if not door.locked:
@@ -156,7 +155,7 @@ def main():
                   last_active_click = active_click
                   active_click = None
 
-            for action in active_room.actions:
+            for action in active_room.actions.values():
               if action.rect.collidepoint(event.pos):
                 if isinstance(action, Action) and active_click == action:
                   action.action()

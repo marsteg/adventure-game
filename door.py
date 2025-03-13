@@ -34,12 +34,15 @@ class Door(RectShape):
     def collidepoint(self, pos):
         return self.rect.collidepoint(pos)
     
-    def unlock(self, key):
+    def unlock(self, key, inventory, rooms):
         if key != self.key:
             print("Wrong key")
             return
         print("Door unlocked: ", self.locked)
         self.locked = False
-        #print("Destroying key: ", key)
-        #key.kill()
+        if key.selfdestruct:
+            key.kill(inventory, rooms)
+            print("destroying key: ", key)
+        else:
+            key.stash(inventory)
     

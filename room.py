@@ -6,6 +6,7 @@ from constants import *
 class Room(pygame.sprite.Sprite):
     _id_counter = 1
     containers = []
+    rooms = {}
     edges = [
         (pygame.Vector2(0, -1), lambda x: pygame.Vector2(x, 0)),
         (pygame.Vector2(1, 0), lambda y: pygame.Vector2(SCREEN_WIDTH, y)),
@@ -21,22 +22,23 @@ class Room(pygame.sprite.Sprite):
         Room._id_counter += 1
         self.image = pygame.image.load(image)
         self.image = pygame.transform.scale(self.image, (SCREEN_WIDTH, SCREEN_HEIGHT-INVENTORY_HEIGHT))
-        self.doors = []
-        self.items = []
-        self.actions = []
+        self.doors = {}
+        self.items = {}
+        self.actions = {}
+        Room.rooms[self.id] = self
         
 
     def draw(self, screen, inventory):
         pygame.draw.rect(screen, "purple", self.rect)
         screen.blit(self.image, self.rect)
         inventory.draw(screen, inventory)
-        for door in self.doors:
+        for door in self.doors.values():
             door.draw(screen)
-        for item in self.items:
+        for item in self.items.values():
             item.draw(screen)
             for inventory_item in inventory.items.values():
                 inventory_item.draw(screen)
-        for action in self.actions:
+        for action in self.actions.values():
             action.draw(screen)
         
         

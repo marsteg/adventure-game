@@ -7,36 +7,43 @@ You will need the pygame library. Then just run:
 ## Features Implemented
 - creation of items, doors, actions and rooms.
 - stashing of items
+- items can now be destroyed on usage or not. if not, they go back to the inventory after usage
 - switching rooms with doors
 - hitting space makes items, doors and actions shine
+- Actionfuncs are a way to teach an action button tricks. With this theoretically anything can be executed via Actions
 
-
-# todo: 
-- item management: what should happen to items, that are unstashed? currently, they go back to their rooms, to the position they were dropped on. Should they:
+# Design Questions:
+- item management: what should happen to items, that are unstashed? currently, they stay on to the position they were dropped on. Should they:
 	- move to the room and position, they were dropped?
 	- go back to the inventory? (do not unstash...)
 	- go back to their room to make them "re-findable?"
 - how can items interact with Actions?
 	- validate unlocking of Actions
 	- should unlock of an action also execute it's actionfuncs?
+
+# todo: 
 - doubleclick on items for fast collecting
 - items should not be movable off the screen
 - need to find a clean way to assign and create doors and rooms and assign items (currently in main func)
 - NPCs
 	- single line talking
 	- conversations
-- Sound
 - Gamestate:
 	- how to save and load the game?
 - Player Character?
+- Sound
 
 ## inventory
 - items should get ordered / aligned in the inventory
 	- the inventory will need slots 
 
+## Sound
+- Rooms should provide background music
 
 ## actions
 - actions work now, but i need more functions
+	- play a sound
+
 	
 
 
