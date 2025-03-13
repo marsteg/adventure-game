@@ -103,14 +103,20 @@ def main():
       for event in pygame.event.get():
         if event.type == pygame.MOUSEBUTTONDOWN:
           if event.button == 1:
-            for num, box in enumerate(dragable):
+            # dragging items
+            for box in active_room.items:
               if box.rect.collidepoint(event.pos):
                 active_box = box
                 print("Box pressed in position: ", box.position, "event pos: ", event.pos)
 
-            for num, door in enumerate(clickable):
+            # clicking doors
+            for door in active_room.doors:
               if door.rect.collidepoint(event.pos):
                 active_click = door
+            # clicking actions
+            for action in active_room.actions:
+              if action.rect.collidepoint(event.pos):
+                active_click = action
 
         if event.type == pygame.MOUSEBUTTONUP:
           if event.button == 1:
@@ -125,17 +131,22 @@ def main():
                     box.unstash(inventory, event.pos) 
             active_box = None
             
-            for num, door in enumerate(clickable):
+            for door in active_room.doors:
               if door.rect.collidepoint(event.pos):
                 if isinstance(door, Door) and active_click == door:
                   if not door.locked:
                     active_room = door.target_room
                   active_click = None
                   print("Button pressed in position: ", door.position)
-                elif isinstance(door, Action) and active_click == door:
-                    door.action()
-                    print("Button pressed in position: ", door.position)
-                    active_click = None
+                else:
+                  active_click = None
+
+            for action in active_room.actions:
+              if action.rect.collidepoint(event.pos):
+                if isinstance(action, Action) and active_click == action:
+                  action.action()
+                  print("Button pressed in position: ", action.position)
+                  active_click = None
                 else:
                   active_click = None
 

@@ -41,14 +41,6 @@ class Item(RectShape):
     def move_ip(self, rel):
         self.rect.move_ip(rel)
         self.position = pygame.Vector2(self.rect.topleft)
-        if self.position.y <= 0:
-            self.position.y = 0
-        if self.position.x <= 0:
-            self.position.x = 0
-        if self.position.y > SCREEN_HEIGHT - INVENTORY_HEIGHT:
-            self.position.y = SCREEN_HEIGHT - INVENTORY_HEIGHT
-        if self.position.x > SCREEN_WIDTH - self.rect.width:
-            self.position.x = SCREEN_WIDTH - self.rect.width
         #return self.rect.move_ip(rel)
     
     def stash(self, inventory):
