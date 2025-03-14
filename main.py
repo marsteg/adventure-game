@@ -158,6 +158,9 @@ def main():
                 if active_room.collidepoint(event.pos):
                   box.stash(inventory)
                   break
+                if inventory.collidepoint(event.pos):
+                  box.stash(inventory)
+                  break
             active_box = None
             
             for door in active_room.doors.values():
