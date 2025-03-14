@@ -13,10 +13,6 @@ You will need the pygame library. Then just run:
 - Actionfuncs are a way to teach an action button tricks. With this theoretically anything can be executed via Actions
 
 # Design Questions:
-- item management: what should happen to items, that are unstashed? currently, they stay on to the position they were dropped on. Should they:
-	- move to the room and position, they were dropped?
-	- go back to the inventory? (do not unstash...)
-	- go back to their room to make them "re-findable?"
 - how can items interact with Actions?
 	- validate unlocking of Actions
 	- should unlock of an action also execute it's actionfuncs?

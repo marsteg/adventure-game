@@ -19,6 +19,7 @@ class Item(RectShape):
         self.image = pygame.transform.scale(self.image, (width, height))
         self.stashed = False
         self.selfdestruct = selfdestruct
+        self.allow_destroy = False
         
 
     def draw(self, screen):
@@ -35,18 +36,19 @@ class Item(RectShape):
         pass
 
     def kill(self, inventory, rooms):
-        print("Item destroyed: ", self.id," on position: ", self.position, " in inventory: ", inventory)
+        print("attempting Item destroye: ", self.id," on position: ", self.position, "selfdestruct: ", self.selfdestruct, "allow_destroy: ", self.allow_destroy)
         # how to destroy the item?
         # i would need to remove it from the inventory and the room
-        #if self.selfdestruct:
-        #    del inventory.items[self.id]
-        for room in rooms.values():
-            if self in room.items.values():
-                del room.items[self.id]
-                print("Item removed from room: ", room.id)
-        pygame.sprite.Sprite.kill(self)
-
-
+        if self.selfdestruct and self.allow_destroy:
+            del inventory.items[self.id]
+            for room in rooms.values():
+                if self.id in room.items:
+                    if self == room.items[self.id]:
+                        del room.items[self.id]
+                        print("Item removed from room: ", room.id)
+                        pygame.sprite.Sprite.kill(self)
+        else:
+            self.stash(inventory)
 
     def collidepoint(self, pos):
         return self.rect.collidepoint(pos)
@@ -57,6 +59,11 @@ class Item(RectShape):
         #return self.rect.move_ip(rel)
     
     def stash(self, inventory):
+        if self.stashed:
+            # just reposition the item in the inventory
+            self.rect.topleft = (self.id * 10 + self.rect.width, SCREEN_HEIGHT - INVENTORY_HEIGHT + 5)
+            self.position = pygame.Vector2(self.rect.topleft)
+            return
         inventory.items[self.id] = self
         self.stashed = True
         # how to stash properly? inventroy slots?
@@ -66,7 +73,7 @@ class Item(RectShape):
         print("Inventory items: ", inventory.items)
 
     def unstash(self, inventory, pos):
-        del inventory.items[self.id]
+        #del inventory.items[self.id]
         self.stashed = False
         #self.position = self.original_position
         #self.rect.topleft = self.original_position

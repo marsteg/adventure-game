@@ -27,6 +27,10 @@ class RectShape(pygame.sprite.Sprite):
         # sub-classes must override
         pass
 
+    def kill(self, arg1, arg2):
+        # sub-classes must override
+        pass
+
     def collides_with(self, other):
         return self.rect.colliderect(other.rect)
 

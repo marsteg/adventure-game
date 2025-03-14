@@ -48,16 +48,12 @@ class Action(RectShape):
         for func, args, kwargs in self.functions:
             func(*args, **kwargs)
             print("Action Function triggered in position: ", self.position)
-        #self.actionfunc(self, self.arg1, self.arg2, self.arg3)
         
-    def unlock(self, key, inventory, rooms):
+    def unlock(self, key, inventory):
         if key != self.key:
             print("Wrong key")
             return
         print("Door unlocked: ", self.locked)
         self.locked = False
-        if key.selfdestruct:
-            key.kill(inventory, rooms)
-            print("destroying key: ", key)
-        else:
-            key.stash(inventory)
+        self.action()
+        #key.stash(inventory)

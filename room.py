@@ -34,22 +34,23 @@ class Room(pygame.sprite.Sprite):
         inventory.draw(screen, inventory)
         for door in self.doors.values():
             door.draw(screen)
+        for action in self.actions.values():
+            action.draw(screen)
         for item in self.items.values():
             item.draw(screen)
             for inventory_item in inventory.items.values():
                 inventory_item.draw(screen)
-        for action in self.actions.values():
-            action.draw(screen)
         
-        
-
     def shine(self, screen):
-        for item in self.items:
+        for item in self.items.values():
             item.shine(screen)
-        for door in self.doors:
+        for door in self.doors.values():
             door.shine(screen)
-        for action in self.actions:
+        for action in self.actions.values():
             action.shine(screen)
+
+    def collidepoint(self, pos):
+        return self.rect.collidepoint(pos)
 
     def spawn(self, radius, position, velocity):
         pass # sub-classes must override - could be useful for minigame style rooms

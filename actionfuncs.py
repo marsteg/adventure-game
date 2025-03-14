@@ -30,3 +30,7 @@ def UnlockDoor(action, door):
     #door.image = pygame.image.load(door.open_image)
     #door.image = pygame.transform.scale(door.image, (door.rect.width, door.rect.height))
     print("Door position: ", door.position)
+
+def AllowDestroy(item):
+    item.allow_destroy = True
+    print("Item ID: ", item.id, " can be destroyed")
