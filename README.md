@@ -18,8 +18,6 @@ You will need the pygame library. Then just run:
 	- should unlock of an action also execute it's actionfuncs?
 
 # todo: 
-- doubleclick on items for fast collecting
-- items should not be movable off the screen
 - need to find a clean way to assign and create doors and rooms and assign items (currently in main func)
 - NPCs
 	- single line talking
@@ -27,6 +25,7 @@ You will need the pygame library. Then just run:
 - Gamestate:
 	- how to save and load the game?
 - Player Character?
+	- doubleclick on items for fast collecting
 - Sound
 
 ## inventory

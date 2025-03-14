@@ -154,11 +154,16 @@ def main():
                     action.unlock(box, inventory)
                     box.kill(inventory, Room.rooms)
                     break
-                # process room
+                # if item is dropped in room
                 if active_room.collidepoint(event.pos):
                   box.stash(inventory)
                   break
-                if inventory.collidepoint(event.pos):
+                # if item is dropped in inventory
+                if inventory.collidepoint(event.pos): 
+                  box.stash(inventory)
+                  break
+                # if item is dropped outside of room or inventory
+                if not active_room.collidepoint(event.pos) and not inventory.collidepoint(event.pos):
                   box.stash(inventory)
                   break
             active_box = None
