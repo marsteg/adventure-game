@@ -7,6 +7,9 @@ from room import *
 from door import *
 from action import *
 from actionfuncs import *
+from npc import *
+from dialog import *
+import time
 
 def main():
     pygame.init()
@@ -30,6 +33,8 @@ def main():
 
     Room.containers = (updatable)
 
+    dialog = Dialog()
+
     # title screen
     title = Room("assets/rooms/TitleScreen.png")
    
@@ -50,6 +55,10 @@ def main():
     Room2door2 = Door(480, 300, 100, 200, "assets/doors/door1.png", room1, False, None)
     titledoor = Door(300, 300, 100, 200, "assets/doors/door1.png", room1, False, None)
 
+    wolfboy = NPC(1000, 300, 80, 150, "assets/npcs/WerewolfBoy.png", "Wolfboy", True, missile, "I am wolfboy!")
+
+
+
    # action funcs require items, doors, and actions
     button1.add_function(ChangePicture, button1, "assets/actions/button2.png", "assets/actions/button.png", None) 
     button1.add_function(LogText, "Text Logged")
@@ -67,6 +76,7 @@ def main():
     room1.doors[Room1door2.id] = Room1door2
     room1.items[missile.id] = missile
     room1.actions[button1.id] = button1
+    room1.npcs[wolfboy.id] = wolfboy
     room2.items[missile2.id] = missile2
     room2.actions[button2.id] = button2
 
@@ -86,21 +96,26 @@ def main():
     active_room = title
     active_box = None
     active_click = None
+    active_talker = None
     last_active_click = None
     
     # game loop
     run = True
     while run:
 
+      for npc in active_room.npcs.values():
+        if dialog.state != None and npc.active_dialog != None:
+          active_talker.talk(dialog)
+          if time.time() - dialog.timer > 3: # stop talking after 3 seconds
+            active_talker = None
+            dialog.state = None
 
       for updatable_object in updatable:
         updatable_object.update(dt)
-      
+
       # draw screen
-      #for drawable_room in rooms:
-      #  if drawable_room == active_room:
-      #    drawable_room.draw(screen, inventory)
-      active_room.draw(screen, inventory)
+      active_room.draw(screen, inventory, dialog)
+
   
       keys = pygame.key.get_pressed()
       if keys[pygame.K_SPACE]:
@@ -113,9 +128,6 @@ def main():
 
     
     # events
-      FPS = 60
-      dt = clock.tick(FPS)
-
       for event in pygame.event.get():
         if event.type == pygame.MOUSEBUTTONDOWN:
           if event.button == 1:
@@ -133,6 +145,10 @@ def main():
             for action in active_room.actions.values():
               if action.rect.collidepoint(event.pos):
                 active_click = action
+            # clicking NPCs
+            for npc in active_room.npcs.values():
+              if npc.rect.collidepoint(event.pos):
+                active_click = npc
 
         if event.type == pygame.MOUSEBUTTONUP:
           # dropping items
@@ -142,16 +158,22 @@ def main():
             
             for box in list(dict.fromkeys(dragable)):
               if box.rect.collidepoint(event.pos):
-                # process doors
+                # process dropping on doors
                 for door in active_room.doors.values():
                   if door.collides_with(box):
                     door.unlock(box, inventory)
                     box.kill(inventory, Room.rooms)
                     break
-                # process actions
+                # process dropping on  actions
                 for action in active_room.actions.values():
                   if action.collides_with(box):
                     action.unlock(box, inventory)
+                    box.kill(inventory, Room.rooms)
+                    break
+                # process dropping on  NPCs
+                for npc in active_room.npcs.values():
+                  if npc.collides_with(box):
+                    npc.unlock(box, inventory)
                     box.kill(inventory, Room.rooms)
                     break
                 # if item is dropped in room
@@ -167,7 +189,7 @@ def main():
                   box.stash(inventory)
                   break
             active_box = None
-            
+            # process clicking on doors
             for door in active_room.doors.values():
               if door.rect.collidepoint(event.pos):
                 if isinstance(door, Door) and active_click == door:
@@ -181,7 +203,7 @@ def main():
                 else:
                   last_active_click = active_click
                   active_click = None
-
+            # process clicking on actions
             for action in active_room.actions.values():
               if action.rect.collidepoint(event.pos):
                 if isinstance(action, Action) and active_click == action:
@@ -193,6 +215,20 @@ def main():
                   last_active_click = active_click
                   active_click = None
 
+              # process clicking on NPCs
+            for npc in active_room.npcs.values():
+              if npc.rect.collidepoint(event.pos):
+                if isinstance(npc, NPC) and active_click == npc:
+                  npc.talk(dialog)
+                  dialog.timer = time.time()
+                  print("NPC pressed in position: ", npc.position)
+                  last_active_click = active_click
+                  active_click = None
+                  active_talker = npc
+                else:
+                  last_active_click = active_click
+                  active_click = None
+
         if event.type == pygame.MOUSEMOTION:
           if active_box != None:
             active_box.move_ip(event.rel)
@@ -200,8 +236,9 @@ def main():
         if event.type == pygame.QUIT:
           run = False
 
+      dt = clock.tick(FPS)
       pygame.display.flip()
-      pygame.display.update()
+
       
 
 pygame.quit()

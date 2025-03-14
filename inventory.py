@@ -14,11 +14,6 @@ class Inventory(pygame.sprite.Sprite):
     def draw(self, screen, inventory):
         inv = pygame.draw.rect(screen, "brown", self.rect)
         screen.fill("brown", inv)
-        #for num, item in inventory.items.items():
-        #    item.rect.topleft = (num * 10 + item.rect.width, SCREEN_HEIGHT - INVENTORY_HEIGHT + 5)
-        #    item.position = pygame.Vector2(item.rect.topleft)
-        #    item.draw(screen)
-            #screen.blit(item.image, item.rect)
 
     def update(self, dt):
         pass
