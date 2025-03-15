@@ -29,7 +29,7 @@ class Room(pygame.sprite.Sprite):
         Room.rooms[self.id] = self
         
 
-    def draw(self, screen, inventory, dialog):
+    def draw(self, screen, inventory, dialogbox):
         pygame.draw.rect(screen, "purple", self.rect)
         screen.blit(self.image, self.rect)
         inventory.draw(screen, inventory)
@@ -43,8 +43,8 @@ class Room(pygame.sprite.Sprite):
             item.draw(screen)
         for inventory_item in inventory.items.values():
             inventory_item.draw(screen)
-        if dialog.state != None:
-            dialog.draw(screen)
+        if dialogbox.state != None:
+            dialogbox.draw(screen)
         
     def shine(self, screen):
         for item in self.items.values():
@@ -53,6 +53,8 @@ class Room(pygame.sprite.Sprite):
             door.shine(screen)
         for action in self.actions.values():
             action.shine(screen)
+        for npc in self.npcs.values():
+            npc.shine(screen)
 
     def collidepoint(self, pos):
         return self.rect.collidepoint(pos)

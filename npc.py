@@ -5,7 +5,7 @@ class NPC(RectShape):
     _id_counter = 1
     containers = []
     NPCs = {}
-    def __init__(self, left, top, width, height, image, name, locked, key, text):
+    def __init__(self, left, top, width, height, image, name, locked, key, speechcolor, text):
         super().__init__(left, top, width, height, image)  
         self.rotation = 0
         self.id = NPC._id_counter
@@ -19,6 +19,7 @@ class NPC(RectShape):
         self.locked = locked
         self.key = key
         self.active_dialog = text
+        self.speechcolor = speechcolor
         NPC.NPCs[self.id] = self
         
     def add_function(self, func, *args, **kwargs):
@@ -51,11 +52,18 @@ class NPC(RectShape):
         key.allow_destroy = True
         self.action()
 
-    def talk(self, dialog):
+    def shine(self, screen):
+        shiner = pygame.Surface((self.rect.width, self.rect.height))
+        shiner.fill((255, 255, 255))
+        shiner.set_alpha(100)
+        screen.blit(shiner, self.rect.topleft)
+
+    def talk(self, dialogbox):
         print("NPC Talking: ", self.name)
-        dialog.state = self
+        dialogbox.state = self
         font = pygame.font.Font('freesansbold.ttf', 25)
-        text = font.render(self.active_dialog, True, (255,255,255))
-        dialog.surface = text
+        text = font.render(self.active_dialog, True, self.speechcolor)
+        dialogbox.rect = pygame.Rect(SCREEN_WIDTH // 3, SCREEN_HEIGHT // 2, SCREEN_WIDTH // 2, 0)
+        dialogbox.surface = text
 
     

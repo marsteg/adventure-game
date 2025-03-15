@@ -8,7 +8,7 @@ from door import *
 from action import *
 from actionfuncs import *
 from npc import *
-from dialog import *
+from dialogbox import *
 import time
 
 def main():
@@ -33,7 +33,7 @@ def main():
 
     Room.containers = (updatable)
 
-    dialog = Dialog()
+    dialogbox = DialogBox()
 
     # title screen
     title = Room("assets/rooms/TitleScreen.png")
@@ -51,18 +51,15 @@ def main():
     button2 = Action(400, 100, 50, 50, "assets/actions/button2.png", True, missile)
 
     # NPCs might require Items
-    wolfboy = NPC(750, 350, 150, 160, "assets/npcs/werewolfboy.png", "Wolfboy", True, missile2, "I am wolfboy! I like red missiles and can open doors!")
+    wolfboy = NPC(750, 350, 150, 160, "assets/npcs/werewolfboy.png", "Wolfboy", True, missile2, GREEN, "I am wolfboy! I like red missiles and provide keys to open doors!")
     
    # doors require rooms and might require items
-    Room1door1 = Door(80, 300, 100, 200, "assets/doors/door1.png", title, True, wolfboy)
+    Room1door1 = Door(80, 300, 100, 200, "assets/doors/door1.png", title, True, missile)
     Room1door2 = Door(880, 300, 100, 200, "assets/doors/door1.png", room2, True, button1)
     Room2door2 = Door(480, 300, 100, 200, "assets/doors/door1.png", room1, False, None)
     titledoor = Door(300, 300, 100, 200, "assets/doors/door1.png", room1, False, None)
 
     
-
-
-
    # action funcs require items, doors, and actions
     button1.add_function(ChangePicture, button1, "assets/actions/button2.png", "assets/actions/button.png", None) 
     button1.add_function(LogText, "Text Logged")
@@ -74,7 +71,7 @@ def main():
 
     #NPCs action funcs
     wolfboy.add_function(GiveItem, missile, inventory)
-    wolfboy.add_function(UnlockDoor, wolfboy, Room1door1)
+    #wolfboy.add_function(UnlockDoor, wolfboy, Room1door1)
   # appendings doors, items and actions to rooms
     title.doors[titledoor.id] = titledoor
     room2.doors[Room2door2.id] = Room2door2
@@ -104,22 +101,22 @@ def main():
     active_talker = None
     last_active_click = None
     
-    # game loop
+    # game loop start
     run = True
     while run:
 
       for npc in active_room.npcs.values():
-        if dialog.state != None and npc.active_dialog != None:
-          active_talker.talk(dialog)
-          if time.time() - dialog.timer > 3: # stop talking after 3 seconds
+        if dialogbox.state != None and npc.active_dialog != None:
+          active_talker.talk(dialogbox)
+          if time.time() - dialogbox.timer > 3: # stop talking after 3 seconds
             active_talker = None
-            dialog.state = None
+            dialogbox.state = None
 
       for updatable_object in updatable:
         updatable_object.update(dt)
 
       # draw screen
-      active_room.draw(screen, inventory, dialog)
+      active_room.draw(screen, inventory, dialogbox)
 
   
       keys = pygame.key.get_pressed()
@@ -224,8 +221,8 @@ def main():
             for npc in active_room.npcs.values():
               if npc.rect.collidepoint(event.pos):
                 if isinstance(npc, NPC) and active_click == npc:
-                  npc.talk(dialog)
-                  dialog.timer = time.time()
+                  npc.talk(dialogbox)
+                  dialogbox.timer = time.time()
                   print("NPC pressed in position: ", npc.position)
                   last_active_click = active_click
                   active_click = None
