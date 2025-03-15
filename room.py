@@ -41,8 +41,8 @@ class Room(pygame.sprite.Sprite):
             npc.draw(screen)
         for item in self.items.values():
             item.draw(screen)
-            for inventory_item in inventory.items.values():
-                inventory_item.draw(screen)
+        for inventory_item in inventory.items.values():
+            inventory_item.draw(screen)
         if dialog.state != None:
             dialog.draw(screen)
         

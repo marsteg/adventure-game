@@ -20,7 +20,6 @@ def ChangePicture(action, new_image, old_image, arg3=None):
     action.state = new_image
     print("Item ID: ", action.id, " changed picture to: ", action.image)
 
-# unused
 def UnlockDoor(action, door):
     if door.key != action:
         print("Wrong key")
@@ -34,3 +33,9 @@ def UnlockDoor(action, door):
 def AllowDestroy(item):
     item.allow_destroy = True
     print("Item ID: ", item.id, " can be destroyed")
+
+def GiveItem(item, inventory):
+    inventory.items[item.id] = item
+    item.stash(inventory)
+    print("Item ID: ", item.id, " added to inventory")
+    print("Inventory items: ", inventory.items)

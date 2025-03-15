@@ -15,11 +15,14 @@ class NPC(RectShape):
         self.image = pygame.image.load(image).convert_alpha()
         self.image = pygame.transform.scale(self.image, (width, height))
         self.name = name
+        self.functions = []
         self.locked = locked
         self.key = key
         self.active_dialog = text
         NPC.NPCs[self.id] = self
         
+    def add_function(self, func, *args, **kwargs):
+        self.functions.append((func, args, kwargs))
 
     def draw(self, screen):
         #pygame.draw.rect(screen, "purple", self.rect)
@@ -31,6 +34,14 @@ class NPC(RectShape):
     def collidepoint(self, pos):
         return self.rect.collidepoint(pos)
     
+    def action(self):
+        if self.locked:
+            print("NPC is locked")
+            return
+        for func, args, kwargs in self.functions:
+            func(*args, **kwargs)
+            print("Action Function triggered in position: ", self.position)
+    
     def unlock(self, key, inventory):
         if key != self.key:
             print("Wrong key")
@@ -38,6 +49,7 @@ class NPC(RectShape):
         print("NPC unlocked: ", self.locked)
         self.locked = False
         key.allow_destroy = True
+        self.action()
 
     def talk(self, dialog):
         print("NPC Talking: ", self.name)

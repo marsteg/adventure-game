@@ -16,6 +16,7 @@ You will need the pygame library. Then just run:
 
 
 # todo: 
+- giveItem places the item into the room instead of the inventory
 - need to find a clean way to assign and create doors and rooms and assign items (currently in main func)
 - NPCs
 	- text currently stays 3 seconds - clicking should remove it

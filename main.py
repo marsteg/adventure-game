@@ -49,13 +49,17 @@ def main():
     # actions might require items
     button1 = Action(800, 100, 50, 50, "assets/actions/button.png", False, None)
     button2 = Action(400, 100, 50, 50, "assets/actions/button2.png", True, missile)
+
+    # NPCs might require Items
+    wolfboy = NPC(750, 350, 150, 160, "assets/npcs/werewolfboy.png", "Wolfboy", True, missile2, "I am wolfboy! I like red missiles and can open doors!")
+    
    # doors require rooms and might require items
-    Room1door1 = Door(80, 300, 100, 200, "assets/doors/door1.png", room2, True, missile2)
+    Room1door1 = Door(80, 300, 100, 200, "assets/doors/door1.png", title, True, wolfboy)
     Room1door2 = Door(880, 300, 100, 200, "assets/doors/door1.png", room2, True, button1)
     Room2door2 = Door(480, 300, 100, 200, "assets/doors/door1.png", room1, False, None)
     titledoor = Door(300, 300, 100, 200, "assets/doors/door1.png", room1, False, None)
 
-    wolfboy = NPC(750, 350, 150, 160, "assets/npcs/werewolfboy.png", "Wolfboy", True, missile, "I am wolfboy!")
+    
 
 
 
@@ -68,16 +72,17 @@ def main():
     button2.add_function(LogText, "Button 2 Text Logged")
     button2.add_function(AllowDestroy, missile2)
 
-
+    #NPCs action funcs
+    wolfboy.add_function(GiveItem, missile, inventory)
+    wolfboy.add_function(UnlockDoor, wolfboy, Room1door1)
   # appendings doors, items and actions to rooms
     title.doors[titledoor.id] = titledoor
     room2.doors[Room2door2.id] = Room2door2
     room1.doors[Room1door1.id] = Room1door1
     room1.doors[Room1door2.id] = Room1door2
-    room1.items[missile.id] = missile
     room1.actions[button1.id] = button1
     room2.npcs[wolfboy.id] = wolfboy
-    room2.items[missile2.id] = missile2
+    room1.items[missile2.id] = missile2
     room2.actions[button2.id] = button2
 
 
