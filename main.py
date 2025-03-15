@@ -55,7 +55,7 @@ def main():
     Room2door2 = Door(480, 300, 100, 200, "assets/doors/door1.png", room1, False, None)
     titledoor = Door(300, 300, 100, 200, "assets/doors/door1.png", room1, False, None)
 
-    wolfboy = NPC(1000, 300, 80, 150, "assets/npcs/WerewolfBoy.png", "Wolfboy", True, missile, "I am wolfboy!")
+    wolfboy = NPC(750, 350, 150, 160, "assets/npcs/werewolfboy.png", "Wolfboy", True, missile, "I am wolfboy!")
 
 
 
@@ -76,7 +76,7 @@ def main():
     room1.doors[Room1door2.id] = Room1door2
     room1.items[missile.id] = missile
     room1.actions[button1.id] = button1
-    room1.npcs[wolfboy.id] = wolfboy
+    room2.npcs[wolfboy.id] = wolfboy
     room2.items[missile2.id] = missile2
     room2.actions[button2.id] = button2
 

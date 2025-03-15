@@ -22,7 +22,7 @@ class NPC(RectShape):
         
 
     def draw(self, screen):
-        pygame.draw.rect(screen, "purple", self.rect)
+        #pygame.draw.rect(screen, "purple", self.rect)
         screen.blit(self.image, self.rect)
 
     def update(self, dt):

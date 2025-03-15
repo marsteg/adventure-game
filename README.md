@@ -12,16 +12,15 @@ You will need the pygame library. Then just run:
 - hitting space makes items, doors and actions shine
 - Actionfuncs are a way to teach an action button tricks. With this theoretically anything can be executed via Actions
 - unlocking an action will also execute it's actionfuncs
-- first NPC available!
-
+- first NPC available!	
 
 
 # todo: 
 - need to find a clean way to assign and create doors and rooms and assign items (currently in main func)
 - NPCs
-	- why does the background invisibility not work?
 	- text currently stays 3 seconds - clicking should remove it
 	- actual conversations
+	- text should be positioned relative to the character speaking
 - Gamestate:
 	- how to save and load the game?
 - Player Character?
