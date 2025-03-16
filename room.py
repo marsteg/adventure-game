@@ -29,7 +29,7 @@ class Room(pygame.sprite.Sprite):
         Room.rooms[self.id] = self
         
 
-    def draw(self, screen, inventory, dialogbox):
+    def draw(self, screen, inventory, dialogbox, answerbox):
         pygame.draw.rect(screen, "purple", self.rect)
         screen.blit(self.image, self.rect)
         inventory.draw(screen, inventory)
@@ -41,10 +41,13 @@ class Room(pygame.sprite.Sprite):
             npc.draw(screen)
         for item in self.items.values():
             item.draw(screen)
-        for inventory_item in inventory.items.values():
-            inventory_item.draw(screen)
         if dialogbox.state != None:
             dialogbox.draw(screen)
+        if answerbox.state != None:
+            answerbox.draw(screen)
+        else:
+            for inventory_item in inventory.items.values():
+                inventory_item.draw(screen)
         
     def shine(self, screen):
         for item in self.items.values():

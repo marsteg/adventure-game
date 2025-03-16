@@ -7,7 +7,8 @@ import random
 class Item(RectShape):
     _id_counter = 1
     containers = []
-    def __init__(self, left, top, width, height, image, selfdestruct = False):
+    items = {}
+    def __init__(self, left, top, width, height, image, name, selfdestruct = False):
         super().__init__(left, top, width, height, image)  
         self.rotation = 0
         self.id = Item._id_counter
@@ -20,6 +21,8 @@ class Item(RectShape):
         self.stashed = False
         self.selfdestruct = selfdestruct
         self.allow_destroy = False
+        Item.items[self.id] = self
+        self.name = name
         
 
     def draw(self, screen):
@@ -58,7 +61,7 @@ class Item(RectShape):
         self.position = pygame.Vector2(self.rect.topleft)
         #return self.rect.move_ip(rel)
     
-    def stash(self, inventory):
+    def stash(self, inventory,room=None):
         if self.stashed:
             # just reposition the item in the inventory
             self.rect.topleft = (self.id * 10 + self.rect.width, SCREEN_HEIGHT - INVENTORY_HEIGHT + 5)
@@ -66,6 +69,11 @@ class Item(RectShape):
             return
         inventory.items[self.id] = self
         self.stashed = True
+        if room != None:
+            if self.id in room.items:
+                if self == room.items[self.id]:
+                    del room.items[self.id]
+                    print("Item removed from room: ", room.id)
         # how to stash properly? inventroy slots?
         self.rect.topleft = (self.id * 10 + self.rect.width, SCREEN_HEIGHT - INVENTORY_HEIGHT + 5)
         self.position = pygame.Vector2(self.rect.topleft)

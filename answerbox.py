@@ -1,59 +1,41 @@
 import pygame
-import random
+from inventory import *
+from item import *
+from room import *
+from door import *
+from rectshape import *
 from constants import *
 
 
-class Dialog(None):
+class AnswerBox(pygame.sprite.Sprite):
     _id_counter = 1
+    containers = []
     def __init__(self):
-        self.id = Dialog._id_counter
-        Dialog._id_counter += 1
+        pygame.sprite.Sprite.__init__(self, self.containers)
+        self.rect = pygame.Rect(0, SCREEN_HEIGHT - INVENTORY_HEIGHT, SCREEN_WIDTH, INVENTORY_HEIGHT)
+        self.id = AnswerBox._id_counter
+        AnswerBox._id_counter += 1
         self.state = None
         self.functions = []
-        
+        self.answers = {}
+
+    def draw(self, screen):
+        answerbox = pygame.draw.rect(screen, "blue", self.rect)
+        screen.fill("blue", answerbox)
+        #screen.blit(self.surface, self.rect)
+        if len(self.answers) > 0:
+            for answer in self.answers.values():
+                screen.blit(answer.surface, answer.rect)
         
     def add_function(self, func, *args, **kwargs):
         self.functions.append((func, args, kwargs))
 
-    def update(self, dt):
-        pass
-
-
-class SpeechLine(None):
-    _id_counter = 1
-    def __init__(self, text, duration, speaker, next_line):
-        self.id = SpeechLine._id_counter
-        SpeechLine._id_counter += 1
-        self.text = text
-        self.duration = duration
-        self.speaker = speaker
-        self.color = speaker.speechcolor
-        self.position = speaker.rect.topleft
-        self.next_line = next_line
-
-    def draw(self, screen):
-        pass
+    def add_answer(self, answer):
+        self.answers[answer.answer] = answer
 
     def update(self, dt):
         pass
-    
 
-class AnswerLines(None):
-    _id_counter = 1
-    def __init__(self, text, duration, speaker, next_line):
-        self.id = AnswerLines._id_counter
-        AnswerLines._id_counter += 1
-        self.answers = []
-        self.functions = []  
-        
-    def add_function(self, func, *args, **kwargs):
-        self.functions.append((func, args, kwargs))
-
-    def draw(self, screen):
-        pass
-
-    def update(self, dt):
-        pass
 '''
 - NPCs
 	- actual conversations

@@ -9,6 +9,7 @@ from action import *
 from actionfuncs import *
 from npc import *
 from dialogbox import *
+from answerbox import *
 import time
 
 def main():
@@ -34,6 +35,7 @@ def main():
     Room.containers = (updatable)
 
     dialogbox = DialogBox()
+    answerbox = AnswerBox()
 
     # title screen
     title = Room("assets/rooms/TitleScreen.png")
@@ -44,14 +46,15 @@ def main():
     room1 = Room("assets/rooms/RektorOffice.png")
     room2 = Room("assets/rooms/LivingRoom.png")
     # items require nothing
-    missile = Item(100, 100, 50, 50, "assets/items/missile.png") # should come back to inventory
-    missile2 = Item(200, 200, 50, 50, "assets/items/missile2.png", True) # should self destruct
+    missile = Item(100, 100, 50, 50, "assets/items/missile.png", "missile") # should come back to inventory
+    missile2 = Item(200, 200, 50, 50, "assets/items/missile2.png", "missile2", True) # should self destruct
     # actions might require items
     button1 = Action(800, 100, 50, 50, "assets/actions/button.png", False, None)
     button2 = Action(400, 100, 50, 50, "assets/actions/button2.png", True, missile)
 
     # NPCs might require Items
-    wolfboy = NPC(750, 350, 150, 160, "assets/npcs/werewolfboy.png", "Wolfboy", True, missile2, GREEN, "I am wolfboy! I like red missiles and provide keys to open doors!")
+    wolfboy = NPC(750, 350, 150, 160, "assets/npcs/werewolfboy.png", "wolfboy", True, missile2, GREEN, "assets/dialogs/wolfboy.yaml")
+    wolfboy2 = NPC(350, 350, 150, 160, "assets/npcs/werewolfboy.png", "wolfboy2", True, missile2, WHITE, "assets/dialogs/wolfboy2.yaml")
     
    # doors require rooms and might require items
     Room1door1 = Door(80, 300, 100, 200, "assets/doors/door1.png", title, True, missile)
@@ -71,12 +74,14 @@ def main():
 
     #NPCs action funcs
     wolfboy.add_function(GiveItem, missile, inventory)
+    
     #wolfboy.add_function(UnlockDoor, wolfboy, Room1door1)
   # appendings doors, items and actions to rooms
     title.doors[titledoor.id] = titledoor
     room2.doors[Room2door2.id] = Room2door2
     room1.doors[Room1door1.id] = Room1door1
     room1.doors[Room1door2.id] = Room1door2
+    room1.npcs[wolfboy2.id] = wolfboy2
     room1.actions[button1.id] = button1
     room2.npcs[wolfboy.id] = wolfboy
     room1.items[missile2.id] = missile2
@@ -90,7 +95,7 @@ def main():
       w = random.randint(35, 65)
       h = random.randint(35, 65)
       image = 'assets/items/missile.png'
-      item = Item(x, y, w, h, image)
+      item = Item(x, y, w, h, image, "missile" + str(x) )
       room2.items[item.id] = item
 
 
@@ -106,17 +111,23 @@ def main():
     while run:
 
       for npc in active_room.npcs.values():
-        if dialogbox.state != None and npc.active_dialog != None:
-          active_talker.talk(dialogbox)
-          if time.time() - dialogbox.timer > 3: # stop talking after 3 seconds
+        #if dialogbox.state != None and npc.active_dialog != None and active_talker != None:
+        if npc.active_dialog != None and active_talker != None:
+          if dialogbox.room != active_room:
+            dialogbox.state = None
+            active_talker = None
+            continue      
+          if time.time() - dialogbox.timer > active_talker.dialog[active_talker.active_dialog]["duration"]:
             active_talker = None
             dialogbox.state = None
+
+
 
       for updatable_object in updatable:
         updatable_object.update(dt)
 
       # draw screen
-      active_room.draw(screen, inventory, dialogbox)
+      active_room.draw(screen, inventory, dialogbox, answerbox)
 
   
       keys = pygame.key.get_pressed()
@@ -151,6 +162,11 @@ def main():
             for npc in active_room.npcs.values():
               if npc.rect.collidepoint(event.pos):
                 active_click = npc
+            # clicking answers
+            if answerbox.state != None:
+              for answer in answerbox.answers.values():
+                if answer.rect.collidepoint(event.pos):
+                  active_click = answer
 
         if event.type == pygame.MOUSEBUTTONUP:
           # dropping items
@@ -180,15 +196,15 @@ def main():
                     break
                 # if item is dropped in room
                 if active_room.collidepoint(event.pos):
-                  box.stash(inventory)
+                  box.stash(inventory, active_room)
                   break
                 # if item is dropped in inventory
                 if inventory.collidepoint(event.pos): 
-                  box.stash(inventory)
+                  box.stash(inventory, active_room)
                   break
                 # if item is dropped outside of room or inventory
                 if not active_room.collidepoint(event.pos) and not inventory.collidepoint(event.pos):
-                  box.stash(inventory)
+                  box.stash(inventory, active_room)
                   break
             active_box = None
             # process clicking on doors
@@ -221,7 +237,8 @@ def main():
             for npc in active_room.npcs.values():
               if npc.rect.collidepoint(event.pos):
                 if isinstance(npc, NPC) and active_click == npc:
-                  npc.talk(dialogbox)
+                  #dialogbox.timer = time.time()
+                  npc.talk(active_room, inventory, dialogbox, answerbox)
                   dialogbox.timer = time.time()
                   print("NPC pressed in position: ", npc.position)
                   last_active_click = active_click
@@ -230,6 +247,24 @@ def main():
                 else:
                   last_active_click = active_click
                   active_click = None
+
+              # process clicking on answers
+            if answerbox.state != None:
+              for answer in answerbox.answers.values():
+                if answer.rect.collidepoint(event.pos):
+                  print("Answer pressed in position: ", answer.position)
+                  print(answer.answer)
+                  if isinstance(answer, Answer) and active_click == answer:
+                    #dialogbox.timer = time.time()
+                    active_talker = npc
+                    answer.action()
+                    dialogbox.timer = time.time()
+                    print("Answer executed in position: ", answer.position)
+                    last_active_click = active_click
+                    active_click = None
+                  else:
+                    last_active_click = active_click
+                    active_click = None
 
         if event.type == pygame.MOUSEMOTION:
           if active_box != None:

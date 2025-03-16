@@ -34,8 +34,22 @@ def AllowDestroy(item):
     item.allow_destroy = True
     print("Item ID: ", item.id, " can be destroyed")
 
+    # Give item to the Player
 def GiveItem(item, inventory):
     inventory.items[item.id] = item
     item.stash(inventory)
     print("Item ID: ", item.id, " added to inventory")
     print("Inventory items: ", inventory.items)
+
+    # Take Item from the Player
+def TakeItem(item, inventory):
+    del inventory.items[item.id]
+    item.stashed = False
+    item.allow_destroy = True
+    print("Item ID: ", item.id, " removed from inventory")
+
+# unused
+def DestroyItem(item, inventory, rooms):
+    item.kill(inventory, rooms)
+    print("Item ID: ", item.id, " destroyed")
+

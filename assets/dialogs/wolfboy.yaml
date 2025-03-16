@@ -1,0 +1,76 @@
+bye:
+  line: "Bye"
+  duration: 1
+  speaker: wolfboy
+  exit: 
+    ExitDialog: start
+bye2:
+  line: "Thanks for the red missile! I hope you enjoy the Gray One!"
+  duration: 2
+  speaker: wolfboy
+  exit: 
+    ExitDialog: bye2
+start:
+  line: "Hi, I'm a wolfboy. I like red stuff."
+  duration: 3
+  speaker: wolfboy
+  answers:
+    - line: "What's a wolfboy?"
+      actionfuncs:
+        - ChangeDialog: 
+            - wolfboy
+            - wolfboytest2
+    - line: "What do you do here?"
+      actionfuncs:
+        - ChangeDialog: 
+            - wolfboy
+            - wolfboytest3
+    - line: "I don't care"
+      actionfuncs:
+        - ExitDialog: 
+          - start
+wolfboytest2:
+  line: "A boy who is also a werewolf"
+  duration: 2
+  speaker: wolfboy
+  answers:
+    - line: "What are you looking for?"
+      actionfuncs:
+        - ChangeDialog: 
+          - wolfboy
+          - wolfboytest3
+    - line: "For a moment, I thought I'd care"
+      actionfuncs:
+        - ChangeDialog:
+          - wolfboy
+          - bye
+wolfboytest3:
+  line: "I need a red missile. I would exchange it for a gray one."
+  duration: 2
+  speaker: wolfboy
+  answers:
+    - line: "Oh, I have a red missile"
+      actionfuncs:
+        - TakeItemString:
+          - missile2
+          - wolffailure
+          - wolfsuccess
+    - line: "I don't care"
+      actionfuncs:
+        - ChangeDialog:
+          - wolfboy
+          - bye
+wolffailure:
+  line: "you don't have the red missile"
+  duration: 2
+  speaker: wolfboy
+  exit: 
+    ExitDialog: start
+wolfsuccess:
+  line: "Thanks! There you go! Enjoy the gray missile!"
+  duration: 2
+  speaker: wolfboy
+  exit: 
+    ExitDialog: bye2
+  unlock: True
+

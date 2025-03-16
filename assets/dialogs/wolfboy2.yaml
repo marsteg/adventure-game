@@ -1,0 +1,9 @@
+bye:
+  line: "Bye2"
+  duration: 1
+  speaker: wolfboy2
+  exit: true
+start:
+  line: "Hi, I'm a copy of wolfboy. i am weird."
+  duration: 2
+  speaker: wolfboy2
