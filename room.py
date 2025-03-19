@@ -14,7 +14,7 @@ class Room(pygame.sprite.Sprite):
         (pygame.Vector2(-1, 0), lambda y: pygame.Vector2(0, y))
     ]
 
-    def __init__(self, image):
+    def __init__(self, image, name):
         pygame.sprite.Sprite.__init__(self, self.containers)
         self.rect = pygame.Rect(0, 0, SCREEN_WIDTH, SCREEN_HEIGHT-INVENTORY_HEIGHT)
         self.spawn_timer = 0.0
@@ -26,6 +26,7 @@ class Room(pygame.sprite.Sprite):
         self.items = {}
         self.actions = {}
         self.npcs = {}
+        self.name = name
         Room.rooms[self.id] = self
         
 

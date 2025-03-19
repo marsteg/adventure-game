@@ -10,6 +10,7 @@ from actionfuncs import *
 from npc import *
 from dialogbox import *
 from answerbox import *
+from save import *
 import time
 
 def main():
@@ -38,13 +39,13 @@ def main():
     answerbox = AnswerBox()
 
     # title screen
-    title = Room("assets/rooms/TitleScreen.png")
+    title = Room("assets/rooms/TitleScreen.png", "title")
    
 
     # room and door and item assignments specifics...
     # rooms require nothing
-    room1 = Room("assets/rooms/RektorOffice.png")
-    room2 = Room("assets/rooms/LivingRoom.png")
+    room1 = Room("assets/rooms/RektorOffice.png", "room1")
+    room2 = Room("assets/rooms/LivingRoom.png", "room2")
     # items require nothing
     missile = Item(100, 100, 50, 50, "assets/items/missile.png", "missile") # should come back to inventory
     missile2 = Item(200, 200, 50, 50, "assets/items/missile2.png", "missile2", True) # should self destruct
@@ -57,10 +58,10 @@ def main():
     wolfboy2 = NPC(350, 350, 150, 160, "assets/npcs/werewolfboy.png", "wolfboy2", True, missile2, WHITE, "assets/dialogs/wolfboy2.yaml")
     
    # doors require rooms and might require items
-    Room1door1 = Door(80, 300, 100, 200, "assets/doors/door1.png", title, True, missile)
-    Room1door2 = Door(880, 300, 100, 200, "assets/doors/door1.png", room2, True, button1)
-    Room2door2 = Door(480, 300, 100, 200, "assets/doors/door1.png", room1, False, None)
-    titledoor = Door(300, 300, 100, 200, "assets/doors/door1.png", room1, False, None)
+    Room1door1 = Door(80, 300, 100, 200, "assets/doors/door1.png", "Room1Door1", title, True, missile)
+    Room1door2 = Door(880, 300, 100, 200, "assets/doors/door1.png", "Room1Door2",room2, True, button1)
+    Room2door2 = Door(480, 300, 100, 200, "assets/doors/door1.png", "Room2Door2",room1, False, None)
+    titledoor = Door(300, 300, 100, 200, "assets/doors/door1.png", "Titledoor", room1, False, None)
 
     
    # action funcs require items, doors, and actions
@@ -74,6 +75,7 @@ def main():
 
     #NPCs action funcs
     wolfboy.add_function(GiveItem, missile, inventory)
+    wolfboy.add_function(ActionChangeDialog, wolfboy, "bye2")
     
     #wolfboy.add_function(UnlockDoor, wolfboy, Room1door1)
   # appendings doors, items and actions to rooms
@@ -138,6 +140,9 @@ def main():
             for drawable_room in Room.rooms.values():
               if drawable_room == active_room:
                 drawable_room.shine(screen)
+      if keys[pygame.K_s]:
+            print("S key pressed")
+            SaveState(active_room, Room.rooms, inventory, "save.yaml")
 
     
     # events

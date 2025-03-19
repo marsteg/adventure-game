@@ -23,6 +23,7 @@ You will need the pygame library. Then just run:
 		- active dialog (dialog state of NPC) answers could change based on:
 			- specific replies chosen (should execute actionfunc)
 			- actions executed (actionfunc to change actve dialog of npc)
+		- NPCs can give the player Items right after successfully giving an Item to them. 
 		- Speech Lines are objects defined in yaml
 				- Speech Lines have:
 					- text
@@ -50,9 +51,27 @@ You will need the pygame library. Then just run:
 		- color
 			- color should come from yaml, rather than NPC?
 		- active answer window should make the rest of the screen unclickable (?)
-		- it would be nice if an NPC can give me something right after successfully giving an Item to him. But where should the Item come from? was it in the room but invisible?
+		
 - Gamestate:
 	- how to save and load the game?
+	- what is part of the "state"?
+		- main
+			- active_room
+		- inventory
+			- inventory.items{}
+		- every door
+			- door.locked
+		- every npc (excluding npc.dialog)
+			- self.active_dialog
+		- every action
+			- action.locked
+		- every room
+			room.doors = {}
+        	room.items = {}
+        	room.actions = {}
+        	room.npcs = {}
+		- answerbox.state
+		- dialogbox.state
 - Player Character?
 	- doubleclick on items for fast collecting
 - Sound

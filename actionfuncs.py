@@ -53,3 +53,6 @@ def DestroyItem(item, inventory, rooms):
     item.kill(inventory, rooms)
     print("Item ID: ", item.id, " destroyed")
 
+def ActionChangeDialog(npc, dialog):
+    npc.active_dialog = dialog
+    print("NPC ID: ", npc.id, " dialog changed to: ", npc.dialog)

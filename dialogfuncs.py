@@ -3,7 +3,6 @@ from item import *
 from room import *
 from answer import *
 from constants import *
-from actionfuncs import *
 import time
 
 

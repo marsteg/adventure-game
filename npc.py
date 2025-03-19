@@ -2,6 +2,7 @@ from rectshape import *
 from constants import *
 from answer import *
 from dialogfuncs import *
+from actionfuncs import *
 import yaml
 
 

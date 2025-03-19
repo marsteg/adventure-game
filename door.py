@@ -4,7 +4,7 @@ from constants import *
 class Door(RectShape):
     _id_counter = 1
     containers = []
-    def __init__(self, left, top, width, height, image, target_room, locked, key):
+    def __init__(self, left, top, width, height, image, name, target_room, locked, key):
         super().__init__(left, top, width, height, image)  
         self.rotation = 0
         self.id = Door._id_counter
@@ -14,6 +14,7 @@ class Door(RectShape):
         self.image = pygame.image.load(image)
         self.image = pygame.transform.scale(self.image, (width, height))
         self.target_room = target_room
+        self.name = name
         self.locked = locked
         self.key = key
         

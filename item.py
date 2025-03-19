@@ -18,11 +18,11 @@ class Item(RectShape):
         self.rect = pygame.Rect(left, top, width, height)
         self.image = pygame.image.load(image)
         self.image = pygame.transform.scale(self.image, (width, height))
-        self.stashed = False
         self.selfdestruct = selfdestruct
-        self.allow_destroy = False
         Item.items[self.id] = self
         self.name = name
+        self.stashed = False
+        self.allow_destroy = False
         
 
     def draw(self, screen):
