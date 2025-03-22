@@ -1,3 +1,12 @@
+description:
+  locked:
+    line: "A wolfboy who seems to like red stuff. I wonder if he would like a red missile."
+    sound: "assets/sounds/dialogs/wolfboy-description-locked.wav"
+    duration: 3
+  unlocked:
+    line: "He really likes anything that is red... I wonder what door this Key is for"
+    sound: "assets/sounds/dialogs/wolfboy-description-unlocked.wav"
+    duration: 3
 bye:
   line: "Bye"
   duration: 1

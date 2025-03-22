@@ -1,3 +1,12 @@
+description:
+  locked:
+    line: "He seems to struggle with his Hair... maybe I can help with something in here"
+    sound: "assets/sounds/dialogs/wolfboy2-description-locked.wav"
+    duration: 3
+  unlocked:
+    line: "He looks happy now! But still terrible..."
+    sound: "assets/sounds/dialogs/wolfboy2-description-unlocked.wav"
+    duration: 3
 bye:
   line: "Thanks! Let me open that door for you!"
   duration: 2

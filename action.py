@@ -24,14 +24,12 @@ class Action(RectShape):
         
     def add_function(self, func, *args, **kwargs):
         self.functions.append((func, args, kwargs))
-        
 
     def draw(self, screen):
         pygame.draw.rect(screen, "green", self.rect)
         self.image = pygame.image.load(self.imagepath)
         self.image = pygame.transform.scale(self.image, (self.width, self.height))
         screen.blit(self.image, self.rect)
-
 
     def shine(self, screen):
         shiner = pygame.Surface((self.rect.width, self.rect.height))

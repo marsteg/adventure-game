@@ -78,13 +78,54 @@ class NPC(RectShape):
         voiceline = pygame.mixer.Sound(self.dialog[self.active_dialog]["sound"])
         pygame.mixer.Sound.play(voiceline)
 
-    # talk should only ensure the NPC talks and trigger the answerbox rather than generate it
+    def speak_description(self):
+        if self.locked:
+            line = self.dialog["description"]["locked"]["sound"]
+            print(line)
+            sound = pygame.mixer.Sound(line)
+            pygame.mixer.Sound.play(sound)
+        else:
+            line = self.dialog["description"]["unlocked"]["sound"]
+            print(line)
+            sound = pygame.mixer.Sound(line)
+            pygame.mixer.Sound.play(sound)
+
+    def talk_description(self, dialogbox, room):
+        SPEECHFONT = pygame.font.Font(SPEECH_FONT, SPEECH_SIZE)
+        dialogbox.state = self
+        dialogbox.room = room
+        if self.locked:
+            line = self.dialog["description"]["locked"]["line"]
+            print("Describe Talking: ", self.name, "dialog:", line)
+            text = SPEECHFONT.render(line, True, BLUE)
+            #i shouldn't re-adjust the rect but rather use a player's or narrator's dialogbox
+            dialogbox.rect = pygame.Rect(SCREEN_WIDTH // 3, SCREEN_HEIGHT // 2, SCREEN_WIDTH // 2, 0)
+            dialogbox.surface = text
+        else:
+            line = self.dialog["description"]["unlocked"]["line"]
+            print("Describe Talking: ", self.name, "dialog:", line)
+            text = SPEECHFONT.render(line, True, BLUE)
+            #i shouldn't re-adjust the rect but rather use a player's or narrator's dialogbox
+            dialogbox.rect = pygame.Rect(SCREEN_WIDTH // 3, SCREEN_HEIGHT // 2, SCREEN_WIDTH // 2, 0)
+            dialogbox.surface = text
+        
+
+
+    def describe(self, dialogbox, room):
+        print("NPC right-clicked: ", self.name)
+        self.speak_description()
+        self.talk_description(dialogbox, room)
+
+
+
+    # talk should only ensure the NPC talks and trigger an own dialogbox rather than using a shared one
     def talk(self, room, inventory, dialogbox, answerbox):
         SPEECHFONT = pygame.font.Font(SPEECH_FONT, SPEECH_SIZE)
         print("NPC Talking: ", self.name)
         dialogbox.state = self
         dialogbox.room = room
         self.speak()
+        # cater for the case where the speaker is another NPC
         speaker = self.dialog[self.active_dialog]["speaker"]
         for npc in room.npcs.values():
             if npc.name == speaker:
@@ -94,7 +135,7 @@ class NPC(RectShape):
             speaker = self
         print("NPC Talking: ", self.name, "dialog:", self.dialog[self.active_dialog]["line"])
         text = SPEECHFONT.render(self.dialog[self.active_dialog]["line"], True, speaker.speechcolor)
-        #text = font.render(self.dialog[self.active_dialog]["line"], True, self.speechcolor)
+        #i shouldn't re-adjust the rect but rather use an own dialogbox
         dialogbox.rect = pygame.Rect(SCREEN_WIDTH // 3, SCREEN_HEIGHT // 2, SCREEN_WIDTH // 2, 0)
         dialogbox.surface = text
         # check if the dialog unlocks something
@@ -109,11 +150,9 @@ class NPC(RectShape):
                 answerbox.answers = {}
                 answerbox.state = None
                 self.active_dialog = self.dialog[self.active_dialog]["exit"]["ExitDialog"]
-                #dialogbox.state = None
-                #ExitDialog(self.dialog[self.active_dialog]["exit"]["ExitDialog"], room, self, inventory, answerbox, dialogbox)
                 return
         
-        # done, answering.
+        # done, talking; building answers now.
         if "answers" in self.dialog[self.active_dialog]:
             # clear old answers:
             answerbox.answers = {}

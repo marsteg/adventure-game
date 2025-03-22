@@ -101,5 +101,8 @@ class Item(RectShape):
         print("Item unstashed: ", self.name)
         print("Inventory items: ", inventory.items)
 
-
-        
+    def add_description(self, sound_locked, text_locked, sound_unlocked, text_unlocked):
+        self.sound_locked = sound_locked
+        self.text_locked = text_locked
+        self.sound_unlocked = sound_unlocked
+        self.text_unlocked = text_unlocked

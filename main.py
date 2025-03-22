@@ -109,6 +109,7 @@ def main():
     active_box = None
     active_click = None
     active_talker = None
+    active_timer = 0
     last_active_click = None
     
     
@@ -123,7 +124,8 @@ def main():
             dialogbox.state = None
             active_talker = None
             continue      
-          if time.time() - dialogbox.timer > active_talker.dialog[active_talker.active_dialog]["duration"]:
+          #if time.time() - dialogbox.timer > active_talker.dialog[active_talker.active_dialog]["duration"]:
+          if time.time() - dialogbox.timer > active_timer:
             active_talker = None
             dialogbox.state = None
 
@@ -135,7 +137,7 @@ def main():
       # draw screen
       active_room.draw(screen, inventory, dialogbox, answerbox)
 
-  
+      # check for key presses
       keys = pygame.key.get_pressed()
       if keys[pygame.K_SPACE]:
             print("Space key pressed")
@@ -154,10 +156,10 @@ def main():
             inventory.items = new_inventory.items
 
     
-    # events
+    # events (mouse actions)
       for event in pygame.event.get():
         if event.type == pygame.MOUSEBUTTONDOWN:
-          if event.button == 1:
+          if event.button == 1 or 3:
             # dragging items
             for box in list(dict.fromkeys(list(active_room.items.values()) + list(inventory.items.values()))):
               if box.rect.collidepoint(event.pos):
@@ -183,11 +185,11 @@ def main():
                   active_click = answer
 
         if event.type == pygame.MOUSEBUTTONUP:
-          # dropping items
+          # dropping items (left mouse button)
+          dragable = list(active_room.items.values()) + list(inventory.items.values())
           if event.button == 1:
-            clickable = list(active_room.actions.values()) + list(active_room.doors.values())
-            dragable = list(active_room.items.values()) + list(inventory.items.values())
-            
+            #clickable = list(active_room.actions.values()) + list(active_room.doors.values())
+              
             for box in list(dict.fromkeys(dragable)):
               if box.rect.collidepoint(event.pos):
                 # process dropping on doors
@@ -254,6 +256,7 @@ def main():
                 if isinstance(npc, NPC) and active_click == npc:
                   #dialogbox.timer = time.time()
                   npc.talk(active_room, inventory, dialogbox, answerbox)
+                  active_timer = npc.dialog[npc.active_dialog]["duration"]
                   dialogbox.timer = time.time()
                   print("NPC pressed in position: ", npc.position)
                   last_active_click = active_click
@@ -280,6 +283,61 @@ def main():
                   else:
                     last_active_click = active_click
                     active_click = None
+
+          if event.button == 3:
+            # process right-clicking on doors
+            for door in active_room.doors.values():
+              if door.rect.collidepoint(event.pos):
+                if isinstance(door, Door) and active_click == door:
+                  if not door.locked:
+                    # play and display an "unlocked" description
+                    pass
+                  else:
+                    print("Door is locked in position: ", door.position)
+                  last_active_click = active_click
+                  active_click = None
+                  # play and display a "locked" description
+                  print("Button pressed in position: ", door.position)
+                else:
+                  last_active_click = active_click
+                  active_click = None
+            # process right-clicking on actions
+            for action in active_room.actions.values():
+              if action.rect.collidepoint(event.pos):
+                if isinstance(action, Action) and active_click == action:
+                  if not action.locked:
+                    # play and display an "unlocked" description
+                    pass
+                  else:
+                    print("Action is locked in position: ", action.position)
+                    # play and display a "locked" description
+                  print("Button pressed in position: ", action.position)
+                  last_active_click = active_click
+                  active_click = None
+                else:
+                  last_active_click = active_click
+                  active_click = None
+
+              # process clicking on NPCs
+            for npc in active_room.npcs.values():
+              if npc.rect.collidepoint(event.pos):
+                if isinstance(npc, NPC) and active_click == npc:
+                  active_talker = npc
+                  npc.describe(dialogbox, active_room)
+                  if npc.locked:
+                    active_timer = npc.dialog["description"]["locked"]["duration"]
+                  else:
+                    active_timer = npc.dialog["description"]["unlocked"]["duration"]
+                  dialogbox.timer = time.time()
+                  print("NPC describe pressed in position: ", npc.position)
+                  last_active_click = active_click
+                  active_click = None
+                else:
+                  last_active_click = active_click
+                  active_click = None
+
+            active_box = None
+
 
         if event.type == pygame.MOUSEMOTION:
           if active_box != None:

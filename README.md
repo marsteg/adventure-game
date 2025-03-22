@@ -13,6 +13,8 @@ You will need the pygame library. Then just run:
 - Actionfuncs are a way to teach an action button tricks. With this theoretically anything can be executed via Actions
 - unlocking an action will also execute it's actionfuncs
 - Save and Loading the Game is now possible! Press 'S' to Save and 'L' to Load
+- Right-Click on NPCs gives now a description about them
+	- different descriptions based on the lock state possible
 - Sounds!
 	- Rooms now have background music!
 	- NPCs can have voice, when talking!
@@ -43,6 +45,8 @@ You will need the pygame library. Then just run:
 
 
 # todo: 
+- right-click should give more information about actions, doors and items, too.
+	might change based on whether locked or unlocked
 - need to find a clean way to assign and create doors and rooms and assign items (currently in main func)
 - if actions, doors cannot be executed (are locked), there should be some "negative" feedback, like a comment by the player or narrator
 - Conversations
@@ -66,7 +70,6 @@ You will need the pygame library. Then just run:
 ## inventory
 - items should get ordered / aligned in the inventory
 	- slot system size (currently 20) - what if i have more items? scrolling?
-
 
 ## Sound
 - actions should play sounds on Unlock
