@@ -15,6 +15,7 @@ You will need the pygame library. Then just run:
 - Save and Loading the Game is now possible! Press 'S' to Save and 'L' to Load
 - Sounds!
 	- Rooms now have background music!
+	- NPCs can have voice, when talking!
 - NPCs	
 	- can give items, when unlockd
 	- can open doors, when unlocked
@@ -68,9 +69,7 @@ You will need the pygame library. Then just run:
 
 
 ## Sound
-- actions play sounds on Unlock
-- NPCs during talk (play file from yaml)
-- background music for rooms
+- actions should play sounds on Unlock
 
 ## actions
 - actions work now, but i need more functions

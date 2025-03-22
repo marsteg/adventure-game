@@ -2,9 +2,11 @@ bye:
   line: "Thanks! Let me open that door for you!"
   duration: 2
   speaker: wolfboy2
+  sound: "assets/sounds/dialogs/wolfboy2-bye.wav"
   exit: 
     ExitDialog: bye
 start:
-  line: "Hi, I can't talk - my hair are everywhere!"
+  line: "Hi, I can't talk - my hair is everywhere!"
   duration: 1
   speaker: wolfboy2
+  sound: "assets/sounds/dialogs/wolfboy2-start.wav"

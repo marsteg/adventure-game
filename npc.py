@@ -74,12 +74,17 @@ class NPC(RectShape):
     def shutup(self):
         self.active_dialog = "bye"
 
+    def speak(self):
+        voiceline = pygame.mixer.Sound(self.dialog[self.active_dialog]["sound"])
+        pygame.mixer.Sound.play(voiceline)
+
     # talk should only ensure the NPC talks and trigger the answerbox rather than generate it
     def talk(self, room, inventory, dialogbox, answerbox):
         SPEECHFONT = pygame.font.Font(SPEECH_FONT, SPEECH_SIZE)
         print("NPC Talking: ", self.name)
         dialogbox.state = self
         dialogbox.room = room
+        self.speak()
         speaker = self.dialog[self.active_dialog]["speaker"]
         for npc in room.npcs.values():
             if npc.name == speaker:

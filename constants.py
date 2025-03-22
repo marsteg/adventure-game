@@ -15,7 +15,7 @@ PURPLE = (160, 32, 240)
 SPEECH_SIZE = 25
 SPEECH_FONT = 'freesansbold.ttf'
 
-BACKGROUND_VOLUME = 0.3
+BACKGROUND_VOLUME = 0.1
 
 
 def at_percentage_width(percentage):

@@ -2,18 +2,21 @@ bye:
   line: "Bye"
   duration: 1
   speaker: wolfboy
+  sound: "assets/sounds/dialogs/wolfboy-bye.wav"
   exit: 
     ExitDialog: start
 bye2:
   line: "Thanks for the red missile! I hope you enjoy the Gray One!"
   duration: 2
   speaker: wolfboy
+  sound: "assets/sounds/dialogs/wolfboy-bye2.wav"
   exit: 
     ExitDialog: bye2
 start:
   line: "Hi, I'm a wolfboy. I like red stuff."
   duration: 3
   speaker: wolfboy
+  sound: "assets/sounds/dialogs/wolfboy-start.wav"
   answers:
     - line: "What's a wolfboy?"
       actionfuncs:
@@ -33,6 +36,7 @@ wolfboytest2:
   line: "A boy who is also a werewolf"
   duration: 2
   speaker: wolfboy
+  sound: "assets/sounds/dialogs/wolfboy-wolfboytest2.wav"
   answers:
     - line: "What are you looking for?"
       actionfuncs:
@@ -48,6 +52,7 @@ wolfboytest3:
   line: "I need a red missile. I would exchange it for a gray one."
   duration: 2
   speaker: wolfboy
+  sound: "assets/sounds/dialogs/wolfboy-wolfboytest3.wav"
   answers:
     - line: "Oh, I have a red missile"
       actionfuncs:
@@ -62,12 +67,14 @@ wolfboytest3:
           - bye
 wolffailure:
   line: "you don't have the red missile"
+  sound: "assets/sounds/dialogs/wolfboy-wolffailure.wav"
   duration: 2
   speaker: wolfboy
   exit: 
     ExitDialog: start
 wolfsuccess:
   line: "Thanks! There you go! Enjoy the gray missile!"
+  sound: "assets/sounds/dialogs/wolfboy-wolfsuccess.wav"
   duration: 2
   speaker: wolfboy
   exit: 
