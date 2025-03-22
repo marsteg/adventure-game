@@ -15,6 +15,8 @@ PURPLE = (160, 32, 240)
 SPEECH_SIZE = 25
 SPEECH_FONT = 'freesansbold.ttf'
 
+BACKGROUND_VOLUME = 0.3
+
 
 def at_percentage_width(percentage):
     print((SCREEN_WIDTH/100)*percentage)

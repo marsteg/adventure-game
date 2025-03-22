@@ -39,13 +39,13 @@ def main():
     answerbox = AnswerBox()
 
     # title screen
-    title = Room("assets/rooms/TitleScreen.png", "title")
+    title = Room("assets/rooms/TitleScreen.png", "title", "assets/sounds/background/Talkline7.wav")
    
 
     # room and door and item assignments specifics...
     # rooms require nothing
-    room1 = Room("assets/rooms/RektorOffice.png", "room1")
-    room2 = Room("assets/rooms/LivingRoom.png", "room2")
+    room1 = Room("assets/rooms/RektorOffice.png", "room1", "assets/sounds/background/Albatros.wav")
+    room2 = Room("assets/rooms/LivingRoom.png", "room2", "assets/sounds/background/PrettyOrgan.wav")
     
     # items require nothing (should require rooms and self-register?)
     missile = Item(100, 100, 50, 50, "assets/items/missile.png", "missile") # should come back to inventory
@@ -103,10 +103,14 @@ def main():
 
     # initial state
     active_room = title
+    pygame.mixer.music.load(active_room.music)
+    pygame.mixer.music.set_volume(BACKGROUND_VOLUME)
+    pygame.mixer.music.play(-1,0.0)
     active_box = None
     active_click = None
     active_talker = None
     last_active_click = None
+    
     
     # game loop start
     run = True
@@ -223,6 +227,7 @@ def main():
                 if isinstance(door, Door) and active_click == door:
                   if not door.locked:
                     active_room = door.target_room
+                    active_room.play()
                   else:
                     print("Door is locked in position: ", door.position)
                   last_active_click = active_click

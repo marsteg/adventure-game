@@ -70,10 +70,6 @@ class Item(RectShape):
         if self.stashed:
             # just reposition the item in the inventory
             pos = inventory.get_available_slots(self)
-            print("old value: ", (self.id * (10 + self.rect.width), SCREEN_HEIGHT - INVENTORY_HEIGHT + 5))
-            print("new value: ", pos)
-            #self.rect.topleft = (self.id * (10 + self.rect.width), SCREEN_HEIGHT - INVENTORY_HEIGHT + 5)
-            #self.position = pygame.Vector2(self.rect.topleft)
             self.rect.topleft = pos
             self.position = pygame.Vector2(pos)
             return
@@ -92,8 +88,6 @@ class Item(RectShape):
         pos = inventory.get_available_slots(self)
         self.rect.topleft = (pos)
         self.position = pygame.Vector2(pos)
-        #self.rect.topleft = (self.id * 10 + self.rect.width, SCREEN_HEIGHT - INVENTORY_HEIGHT + 5)
-        #self.position = pygame.Vector2(self.rect.topleft)
         print("Item Name stashed: ", self.name)
         print("Item stashed: ", self.name)
         print("Inventory items: ", inventory.items)

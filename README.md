@@ -13,6 +13,8 @@ You will need the pygame library. Then just run:
 - Actionfuncs are a way to teach an action button tricks. With this theoretically anything can be executed via Actions
 - unlocking an action will also execute it's actionfuncs
 - Save and Loading the Game is now possible! Press 'S' to Save and 'L' to Load
+- Sounds!
+	- Rooms now have background music!
 - NPCs	
 	- can give items, when unlockd
 	- can open doors, when unlocked
@@ -41,18 +43,15 @@ You will need the pygame library. Then just run:
 
 # todo: 
 - need to find a clean way to assign and create doors and rooms and assign items (currently in main func)
-- NPCs
-	- actual conversations
-		- text currently stays X seconds - clicking should skip to the next line
-		- how to manage it when picking up an item should change dialog choices?
-			- should Items have actions, that get executed on pickup? could change active_dialogs or locked dialogs?
-		- how to have multiple NPC talk at the same time?
-		- position
-			- text should be positioned relative to the character speaking
-		- color
-			- color should come from yaml, rather than NPC?
-		- active answer window should make the rest of the screen unclickable (?)
-		
+- if actions, doors cannot be executed (are locked), there should be some "negative" feedback, like a comment by the player or narrator
+- Conversations
+	- text currently stays X seconds - clicking should skip to the next line
+	- how to manage it when picking up an item should change dialog choices?
+		- should Items have actions, that get executed on pickup? could change active_dialogs or locked dialogs?
+	- how to have multiple NPC talk at the same time?
+	- position
+		- text should be positioned relative to the character speaking
+	- active answer window should make the rest of the screen unclickable (?)
 - Saving/Loading:
 	- how to save and load the game?
 		- save to yaml
@@ -62,15 +61,13 @@ You will need the pygame library. Then just run:
 			- select savefile
 - Player Character?
 	- doubleclick on items for fast collecting
-- Sound
-	-
 
 ## inventory
 - items should get ordered / aligned in the inventory
-	- slot system could be improved
+	- slot system size (currently 20) - what if i have more items? scrolling?
+
 
 ## Sound
-- Rooms should provide background music
 - actions play sounds on Unlock
 - NPCs during talk (play file from yaml)
 - background music for rooms
@@ -79,6 +76,7 @@ You will need the pygame library. Then just run:
 - actions work now, but i need more functions
 	- play a sound
 
-	
+
+Music files from: https://www.musicfox.com/info/kostenlose-gemafreie-musik/
 
 

@@ -23,8 +23,8 @@ class Inventory(pygame.sprite.Sprite):
         return self.rect.collidepoint(pos)
     
     def init_slots(self):
-        for i in range(1,10):
-            Inventory.slot[i] = {"pos": (at_percentage_width(i*10), SCREEN_HEIGHT - INVENTORY_HEIGHT + 5), "item": None}
+        for i in range(0, 19):
+            Inventory.slot[i] = {"pos": (at_percentage_width(i*5)+5, SCREEN_HEIGHT - INVENTORY_HEIGHT + 5), "item": None}
         
     def get_available_slots(self, item):
         for slot in Inventory.slot.values():

@@ -14,7 +14,7 @@ class Room(pygame.sprite.Sprite):
         (pygame.Vector2(-1, 0), lambda y: pygame.Vector2(0, y))
     ]
 
-    def __init__(self, image, name):
+    def __init__(self, image, name, music):
         pygame.sprite.Sprite.__init__(self, self.containers)
         self.rect = pygame.Rect(0, 0, SCREEN_WIDTH, SCREEN_HEIGHT-INVENTORY_HEIGHT)
         self.spawn_timer = 0.0
@@ -27,6 +27,7 @@ class Room(pygame.sprite.Sprite):
         self.actions = {}
         self.npcs = {}
         self.name = name
+        self.music = music
         Room.rooms[self.name] = self
         
 
@@ -49,6 +50,13 @@ class Room(pygame.sprite.Sprite):
         else:
             for inventory_item in inventory.items.values():
                 inventory_item.draw(screen)
+
+    def play(self):
+        print("Playing music: ", self.music)
+        pygame.mixer.music.stop()
+        pygame.mixer.music.load(self.music)
+        pygame.mixer.music.set_volume(BACKGROUND_VOLUME)
+        pygame.mixer.music.play(-1,0.0)
         
     def shine(self, screen):
         for item in self.items.values():
