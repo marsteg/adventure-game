@@ -13,9 +13,6 @@ class DialogBox(pygame.sprite.Sprite):
 
     def draw(self, screen):
         screen.blit(self.surface, self.rect)
-
-    def update(self, dt):
-        pass
     
     def collidepoint(self, pos):
         return self.rect.collidepoint(pos)

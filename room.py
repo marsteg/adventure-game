@@ -56,7 +56,6 @@ class Room(pygame.sprite.Sprite):
         pygame.mixer.music.stop()
         pygame.mixer.music.load(self.music)
         pygame.mixer.music.set_volume(BACKGROUND_VOLUME)
-        #pygame.mixer.music.set_volume(0.1)
         pygame.mixer.music.play(-1,0.0)
         
     def shine(self, screen):
@@ -71,12 +70,6 @@ class Room(pygame.sprite.Sprite):
 
     def collidepoint(self, pos):
         return self.rect.collidepoint(pos)
-
-    def spawn(self, radius, position, velocity):
-        pass # sub-classes must override - could be useful for minigame style rooms
-        #asteroid = Asteroid(position.x, position.y, radius)
-        #print("spawning asteroid ", asteroid.id, " at position: ", position)
-        #asteroid.velocity = velocity
 
     def update(self, dt):
         self.spawn_timer += dt

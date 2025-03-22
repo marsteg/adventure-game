@@ -16,8 +16,7 @@ class RectShape(pygame.sprite.Sprite):
         self.width = width
         self.height = height
         self.image = image
-
-        
+     
 
     def draw(self, screen):
         # sub-classes must override

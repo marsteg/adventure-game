@@ -13,7 +13,7 @@ You will need the pygame library. Then just run:
 - Actionfuncs are a way to teach an action button tricks. With this theoretically anything can be executed via Actions
 - unlocking an action will also execute it's actionfuncs
 - Save and Loading the Game is now possible! Press 'S' to Save and 'L' to Load
-- Right-Click on NPCs gives now a description about them
+- Right-Click on NPCs, Doors, Items and Actions gives now a description about them
 	- different descriptions based on the lock state possible
 - Sounds!
 	- Rooms now have background music!
@@ -44,19 +44,22 @@ You will need the pygame library. Then just run:
 		
 
 
-# todo: 
-- right-click should give more information about actions, doors and items, too.
-	might change based on whether locked or unlocked
+# Todo List: 
 - need to find a clean way to assign and create doors and rooms and assign items (currently in main func)
+	- it would be nice to have the "Game Definition" in a yaml file.
+		- All Items in a Yaml
+		- All Rooms in a Yaml
+		- All NPCs in a Yaml
+		- all Doors in a Yaml
 - if actions, doors cannot be executed (are locked), there should be some "negative" feedback, like a comment by the player or narrator
 - Conversations
 	- text currently stays X seconds - clicking should skip to the next line
 	- how to manage it when picking up an item should change dialog choices?
 		- should Items have actions, that get executed on pickup? could change active_dialogs or locked dialogs?
 	- how to have multiple NPC talk at the same time?
-	- position
-		- text should be positioned relative to the character speaking
-	- active answer window should make the rest of the screen unclickable (?)
+		- every NPC needs their own dialogbox with a associated position
+			- text should be positioned relative to the character speaking
+	- active answer window should make the rest of the screen unclickable (not sure about this)
 - Saving/Loading:
 	- how to save and load the game?
 		- save to yaml
@@ -65,18 +68,18 @@ You will need the pygame library. Then just run:
 		- load from yaml
 			- select savefile
 - Player Character?
-	- doubleclick on items for fast collecting
+	- doubleclick on items for faster collecting
+	- Let the Player Character Walk
+		- requires a walkable area as clickable area per room
+		- requires player walking animation
+	- make the character walk to items, doors, actions and NPCs before executing them
 
 ## inventory
 - items should get ordered / aligned in the inventory
 	- slot system size (currently 20) - what if i have more items? scrolling?
 
 ## Sound
-- actions should play sounds on Unlock
-
-## actions
-- actions work now, but i need more functions
-	- play a sound
+- actions should play sounds on Unlock (should be optional)
 
 
 Music files from: https://www.musicfox.com/info/kostenlose-gemafreie-musik/
