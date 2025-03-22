@@ -59,3 +59,46 @@ class Action(RectShape):
         self.locked = False
         self.action()
         #key.stash(inventory)
+
+    def add_description(self, description_text_locked, description_text_unlocked, description_sound_locked, description_sound_unlocked):
+        self.description_text_locked = description_text_locked
+        self.description_text_unlocked = description_text_unlocked
+        self.description_sound_locked = description_sound_locked
+        self.description_sound_unlocked = description_sound_unlocked
+
+
+    def speak_description(self):
+        if self.locked:
+            line = self.description_sound_locked
+            print(line)
+            sound = pygame.mixer.Sound(line)
+            pygame.mixer.Sound.play(sound)
+        else:
+            line = self.description_sound_unlocked
+            print(line)
+            sound = pygame.mixer.Sound(line)
+            pygame.mixer.Sound.play(sound)
+
+    def talk_description(self, dialogbox, room):
+        SPEECHFONT = pygame.font.Font(SPEECH_FONT, SPEECH_SIZE)
+        dialogbox.state = self
+        dialogbox.room = room
+        if self.locked:
+            line = self.description_text_locked
+            print("Action Describe Talking: ", self.name, "dialog:", line)
+            text = SPEECHFONT.render(line, True, BLUE)
+            #i shouldn't re-adjust the rect but rather use a player's or narrator's dialogbox
+            dialogbox.rect = pygame.Rect(SCREEN_WIDTH // 3, SCREEN_HEIGHT // 2, SCREEN_WIDTH // 2, 0)
+            dialogbox.surface = text
+        else:
+            line = self.description_text_unlocked
+            print("Action Describe Talking: ", self.name, "dialog:", line)
+            text = SPEECHFONT.render(line, True, BLUE)
+            #i shouldn't re-adjust the rect but rather use a player's or narrator's dialogbox
+            dialogbox.rect = pygame.Rect(SCREEN_WIDTH // 3, SCREEN_HEIGHT // 2, SCREEN_WIDTH // 2, 0)
+            dialogbox.surface = text
+
+    def describe(self, dialogbox, room):
+        print("Action right-clicked: ", self.name)
+        self.speak_description()
+        self.talk_description(dialogbox, room)

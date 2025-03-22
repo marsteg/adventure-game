@@ -108,14 +108,11 @@ class NPC(RectShape):
             #i shouldn't re-adjust the rect but rather use a player's or narrator's dialogbox
             dialogbox.rect = pygame.Rect(SCREEN_WIDTH // 3, SCREEN_HEIGHT // 2, SCREEN_WIDTH // 2, 0)
             dialogbox.surface = text
-        
-
 
     def describe(self, dialogbox, room):
         print("NPC right-clicked: ", self.name)
         self.speak_description()
         self.talk_description(dialogbox, room)
-
 
 
     # talk should only ensure the NPC talks and trigger an own dialogbox rather than using a shared one

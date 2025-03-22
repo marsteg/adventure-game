@@ -52,21 +52,38 @@ def main():
     missile2 = Item(200, 200, 50, 50, "assets/items/missile2.png", "missile2", True) # should self destruct
     comb = Item(at_percentage_width(88), at_percentage_height(80), 50, 50, "assets/items/comb.png", "comb", True) # should self destruct
 
+    # adding item descriptions
+    missile.add_description("A durable key. I wonder what Door it is for?", "assets/sounds/items/missile_locked.wav")
+    missile2.add_description("A Red shiny thing. Is it a Key?", "assets/sounds/items/missile2_locked.wav")
+    comb.add_description("A comb... What is this doing here?", "assets/sounds/items/comb_locked.wav")
+
     # actions might require items
     button1 = Action(800, 100, 50, 50, "assets/actions/button.png", "button1", False, None)
     button2 = Action(400, 100, 50, 50, "assets/actions/button2.png", "button2", True, missile)
+
+    # adding action descriptions
+    button1.add_description("I think this switch opens the door", "I think this switch opens the door", "assets/sounds/actions/button1_locked.wav", "assets/sounds/actions/button1_locked.wav")
+    button2.add_description("A button. I wonder what it does?", "Great, it can turn on and off...", "assets/sounds/actions/button2_locked.wav", "assets/sounds/actions/button2_unlocked.wav")
+
 
     # NPCs might require Items
     wolfboy = NPC(750, 350, 150, 160, "assets/npcs/werewolfboy.png", "wolfboy", True, missile2, GREEN, "assets/dialogs/wolfboy.yaml")
     wolfboy2 = NPC(350, 350, 150, 160, "assets/npcs/werewolfboy.png", "wolfboy2", True, comb, WHITE, "assets/dialogs/wolfboy2.yaml")
     
-   # doors require rooms and might require items
+    # NPCs get their description from the dialog yaml file 
+
+    # doors require rooms and might require items
     Room1door1 = Door(80, 300, 100, 200, "assets/doors/door1.png", "Room1Door1", title, True, missile)
     Room1door2 = Door(880, 300, 100, 200, "assets/doors/door1.png", "Room1Door2",room2, True, button1)
     Room2door2 = Door(480, 300, 100, 200, "assets/doors/door1.png", "Room2Door2",room1, False, None)
     titledoor = Door(300, 300, 100, 200, "assets/doors/door1.png", "Titledoor", room1, False, None)
 
-    
+    # adding door descriptions
+    titledoor.add_description("", "This is where the Adventure begins!", "assets/sounds/doors/titledoor_unlocked.wav", "assets/sounds/doors/titledoor_unlocked.wav")
+    Room2door2.add_description("", "This leads back to the Dean's Office", "assets/sounds/doors/room2door2_unlocked.wav", "assets/sounds/doors/room2door2_unlocked.wav")
+    Room1door1.add_description("I wonder where this Door leads to... it smells amazing in there!", "Finally! The last Door unlocked! What Mysteries might await me?", "assets/sounds/doors/room1door1_locked.wav", "assets/sounds/doors/room1door1_unlocked.wav")
+    Room1door2.add_description("This Door does not look inviting at all...", "Do I really want to go in there?", "assets/sounds/doors/room1door2_locked.wav", "assets/sounds/doors/room1door2_unlocked.wav")
+
    # action funcs require items, doors, and actions
     button1.add_function(ChangePicture, button1, "assets/actions/button2.png", "assets/actions/button.png", None) 
     button1.add_function(LogText, "Text Logged")
@@ -88,7 +105,6 @@ def main():
     wolfboy2.add_function(UnlockDoor, button1, Room1door2)
 
     
-    #wolfboy.add_function(UnlockDoor, wolfboy, Room1door1)
   # appendings doors, items and actions to rooms
     title.doors[titledoor.name] = titledoor
     room2.doors[Room2door2.name] = Room2door2
@@ -128,7 +144,6 @@ def main():
           if time.time() - dialogbox.timer > active_timer:
             active_talker = None
             dialogbox.state = None
-
 
 
       for updatable_object in updatable:
@@ -223,6 +238,7 @@ def main():
                   box.stash(inventory, active_room)
                   break
             active_box = None
+
             # process clicking on doors
             for door in active_room.doors.values():
               if door.rect.collidepoint(event.pos):
@@ -288,12 +304,11 @@ def main():
             # process right-clicking on doors
             for door in active_room.doors.values():
               if door.rect.collidepoint(event.pos):
-                if isinstance(door, Door) and active_click == door:
-                  if not door.locked:
-                    # play and display an "unlocked" description
-                    pass
-                  else:
-                    print("Door is locked in position: ", door.position)
+                if isinstance(door, Door) and active_click == door:            
+                  active_talker = door
+                  door.describe(dialogbox, active_room)
+                  dialogbox.timer = time.time()
+                  active_timer = 3
                   last_active_click = active_click
                   active_click = None
                   # play and display a "locked" description
@@ -305,12 +320,10 @@ def main():
             for action in active_room.actions.values():
               if action.rect.collidepoint(event.pos):
                 if isinstance(action, Action) and active_click == action:
-                  if not action.locked:
-                    # play and display an "unlocked" description
-                    pass
-                  else:
-                    print("Action is locked in position: ", action.position)
-                    # play and display a "locked" description
+                  active_talker = action
+                  action.describe(dialogbox, active_room)
+                  dialogbox.timer = time.time()
+                  active_timer = 3
                   print("Button pressed in position: ", action.position)
                   last_active_click = active_click
                   active_click = None
@@ -330,6 +343,21 @@ def main():
                     active_timer = npc.dialog["description"]["unlocked"]["duration"]
                   dialogbox.timer = time.time()
                   print("NPC describe pressed in position: ", npc.position)
+                  last_active_click = active_click
+                  active_click = None
+                else:
+                  last_active_click = active_click
+                  active_click = None
+
+            # process right-clicking on items
+            for box in list(dict.fromkeys(dragable)):
+              if box.rect.collidepoint(event.pos):
+                if isinstance(box, Item):
+                  active_talker = box
+                  active_timer = 3
+                  box.describe(dialogbox, active_room)
+                  dialogbox.timer = time.time()
+                  print("Item pressed in position: ", box.position)
                   last_active_click = active_click
                   active_click = None
                 else:

@@ -101,8 +101,28 @@ class Item(RectShape):
         print("Item unstashed: ", self.name)
         print("Inventory items: ", inventory.items)
 
-    def add_description(self, sound_locked, text_locked, sound_unlocked, text_unlocked):
-        self.sound_locked = sound_locked
-        self.text_locked = text_locked
-        self.sound_unlocked = sound_unlocked
-        self.text_unlocked = text_unlocked
+    def add_description(self, description_text, description_sound):
+        self.description_sound = description_sound
+        self.description_text = description_text
+
+    def speak_description(self):
+        line = self.description_sound
+        print(line)
+        sound = pygame.mixer.Sound(line)
+        pygame.mixer.Sound.play(sound)
+
+    def talk_description(self, dialogbox, room):
+        SPEECHFONT = pygame.font.Font(SPEECH_FONT, SPEECH_SIZE)
+        dialogbox.state = self
+        dialogbox.room = room
+        line = self.description_text
+        print("Item Describe Talking: ", self.name, "dialog:", line)
+        text = SPEECHFONT.render(line, True, BLUE)
+        #i shouldn't re-adjust the rect but rather use a player's or narrator's dialogbox
+        dialogbox.rect = pygame.Rect(SCREEN_WIDTH // 3, SCREEN_HEIGHT // 2, SCREEN_WIDTH // 2, 0)
+        dialogbox.surface = text
+
+    def describe(self, dialogbox, room):
+        print("Item right-clicked: ", self.name)
+        self.speak_description()
+        self.talk_description(dialogbox, room)
