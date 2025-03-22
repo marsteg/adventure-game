@@ -23,7 +23,6 @@ class NPC(RectShape):
         self.functions = []
         self.locked = locked
         self.key = key
-        #self.active_dialog = text
         self.active_dialog = "start"
         self.dialogfile = dialogfile
         self.dialog = self.load_dialog()
@@ -52,7 +51,7 @@ class NPC(RectShape):
             print("Action Function triggered in position: ", self.position)
     
     def unlock(self, key, inventory):
-        if key != self.key:
+        if key.name != self.key.name:
             print("Wrong key")
             return
         print("NPC unlocked: ", self.locked)
@@ -82,7 +81,7 @@ class NPC(RectShape):
         dialogbox.state = self
         dialogbox.room = room
         speaker = self.dialog[self.active_dialog]["speaker"]
-        for npc in NPC.NPCs.values():
+        for npc in room.npcs.values():
             if npc.name == speaker:
                 speaker = npc
                 break

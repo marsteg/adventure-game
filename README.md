@@ -12,6 +12,7 @@ You will need the pygame library. Then just run:
 - hitting space makes items, doors and actions shine
 - Actionfuncs are a way to teach an action button tricks. With this theoretically anything can be executed via Actions
 - unlocking an action will also execute it's actionfuncs
+- Save and Loading the Game is now possible! Press 'S' to Save and 'L' to Load
 - NPCs	
 	- can give items, when unlockd
 	- can open doors, when unlocked
@@ -52,41 +53,31 @@ You will need the pygame library. Then just run:
 			- color should come from yaml, rather than NPC?
 		- active answer window should make the rest of the screen unclickable (?)
 		
-- Gamestate:
+- Saving/Loading:
 	- how to save and load the game?
-	- what is part of the "state"?
-		- main
-			- active_room
-		- inventory
-			- inventory.items{}
-		- every door
-			- door.locked
-		- every npc (excluding npc.dialog)
-			- self.active_dialog
-		- every action
-			- action.locked
-		- every room
-			room.doors = {}
-        	room.items = {}
-        	room.actions = {}
-        	room.npcs = {}
-		- answerbox.state
-		- dialogbox.state
+		- save to yaml
+			- should provide some savename input
+			- support multiple savefiles
+		- load from yaml
+			- select savefile
 - Player Character?
 	- doubleclick on items for fast collecting
 - Sound
+	-
 
 ## inventory
 - items should get ordered / aligned in the inventory
-	- the inventory will need slots 
+	- slot system could be improved
 
 ## Sound
 - Rooms should provide background music
+- actions play sounds on Unlock
+- NPCs during talk (play file from yaml)
+- background music for rooms
 
 ## actions
 - actions work now, but i need more functions
 	- play a sound
-	- change the dialog state of a NPC
 
 	
 

@@ -9,16 +9,14 @@ def LogText(text):
 
 def ChangePicture(action, new_image, old_image, arg3=None):
     if old_image != None and action.state == new_image:
-        action.image = pygame.image.load(old_image)
-        action.image = pygame.transform.scale(action.image, (action.rect.width, action.rect.height))
+        action.imagepath = old_image
         action.state = old_image
-        print("Item ID: ", action.id, " changed picture to: ", action.image)
+        print("Action Name: ", action.name, " changed picture to: ", action.image)
         return
     print("Change Picture")
-    action.image = pygame.image.load(new_image)
-    action.image = pygame.transform.scale(action.image, (action.rect.width, action.rect.height))
+    action.imagepath = new_image
     action.state = new_image
-    print("Item ID: ", action.id, " changed picture to: ", action.image)
+    print("Action Name: ", action.name, " changed picture to: ", action.image)
 
 def UnlockDoor(action, door):
     if door.key != action:
@@ -32,25 +30,25 @@ def UnlockDoor(action, door):
 
 def AllowDestroy(item):
     item.allow_destroy = True
-    print("Item ID: ", item.id, " can be destroyed")
+    print("Item Name: ", item.name, " can be destroyed")
 
     # Give item to the Player
 def GiveItem(item, inventory):
-    inventory.items[item.id] = item
+    inventory.items[item.name] = item
     item.stash(inventory)
-    print("Item ID: ", item.id, " added to inventory")
+    print("Item Name: ", item.name, " added to inventory")
     print("Inventory items: ", inventory.items)
 
     # Take Item from the Player
 def TakeItem(item, inventory):
-    del inventory.items[item.id]
+    if item in inventory.items:
+        del inventory.items[item.name]
     item.stashed = False
     item.allow_destroy = True
-    print("Item ID: ", item.id, " removed from inventory")
+    print("Item Name: ", item.name, " removed from inventory")
 
-# unused
-def DestroyItem(item, inventory, rooms):
-    item.kill(inventory, rooms)
+def DestroyItem(item, inventory):
+    item.kill(inventory, Room.rooms)
     print("Item ID: ", item.id, " destroyed")
 
 def ActionChangeDialog(npc, dialog):

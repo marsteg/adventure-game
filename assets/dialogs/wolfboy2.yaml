@@ -1,9 +1,10 @@
 bye:
-  line: "Bye2"
-  duration: 1
-  speaker: wolfboy2
-  exit: true
-start:
-  line: "Hi, I'm a copy of wolfboy. i am weird."
+  line: "Thanks! Let me open that door for you!"
   duration: 2
+  speaker: wolfboy2
+  exit: 
+    ExitDialog: bye
+start:
+  line: "Hi, I can't talk - my hair are everywhere!"
+  duration: 1
   speaker: wolfboy2

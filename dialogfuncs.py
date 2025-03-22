@@ -38,6 +38,8 @@ def TakeItemString(itemString, failure_dialog, success_dialog, room, npc, invent
     for item in inventory.items.values():
         if item.name == itemString:
             TakeItem(item, inventory)
+            AllowDestroy(item)
+            DestroyItem(item, inventory)
             #del inventory.items[key]
             #value.stashed = False
             #value.allow_destroy = True

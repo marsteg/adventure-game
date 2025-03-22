@@ -5,15 +5,17 @@ from actionfuncs import *
 class Action(RectShape):
     _id_counter = 1
     containers = []
-    def __init__(self, left, top, width, height, image, locked, key):
+    def __init__(self, left, top, width, height, image, name, locked, key):
         super().__init__(left, top, width, height, image)  
         self.rotation = 0
         self.id = Action._id_counter
         Action._id_counter += 1
         self.position = pygame.Vector2(left, top)
         self.rect = pygame.Rect(left, top, width, height)
-        self.image = pygame.image.load(image)
-        self.image = pygame.transform.scale(self.image, (width, height))
+        self.imagepath = image
+        #self.image = pygame.image.load(self.imagepath)
+        #self.image = pygame.transform.scale(self.image, (width, height))
+        self.name = name
         self.locked = locked
         self.state = ""
         self.key = key
@@ -26,6 +28,8 @@ class Action(RectShape):
 
     def draw(self, screen):
         pygame.draw.rect(screen, "green", self.rect)
+        self.image = pygame.image.load(self.imagepath)
+        self.image = pygame.transform.scale(self.image, (self.width, self.height))
         screen.blit(self.image, self.rect)
 
 

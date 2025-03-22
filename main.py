@@ -46,16 +46,19 @@ def main():
     # rooms require nothing
     room1 = Room("assets/rooms/RektorOffice.png", "room1")
     room2 = Room("assets/rooms/LivingRoom.png", "room2")
-    # items require nothing
+    
+    # items require nothing (should require rooms and self-register?)
     missile = Item(100, 100, 50, 50, "assets/items/missile.png", "missile") # should come back to inventory
     missile2 = Item(200, 200, 50, 50, "assets/items/missile2.png", "missile2", True) # should self destruct
+    comb = Item(at_percentage_width(88), at_percentage_height(80), 50, 50, "assets/items/comb.png", "comb", True) # should self destruct
+
     # actions might require items
-    button1 = Action(800, 100, 50, 50, "assets/actions/button.png", False, None)
-    button2 = Action(400, 100, 50, 50, "assets/actions/button2.png", True, missile)
+    button1 = Action(800, 100, 50, 50, "assets/actions/button.png", "button1", False, None)
+    button2 = Action(400, 100, 50, 50, "assets/actions/button2.png", "button2", True, missile)
 
     # NPCs might require Items
     wolfboy = NPC(750, 350, 150, 160, "assets/npcs/werewolfboy.png", "wolfboy", True, missile2, GREEN, "assets/dialogs/wolfboy.yaml")
-    wolfboy2 = NPC(350, 350, 150, 160, "assets/npcs/werewolfboy.png", "wolfboy2", True, missile2, WHITE, "assets/dialogs/wolfboy2.yaml")
+    wolfboy2 = NPC(350, 350, 150, 160, "assets/npcs/werewolfboy.png", "wolfboy2", True, comb, WHITE, "assets/dialogs/wolfboy2.yaml")
     
    # doors require rooms and might require items
     Room1door1 = Door(80, 300, 100, 200, "assets/doors/door1.png", "Room1Door1", title, True, missile)
@@ -75,31 +78,28 @@ def main():
 
     #NPCs action funcs
     wolfboy.add_function(GiveItem, missile, inventory)
+    wolfboy.add_function(AllowDestroy, missile2)
     wolfboy.add_function(ActionChangeDialog, wolfboy, "bye2")
+    wolfboy.add_function(DestroyItem, missile2, inventory)
+    
+    wolfboy2.add_function(ActionChangeDialog, wolfboy2, "bye")
+    wolfboy2.add_function(AllowDestroy, comb)
+    wolfboy2.add_function(TakeItem, comb, inventory)
+    wolfboy2.add_function(UnlockDoor, button1, Room1door2)
+
     
     #wolfboy.add_function(UnlockDoor, wolfboy, Room1door1)
   # appendings doors, items and actions to rooms
-    title.doors[titledoor.id] = titledoor
-    room2.doors[Room2door2.id] = Room2door2
-    room1.doors[Room1door1.id] = Room1door1
-    room1.doors[Room1door2.id] = Room1door2
-    room1.npcs[wolfboy2.id] = wolfboy2
-    room1.actions[button1.id] = button1
-    room2.npcs[wolfboy.id] = wolfboy
-    room1.items[missile2.id] = missile2
-    room2.actions[button2.id] = button2
-
-
-    
-    for i in range(5):
-      x = random.randint(50, 700)
-      y = random.randint(50, 350)
-      w = random.randint(35, 65)
-      h = random.randint(35, 65)
-      image = 'assets/items/missile.png'
-      item = Item(x, y, w, h, image, "missile" + str(x) )
-      room2.items[item.id] = item
-
+    title.doors[titledoor.name] = titledoor
+    room2.doors[Room2door2.name] = Room2door2
+    room1.doors[Room1door1.name] = Room1door1
+    room1.doors[Room1door2.name] = Room1door2
+    room1.npcs[wolfboy2.name] = wolfboy2
+    room1.actions[button1.name] = button1
+    room1.items[missile2.name] = missile2
+    room1.items[comb.name] = comb
+    room2.npcs[wolfboy.name] = wolfboy
+    room2.actions[button2.name] = button2
 
     # initial state
     active_room = title
@@ -142,7 +142,12 @@ def main():
                 drawable_room.shine(screen)
       if keys[pygame.K_s]:
             print("S key pressed")
-            SaveState(active_room, Room.rooms, inventory, "save.yaml")
+            SaveState(active_room, inventory, "save.yaml")
+      if keys[pygame.K_l]:
+            print("L key pressed")
+            inventory.items = {}
+            (active_room, new_inventory) = LoadState("save.yaml")
+            inventory.items = new_inventory.items
 
     
     # events

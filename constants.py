@@ -16,6 +16,14 @@ SPEECH_SIZE = 25
 SPEECH_FONT = 'freesansbold.ttf'
 
 
+def at_percentage_width(percentage):
+    print((SCREEN_WIDTH/100)*percentage)
+    return (SCREEN_WIDTH/100)*percentage
+
+def at_percentage_height(percentage):
+    print(((SCREEN_HEIGHT-INVENTORY_HEIGHT)/100)*percentage)
+    return ((SCREEN_HEIGHT-INVENTORY_HEIGHT)/100)*percentage
+
 ASTEROID_MIN_RADIUS = 20
 ASTEROID_KINDS = 3
 ASTEROID_SPAWN_RATE = 0.8  # seconds

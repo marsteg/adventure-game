@@ -27,7 +27,7 @@ class Room(pygame.sprite.Sprite):
         self.actions = {}
         self.npcs = {}
         self.name = name
-        Room.rooms[self.id] = self
+        Room.rooms[self.name] = self
         
 
     def draw(self, screen, inventory, dialogbox, answerbox):

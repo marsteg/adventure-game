@@ -1,0 +1,49 @@
+rooms:
+  title:
+    doors:
+      Titledoor:
+        locked: false
+    actions: {}
+    items: {}
+    npcs: {}
+  room1:
+    doors:
+      Room1Door1:
+        locked: true
+      Room1Door2:
+        locked: false
+    actions:
+      button1:
+        locked: false
+        state: ''
+        imagepath: assets/actions/button.png
+    items: {}
+    npcs:
+      wolfboy2:
+        active_dialog: bye
+        locked: false
+  room2:
+    doors:
+      Room2Door2:
+        locked: false
+    actions:
+      button2:
+        locked: true
+        state: ''
+        imagepath: assets/actions/button2.png
+    items: {}
+    npcs:
+      wolfboy:
+        active_dialog: start
+        locked: true
+inventory:
+  missile2:
+    stashed: true
+    allow_destroy: false
+    selfdestruct: true
+    left: 128
+    top: 617
+    width: 50
+    height: 50
+    imagepath: assets/items/missile2.png
+active_room: room2
