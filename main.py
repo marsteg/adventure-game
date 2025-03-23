@@ -90,8 +90,9 @@ def main():
     button1.add_function(UnlockDoor, button1, Room1door2)
 
     button2.add_function(ChangePicture, button2, "assets/actions/button.png", "assets/actions/button2.png", None)
-    button2.add_function(LogText, "Button 2 Text Logged")
+    button2.add_function(LogText, "Useless Button pressed")
     button2.add_function(AllowDestroy, missile2)
+    button2.add_function(PlaySound, "assets/sounds/actions/grunz.wav")
 
     #NPCs action funcs
     wolfboy.add_function(GiveItem, missile, inventory)
@@ -289,7 +290,6 @@ def main():
                   print("Answer pressed in position: ", answer.position)
                   print(answer.answer)
                   if isinstance(answer, Answer) and active_click == answer:
-                    #dialogbox.timer = time.time()
                     active_talker = npc
                     answer.action()
                     dialogbox.timer = time.time()

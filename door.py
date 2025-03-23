@@ -35,13 +35,15 @@ class Door(RectShape):
     def collidepoint(self, pos):
         return self.rect.collidepoint(pos)
     
-    def unlock(self, key, inventory):
+    def unlock(self, key):
         if key != self.key:
             print("Wrong key")
             return
         print("Door unlocked: ", self.locked)
         self.locked = False
         key.allow_destroy = True
+        sound = pygame.mixer.Sound("assets/sounds/actions/door_unlock.wav")
+        pygame.mixer.Sound.play(sound)
         #key.stash(inventory)
 
     def add_description(self, description_text_locked, description_text_unlocked, description_sound_locked, description_sound_unlocked):

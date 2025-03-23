@@ -9,7 +9,7 @@ You will need the pygame library. Then just run:
 - stashing of items
 - items can now be destroyed on usage or not. if not, they go back to the inventory after usage
 - switching rooms with doors
-- hitting space makes items, doors and actions shine
+- hitting space makes items, doors, NPCs and actions shine
 - Actionfuncs are a way to teach an action button tricks. With this theoretically anything can be executed via Actions
 - unlocking an action will also execute it's actionfuncs
 - Save and Loading the Game is now possible! Press 'S' to Save and 'L' to Load
@@ -18,6 +18,7 @@ You will need the pygame library. Then just run:
 - Sounds!
 	- Rooms now have background music!
 	- NPCs can have voice, when talking!
+	- actions can play sounds on Activation (when unlocked)
 - NPCs	
 	- can give items, when unlockd
 	- can open doors, when unlocked
@@ -52,7 +53,7 @@ You will need the pygame library. Then just run:
 		- All NPCs in a Yaml
 		- all Doors in a Yaml
 - if actions, doors cannot be executed (are locked), there should be some "negative" feedback, like a comment by the player or narrator
-- Conversations
+## Conversations
 	- text currently stays X seconds - clicking should skip to the next line
 	- how to manage it when picking up an item should change dialog choices?
 		- should Items have actions, that get executed on pickup? could change active_dialogs or locked dialogs?
@@ -60,14 +61,14 @@ You will need the pygame library. Then just run:
 		- every NPC needs their own dialogbox with a associated position
 			- text should be positioned relative to the character speaking
 	- active answer window should make the rest of the screen unclickable (not sure about this)
-- Saving/Loading:
+## Saving/Loading:
 	- how to save and load the game?
 		- save to yaml
 			- should provide some savename input
 			- support multiple savefiles
 		- load from yaml
 			- select savefile
-- Player Character?
+## Player Character?
 	- doubleclick on items for faster collecting
 	- Let the Player Character Walk
 		- requires a walkable area as clickable area per room
@@ -78,10 +79,10 @@ You will need the pygame library. Then just run:
 - items should get ordered / aligned in the inventory
 	- slot system size (currently 20) - what if i have more items? scrolling?
 
-## Sound
-- actions should play sounds on Unlock (should be optional)
 
 
-Music files from: https://www.musicfox.com/info/kostenlose-gemafreie-musik/
-
+Background Music files from: https://www.musicfox.com/info/kostenlose-gemafreie-musik/
+Sound Effeces from:
+freesound.org
+	- Brickhario (unlocking doors)
 

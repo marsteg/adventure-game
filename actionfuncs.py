@@ -18,12 +18,18 @@ def ChangePicture(action, new_image, old_image, arg3=None):
     action.state = new_image
     print("Action Name: ", action.name, " changed picture to: ", action.image)
 
+def PlaySound(soundfile):
+    print("Playing sound: ", soundfile)
+    sound = pygame.mixer.Sound(soundfile)
+    sound.play()
+
 def UnlockDoor(action, door):
     if door.key != action:
         print("Wrong key")
         return
     print("Door unlocked: ", door.locked)
-    door.locked = False
+    #door.locked = False
+    door.unlock(door.key)
     #door.image = pygame.image.load(door.open_image)
     #door.image = pygame.transform.scale(door.image, (door.rect.width, door.rect.height))
     print("Door position: ", door.position)
