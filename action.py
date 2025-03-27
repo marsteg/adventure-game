@@ -1,6 +1,7 @@
 from rectshape import *
 from constants import *
 from actionfuncs import *
+import time
 
 class Action(RectShape):
     _id_counter = 1
@@ -52,6 +53,9 @@ class Action(RectShape):
             print("Action Function triggered in position: ", self.position)
         
     def unlock(self, key, inventory):
+        if self.key == None:
+            print("No key required")
+            return
         if key != self.key:
             print("Wrong key")
             return
@@ -79,26 +83,29 @@ class Action(RectShape):
             sound = pygame.mixer.Sound(line)
             pygame.mixer.Sound.play(sound)
 
-    def talk_description(self, dialogbox, room):
+    def talk_description(self, room):
         SPEECHFONT = pygame.font.Font(SPEECH_FONT, SPEECH_SIZE)
-        dialogbox.state = self
-        dialogbox.room = room
+        #dialogbox.state = self
+        #dialogbox.room = room
+        dialbox = DialogBox(room, time.time())
+        dialbox.state = self
+        dialbox.room = room
         if self.locked:
             line = self.description_text_locked
             print("Action Describe Talking: ", self.name, "dialog:", line)
             text = SPEECHFONT.render(line, True, BLUE)
             #i shouldn't re-adjust the rect but rather use a player's or narrator's dialogbox
-            dialogbox.rect = pygame.Rect(SCREEN_WIDTH // 3, SCREEN_HEIGHT // 2, SCREEN_WIDTH // 2, 0)
-            dialogbox.surface = text
+            dialbox.rect = pygame.Rect(SCREEN_WIDTH // 4, SCREEN_HEIGHT // 4, SCREEN_WIDTH // 2, 0)
+            dialbox.surface = text
         else:
             line = self.description_text_unlocked
             print("Action Describe Talking: ", self.name, "dialog:", line)
             text = SPEECHFONT.render(line, True, BLUE)
             #i shouldn't re-adjust the rect but rather use a player's or narrator's dialogbox
-            dialogbox.rect = pygame.Rect(SCREEN_WIDTH // 3, SCREEN_HEIGHT // 2, SCREEN_WIDTH // 2, 0)
-            dialogbox.surface = text
+            dialbox.rect = pygame.Rect(SCREEN_WIDTH // 4, SCREEN_HEIGHT // 4, SCREEN_WIDTH // 2, 0)
+            dialbox.surface = text
 
-    def describe(self, dialogbox, room):
+    def describe(self, room):
         print("Action right-clicked: ", self.name)
         self.speak_description()
-        self.talk_description(dialogbox, room)
+        self.talk_description(room)

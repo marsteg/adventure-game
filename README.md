@@ -25,12 +25,13 @@ You will need the pygame library. Then just run:
 	- can have a speechcolor
 	- There are now different ways to take and give items from NPCs
 			- by unlocking them (possible via item, action or dialog)
-	Conversations!
+- Conversations!
 	- each line of speech should have a configurable talking time 
-		- active dialog (dialog state of NPC) answers could change based on:
+	- active dialog (dialog state of NPC) answers could change based on:
 			- specific replies chosen (should execute actionfunc)
 			- actions executed (actionfunc to change actve dialog of npc)
-		- NPCs can give the player Items right after successfully giving an Item to them. 
+	- doors are disabled from clicking while conversations are ongoing
+	- NPCs can give the player Items right after successfully giving an Item to them. 
 		- Speech Lines are objects defined in yaml
 				- Speech Lines have:
 					- text
@@ -53,14 +54,16 @@ You will need the pygame library. Then just run:
 		- All NPCs in a Yaml
 		- all Doors in a Yaml
 - if actions, doors cannot be executed (are locked), there should be some "negative" feedback, like a comment by the player or narrator
+- items should be combinalbe
 ## Conversations
 	- text currently stays X seconds - clicking should skip to the next line
 	- how to manage it when picking up an item should change dialog choices?
 		- should Items have actions, that get executed on pickup? could change active_dialogs or locked dialogs?
 	- how to have multiple NPC talk at the same time?
-		- every NPC needs their own dialogbox with a associated position
+		- every NPC has now their own dialogbox. The position is still hard-coded.
+			- what is a smart way to find a position?
+				- i want to have it relative to the object but closer to the center of the screen
 			- text should be positioned relative to the character speaking
-	- active answer window should make the rest of the screen unclickable (not sure about this)
 ## Saving/Loading:
 	- how to save and load the game?
 		- save to yaml
@@ -70,6 +73,7 @@ You will need the pygame library. Then just run:
 			- select savefile
 ## Player Character?
 	- doubleclick on items for faster collecting
+	- Introduce Player Character
 	- Let the Player Character Walk
 		- requires a walkable area as clickable area per room
 		- requires player walking animation
@@ -78,10 +82,14 @@ You will need the pygame library. Then just run:
 ## inventory
 - items should get ordered / aligned in the inventory
 	- slot system size (currently 20) - what if i have more items? scrolling?
+	- slots currently do not get re-used
 
+### useful dialog box positions?
+dialbox.rect = pygame.Rect(SCREEN_WIDTH // 5, SCREEN_HEIGHT // 5, SCREEN_WIDTH // 2, 0)
+--> perfect "narrator" position on the top center
 
-
-Background Music files from: https://www.musicfox.com/info/kostenlose-gemafreie-musik/
+# Thanks and Grateful links to external helping tools:
+Background Music from: https://www.musicfox.com/info/kostenlose-gemafreie-musik/
 Sound Effeces from:
 freesound.org
 	- Brickhario (unlocking doors)

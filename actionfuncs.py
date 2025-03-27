@@ -40,16 +40,16 @@ def AllowDestroy(item):
 
     # Give item to the Player
 def GiveItem(item, inventory):
-    inventory.items[item.name] = item
     item.stash(inventory)
     print("Item Name: ", item.name, " added to inventory")
     print("Inventory items: ", inventory.items)
 
     # Take Item from the Player
 def TakeItem(item, inventory):
+    item.unstash(inventory (0, 0))
+    inventory.release_slots(item)
     if item in inventory.items:
         del inventory.items[item.name]
-    item.stashed = False
     item.allow_destroy = True
     print("Item Name: ", item.name, " removed from inventory")
 

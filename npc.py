@@ -51,6 +51,9 @@ class NPC(RectShape):
             print("Action Function triggered in position: ", self.position)
     
     def unlock(self, key, inventory):
+        if self.key == None:
+            print("No key required")
+            return
         if key.name != self.key.name:
             print("Wrong key")
             return
@@ -90,37 +93,43 @@ class NPC(RectShape):
             sound = pygame.mixer.Sound(line)
             pygame.mixer.Sound.play(sound)
 
-    def talk_description(self, dialogbox, room):
+    def talk_description(self, room):
         SPEECHFONT = pygame.font.Font(SPEECH_FONT, SPEECH_SIZE)
-        dialogbox.state = self
-        dialogbox.room = room
+        dialbox = DialogBox(room, time.time())
+        dialbox.state = self
+        dialbox.room = room
+
         if self.locked:
             line = self.dialog["description"]["locked"]["line"]
             print("Describe Talking: ", self.name, "dialog:", line)
             text = SPEECHFONT.render(line, True, BLUE)
             #i shouldn't re-adjust the rect but rather use a player's or narrator's dialogbox
-            dialogbox.rect = pygame.Rect(SCREEN_WIDTH // 3, SCREEN_HEIGHT // 2, SCREEN_WIDTH // 2, 0)
-            dialogbox.surface = text
+            dialbox.rect = pygame.Rect(SCREEN_WIDTH // 3, SCREEN_HEIGHT // 2, SCREEN_WIDTH // 2, 0)
+            dialbox.surface = text
+            print("Dialogbox worked")
         else:
             line = self.dialog["description"]["unlocked"]["line"]
             print("Describe Talking: ", self.name, "dialog:", line)
             text = SPEECHFONT.render(line, True, BLUE)
             #i shouldn't re-adjust the rect but rather use a player's or narrator's dialogbox
-            dialogbox.rect = pygame.Rect(SCREEN_WIDTH // 3, SCREEN_HEIGHT // 2, SCREEN_WIDTH // 2, 0)
-            dialogbox.surface = text
+            dialbox.rect = pygame.Rect(SCREEN_WIDTH // 3, SCREEN_HEIGHT // 2, SCREEN_WIDTH // 2, 0)
+            dialbox.surface = text
+            print("Dialogbox worked")
 
-    def describe(self, dialogbox, room):
+    def describe(self, room):
         print("NPC right-clicked: ", self.name)
         self.speak_description()
-        self.talk_description(dialogbox, room)
+        self.talk_description(room)
 
 
     # talk should only ensure the NPC talks and trigger an own dialogbox rather than using a shared one
-    def talk(self, room, inventory, dialogbox, answerbox):
+    def talk(self, room, inventory, answerbox):
+        self.timer = time.time()
         SPEECHFONT = pygame.font.Font(SPEECH_FONT, SPEECH_SIZE)
         print("NPC Talking: ", self.name)
-        dialogbox.state = self
-        dialogbox.room = room
+        dialbox = DialogBox(room, time.time())
+        dialbox.state = self
+        dialbox.room = room
         self.speak()
         # cater for the case where the speaker is another NPC
         speaker = self.dialog[self.active_dialog]["speaker"]
@@ -132,9 +141,13 @@ class NPC(RectShape):
             speaker = self
         print("NPC Talking: ", self.name, "dialog:", self.dialog[self.active_dialog]["line"])
         text = SPEECHFONT.render(self.dialog[self.active_dialog]["line"], True, speaker.speechcolor)
-        #i shouldn't re-adjust the rect but rather use an own dialogbox
-        dialogbox.rect = pygame.Rect(SCREEN_WIDTH // 3, SCREEN_HEIGHT // 2, SCREEN_WIDTH // 2, 0)
-        dialogbox.surface = text
+        #i shouldn't re-adjust the rect but rather use a position relative to the speaker
+        if SCREEN_WIDTH // 2 < speaker.rect.left:
+            dialbox.rect = pygame.Rect(speaker.rect.left - SCREEN_WIDTH // 3, speaker.rect.top + at_percentage_height(5), SCREEN_WIDTH // 2, 0)
+        else:
+            dialbox.rect = pygame.Rect(speaker.rect.left + SCREEN_WIDTH // 3, speaker.rect.top + at_percentage_height(5), SCREEN_WIDTH // 2, 0)
+        #dialbox.rect = pygame.Rect(SCREEN_WIDTH // 3, SCREEN_HEIGHT // 2, SCREEN_WIDTH // 2, 0)
+        dialbox.surface = text
         # check if the dialog unlocks something
         if "unlock" in self.dialog[self.active_dialog]:
             print("Unlocking is in yaml")
@@ -146,6 +159,7 @@ class NPC(RectShape):
             if "ExitDialog" in self.dialog[self.active_dialog]["exit"]:
                 answerbox.answers = {}
                 answerbox.state = None
+                answerbox.room = None
                 self.active_dialog = self.dialog[self.active_dialog]["exit"]["ExitDialog"]
                 return
         
@@ -155,6 +169,7 @@ class NPC(RectShape):
             answerbox.answers = {}
             if self.dialog[self.active_dialog]["answers"] != None:
                 answerbox.state = self.dialog[self.active_dialog]["answers"]
+                answerbox.room = room
             # generate answerboxes
             if len(self.dialog[self.active_dialog]["answers"]) > 0:
                 for i, answer in enumerate(self.dialog[self.active_dialog]["answers"]):
@@ -165,15 +180,22 @@ class NPC(RectShape):
                             func = globals().get(k)
                             if func:
                                 if isinstance(v, list):
-                                    func_args = (*v, room, self, inventory, answerbox, dialogbox)
+                                    #func_args = (*v, room, self, inventory, answerbox, dialogbox)
+                                    func_args = (*v, room, self, inventory, answerbox)
                                 else:
-                                    func_args = (v, room, self, inventory, answerbox, dialogbox)
+                                    func_args = (v, room, self, inventory, answerbox)
+                                    #func_args = (v, room, self, inventory, answerbox, dialogbox)
                                 a.add_dialogfunction(func, *func_args)
                                 print("funcs added: ", func, func_args)
                                 print("Action added: ", action)
                                 print("Function: ", func)
                                 print("Arguments: ", v)
-                                # add dialogfunction to trigger dialogbox (timer reset + state change)
                             else:
                                 print(f"Function {k} not found.")
                         a.npc = self
+
+
+# find the correct position for the dialogbox
+
+# the speaker has a left and top position, the dialogbox should be placed relative to the speaker's position'
+# 

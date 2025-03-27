@@ -1,6 +1,7 @@
 from rectshape import *
 from constants import *
 from room import *
+import time
 
 import random
 
@@ -18,6 +19,7 @@ class Item(RectShape):
         self.image = pygame.image.load(image).convert_alpha()
         self.image = pygame.transform.scale(self.image, (width, height))
         self.name = name
+        self.timer = 0
         self.id = Item.id_counter
         Item.id_counter += 1
         self.selfdestruct = selfdestruct
@@ -65,7 +67,7 @@ class Item(RectShape):
         self.position = pygame.Vector2(self.rect.topleft)
         #return self.rect.move_ip(rel)
     
-    def stash(self, inventory,room=None):
+    def stash(self, inventory, room=None):
         inventory.release_slots(self)
         if self.stashed:
             # just reposition the item in the inventory
@@ -74,9 +76,11 @@ class Item(RectShape):
             self.position = pygame.Vector2(pos)
             return
         if self.allow_destroy:
-            print("Item Name: ", self.name, " can be destroyed")
-            #self.kill(inventory, Room.rooms)
-            return
+            print("Item Name: ", self.name, " could be destroyed")
+            if self.selfdestruct:
+                print("Item Name: ", self.name, " is selfdestructable")
+                self.unstash(inventory)
+                return
         inventory.items[self.name] = self
         self.stashed = True
         if room != None:
@@ -111,18 +115,23 @@ class Item(RectShape):
         sound = pygame.mixer.Sound(line)
         pygame.mixer.Sound.play(sound)
 
-    def talk_description(self, dialogbox, room):
+    def talk_description(self, room):
         SPEECHFONT = pygame.font.Font(SPEECH_FONT, SPEECH_SIZE)
-        dialogbox.state = self
-        dialogbox.room = room
+        #dialogbox.state = self
+        #dialogbox.room = room
+        dialbox = DialogBox(room, time.time())
+        dialbox.state = self
+        dialbox.room = room
         line = self.description_text
         print("Item Describe Talking: ", self.name, "dialog:", line)
         text = SPEECHFONT.render(line, True, BLUE)
         #i shouldn't re-adjust the rect but rather use a player's or narrator's dialogbox
-        dialogbox.rect = pygame.Rect(SCREEN_WIDTH // 3, SCREEN_HEIGHT // 2, SCREEN_WIDTH // 2, 0)
-        dialogbox.surface = text
+        #dialogbox.rect = pygame.Rect(SCREEN_WIDTH // 3, SCREEN_HEIGHT // 2, SCREEN_WIDTH // 2, 0)
+        #dialogbox.surface = text
+        dialbox.rect = pygame.Rect(SCREEN_WIDTH // 4, SCREEN_HEIGHT // 4, SCREEN_WIDTH // 2, 0)
+        dialbox.surface = text
 
-    def describe(self, dialogbox, room):
+    def describe(self, room):
         print("Item right-clicked: ", self.name)
         self.speak_description()
-        self.talk_description(dialogbox, room)
+        self.talk_description(room)

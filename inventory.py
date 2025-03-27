@@ -12,7 +12,7 @@ class Inventory(pygame.sprite.Sprite):
         self.rect = pygame.Rect(0, SCREEN_HEIGHT - INVENTORY_HEIGHT, SCREEN_WIDTH, INVENTORY_HEIGHT)
         self.init_slots()
 
-    def draw(self, screen, inventory):
+    def draw(self, screen):
         inv = pygame.draw.rect(screen, "brown", self.rect)
         screen.fill("brown", inv)
 

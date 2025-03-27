@@ -1,0 +1,56 @@
+description:
+  locked:
+    line: "This muckmuck looks really coool."
+    sound: "assets/sounds/dialogs/muckmuck-description-locked.wav"
+    duration: 2
+  unlocked:
+    line: "He really likes anything that is red... I wonder what door this Key is for"
+    sound: "assets/sounds/dialogs/wolfboy-description-unlocked.wav"
+    duration: 3
+bye:
+  line: "Bye"
+  duration: 1
+  speaker: muckmuck
+  sound: "assets/sounds/dialogs/wolfboy-bye.wav"
+  exit: 
+    ExitDialog: start
+start:
+  line: "Welcome to my Bar! Sit down and have a drink!"
+  duration: 2
+  speaker: muckmuck
+  sound: "assets/sounds/dialogs/muckmuck-start.wav"
+  answers:
+    - line: "Ok."
+      actionfuncs:
+        - ChangeDialog: 
+            - muckmuck
+            - muckmuck2
+    - line: "Aha."
+      actionfuncs:
+        - ExitDialog: 
+          - start
+muckmuck2:
+  line: "Do you need some healing herbs? I got them from Raccoon City!"
+  duration: 2
+  speaker: muckmuck
+  sound: "assets/sounds/dialogs/muckmuck-muckmuck2.wav"
+  answers:
+    - line: "Sure!"
+      actionfuncs:
+        - ChangeDialog: 
+          - muckmuck
+          - mucksuccess
+    - line: "Nah, thanks!"
+      actionfuncs:
+        - ChangeDialog:
+          - muckmuck
+          - bye
+mucksuccess:
+  line: "Enjoy my friend!"
+  sound: "assets/sounds/dialogs/muckmuck-mucksuccess.wav"
+  duration: 2
+  speaker: muckmuck
+  exit: 
+    ExitDialog: bye
+  unlock: True
+

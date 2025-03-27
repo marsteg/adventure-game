@@ -35,7 +35,6 @@ def main():
 
     Room.containers = (updatable)
 
-    dialogbox = DialogBox()
     answerbox = AnswerBox()
 
     # title screen
@@ -46,16 +45,19 @@ def main():
     # rooms require nothing
     room1 = Room("assets/rooms/RektorOffice.png", "room1", "assets/sounds/background/Albatros.wav")
     room2 = Room("assets/rooms/LivingRoom.png", "room2", "assets/sounds/background/PrettyOrgan.wav")
+    BeachBar = Room("assets/rooms/BeachBar.png", "BeachBar", "assets/sounds/background/dancing_street.wav")
     
     # items require nothing (should require rooms and self-register?)
     missile = Item(100, 100, 50, 50, "assets/items/missile.png", "missile") # should come back to inventory
     missile2 = Item(200, 200, 50, 50, "assets/items/missile2.png", "missile2", True) # should self destruct
     comb = Item(at_percentage_width(88), at_percentage_height(80), 50, 50, "assets/items/comb.png", "comb", True) # should self destruct
+    herb = Item(300, 300, 50, 50, "assets/items/muckmuck_share.png", "herb") # should come back to inventory
 
     # adding item descriptions
     missile.add_description("A durable key. I wonder what Door it is for?", "assets/sounds/items/missile_locked.wav")
     missile2.add_description("A Red shiny thing. Is it a Key?", "assets/sounds/items/missile2_locked.wav")
     comb.add_description("A comb... What is this doing here?", "assets/sounds/items/comb_locked.wav")
+    herb.add_description("A herb. It smells like Muckmuck", "assets/sounds/items/herb_locked.wav")
 
     # actions might require items
     button1 = Action(800, 100, 50, 50, "assets/actions/button.png", "button1", False, None)
@@ -67,22 +69,25 @@ def main():
 
 
     # NPCs might require Items
-    wolfboy = NPC(750, 350, 150, 160, "assets/npcs/werewolfboy.png", "wolfboy", True, missile2, GREEN, "assets/dialogs/wolfboy.yaml")
+    wolfboy = NPC(750, 350, 150, 160, "assets/npcs/werewolfboy.png", "wolfboy", True, missile2, YELLOW, "assets/dialogs/wolfboy.yaml")
     wolfboy2 = NPC(350, 350, 150, 160, "assets/npcs/werewolfboy.png", "wolfboy2", True, comb, WHITE, "assets/dialogs/wolfboy2.yaml")
+    muckmuck = NPC(SCREEN_WIDTH/2-150, SCREEN_HEIGHT/2-100, 80, 90, "assets/npcs/muckmuck_cool.png", "muckmuck", True, herb, GREEN, "assets/dialogs/muckmuck.yaml")
     
     # NPCs get their description from the dialog yaml file 
 
     # doors require rooms and might require items
-    Room1door1 = Door(80, 300, 100, 200, "assets/doors/door1.png", "Room1Door1", title, True, missile)
+    Room1door1 = Door(80, 300, 100, 200, "assets/doors/door1.png", "Room1Door1", BeachBar, True, missile)
     Room1door2 = Door(880, 300, 100, 200, "assets/doors/door1.png", "Room1Door2",room2, True, button1)
     Room2door2 = Door(480, 300, 100, 200, "assets/doors/door1.png", "Room2Door2",room1, False, None)
     titledoor = Door(300, 300, 100, 200, "assets/doors/door1.png", "Titledoor", room1, False, None)
+    BeachBarExit = Door(300, 300, 100, 200, "assets/doors/door1.png", "BeachBarExit", title, False, None)
 
     # adding door descriptions
     titledoor.add_description("", "This is where the Adventure begins!", "assets/sounds/doors/titledoor_unlocked.wav", "assets/sounds/doors/titledoor_unlocked.wav")
     Room2door2.add_description("", "This leads back to the Dean's Office", "assets/sounds/doors/room2door2_unlocked.wav", "assets/sounds/doors/room2door2_unlocked.wav")
     Room1door1.add_description("I wonder where this Door leads to... it smells amazing in there!", "Finally! The last Door unlocked! What Mysteries might await me?", "assets/sounds/doors/room1door1_locked.wav", "assets/sounds/doors/room1door1_unlocked.wav")
     Room1door2.add_description("This Door does not look inviting at all...", "Do I really want to go in there?", "assets/sounds/doors/room1door2_locked.wav", "assets/sounds/doors/room1door2_unlocked.wav")
+    BeachBarExit.add_description("", "This is where the Adventure ends!", "assets/sounds/doors/room2door2_unlocked.wav", "assets/sounds/doors/room2door2_unlocked.wav")
 
    # action funcs require items, doors, and actions
     button1.add_function(ChangePicture, button1, "assets/actions/button2.png", "assets/actions/button.png", None) 
@@ -91,19 +96,22 @@ def main():
 
     button2.add_function(ChangePicture, button2, "assets/actions/button.png", "assets/actions/button2.png", None)
     button2.add_function(LogText, "Useless Button pressed")
-    button2.add_function(AllowDestroy, missile2)
     button2.add_function(PlaySound, "assets/sounds/actions/grunz.wav")
 
     #NPCs action funcs
     wolfboy.add_function(GiveItem, missile, inventory)
     wolfboy.add_function(AllowDestroy, missile2)
-    wolfboy.add_function(ActionChangeDialog, wolfboy, "bye2")
     wolfboy.add_function(DestroyItem, missile2, inventory)
+    wolfboy.add_function(ActionChangeDialog, wolfboy, "bye2")
+    
     
     wolfboy2.add_function(ActionChangeDialog, wolfboy2, "bye")
     wolfboy2.add_function(AllowDestroy, comb)
     wolfboy2.add_function(TakeItem, comb, inventory)
     wolfboy2.add_function(UnlockDoor, button1, Room1door2)
+
+    muckmuck.add_function(GiveItem, herb, inventory)
+    muckmuck.add_function(LogText, "Muckmuck shared his herb with you")
 
     
   # appendings doors, items and actions to rooms
@@ -117,6 +125,8 @@ def main():
     room1.items[comb.name] = comb
     room2.npcs[wolfboy.name] = wolfboy
     room2.actions[button2.name] = button2
+    BeachBar.doors[BeachBarExit.name] = BeachBarExit
+    BeachBar.npcs[muckmuck.name] = muckmuck
 
     # initial state
     active_room = title
@@ -134,24 +144,22 @@ def main():
     run = True
     while run:
 
-      for npc in active_room.npcs.values():
-        #if dialogbox.state != None and npc.active_dialog != None and active_talker != None:
-        if npc.active_dialog != None and active_talker != None:
-          if dialogbox.room != active_room:
-            dialogbox.state = None
-            active_talker = None
-            continue      
-          #if time.time() - dialogbox.timer > active_talker.dialog[active_talker.active_dialog]["duration"]:
-          if time.time() - dialogbox.timer > active_timer:
-            active_talker = None
-            dialogbox.state = None
-
+      for dialbox in DialogBox.dialogboxes:
+            # cleanup unneeded dialogboxes
+            if dialbox.room != active_room:
+              dialbox.state = None
+              active_talker = None
+              dialbox.kill()
+            if time.time() - dialbox.timer > active_timer:
+              dialbox.state = None
+              active_talker = None
+              dialbox.kill()
 
       for updatable_object in updatable:
         updatable_object.update(dt)
 
       # draw screen
-      active_room.draw(screen, inventory, dialogbox, answerbox)
+      active_room.draw(screen, inventory, answerbox)
 
       # check for key presses
       keys = pygame.key.get_pressed()
@@ -182,10 +190,11 @@ def main():
                 active_box = box
                 print("Box pressed in position: ", box.position, "event pos: ", event.pos)
 
-            # clicking doors
-            for door in active_room.doors.values():
-              if door.rect.collidepoint(event.pos):
-                active_click = door
+            # clicking doors - skip clicking doors, when an answer is outstanding
+            if answerbox.state == None:
+              for door in active_room.doors.values():
+                if door.rect.collidepoint(event.pos):
+                  active_click = door
             # clicking actions
             for action in active_room.actions.values():
               if action.rect.collidepoint(event.pos):
@@ -211,7 +220,7 @@ def main():
                 # process dropping on doors
                 for door in active_room.doors.values():
                   if door.collides_with(box):
-                    door.unlock(box, inventory)
+                    door.unlock(box)
                     box.kill(inventory, Room.rooms)
                     break
                 # process dropping on  actions
@@ -271,10 +280,8 @@ def main():
             for npc in active_room.npcs.values():
               if npc.rect.collidepoint(event.pos):
                 if isinstance(npc, NPC) and active_click == npc:
-                  #dialogbox.timer = time.time()
-                  npc.talk(active_room, inventory, dialogbox, answerbox)
+                  npc.talk(active_room, inventory, answerbox)
                   active_timer = npc.dialog[npc.active_dialog]["duration"]
-                  dialogbox.timer = time.time()
                   print("NPC pressed in position: ", npc.position)
                   last_active_click = active_click
                   active_click = None
@@ -292,7 +299,6 @@ def main():
                   if isinstance(answer, Answer) and active_click == answer:
                     active_talker = npc
                     answer.action()
-                    dialogbox.timer = time.time()
                     print("Answer executed in position: ", answer.position)
                     last_active_click = active_click
                     active_click = None
@@ -306,12 +312,10 @@ def main():
               if door.rect.collidepoint(event.pos):
                 if isinstance(door, Door) and active_click == door:            
                   active_talker = door
-                  door.describe(dialogbox, active_room)
-                  dialogbox.timer = time.time()
+                  door.describe(active_room)
                   active_timer = 3
                   last_active_click = active_click
                   active_click = None
-                  # play and display a "locked" description
                   print("Button pressed in position: ", door.position)
                 else:
                   last_active_click = active_click
@@ -321,8 +325,7 @@ def main():
               if action.rect.collidepoint(event.pos):
                 if isinstance(action, Action) and active_click == action:
                   active_talker = action
-                  action.describe(dialogbox, active_room)
-                  dialogbox.timer = time.time()
+                  action.describe(active_room)
                   active_timer = 3
                   print("Button pressed in position: ", action.position)
                   last_active_click = active_click
@@ -336,12 +339,11 @@ def main():
               if npc.rect.collidepoint(event.pos):
                 if isinstance(npc, NPC) and active_click == npc:
                   active_talker = npc
-                  npc.describe(dialogbox, active_room)
+                  npc.describe(active_room)
                   if npc.locked:
                     active_timer = npc.dialog["description"]["locked"]["duration"]
                   else:
                     active_timer = npc.dialog["description"]["unlocked"]["duration"]
-                  dialogbox.timer = time.time()
                   print("NPC describe pressed in position: ", npc.position)
                   last_active_click = active_click
                   active_click = None
@@ -355,8 +357,7 @@ def main():
                 if isinstance(box, Item):
                   active_talker = box
                   active_timer = 3
-                  box.describe(dialogbox, active_room)
-                  dialogbox.timer = time.time()
+                  box.describe(active_room)
                   print("Item pressed in position: ", box.position)
                   last_active_click = active_click
                   active_click = None

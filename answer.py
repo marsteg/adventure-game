@@ -20,6 +20,7 @@ class Answer(RectShape):
         self.functions = []
         self.position = pygame.Vector2(self.left, self.top) 
         self.answer = answer
+        self.timer = 0
         
    
         

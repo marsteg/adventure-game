@@ -1,6 +1,7 @@
 import pygame
 import random
 from constants import *
+from dialogbox import *
 
 
 class Room(pygame.sprite.Sprite):
@@ -31,10 +32,10 @@ class Room(pygame.sprite.Sprite):
         Room.rooms[self.name] = self
         
 
-    def draw(self, screen, inventory, dialogbox, answerbox):
+    def draw(self, screen, inventory, answerbox):
         pygame.draw.rect(screen, "purple", self.rect)
         screen.blit(self.image, self.rect)
-        inventory.draw(screen, inventory)
+        inventory.draw(screen)
         for door in self.doors.values():
             door.draw(screen)
         for action in self.actions.values():
@@ -43,8 +44,9 @@ class Room(pygame.sprite.Sprite):
             npc.draw(screen)
         for item in self.items.values():
             item.draw(screen)
-        if dialogbox.state != None:
-            dialogbox.draw(screen)
+        for dialogbox in DialogBox.dialogboxes:
+            if dialogbox.room == self:
+                dialogbox.draw(screen)
         if answerbox.state != None:
             answerbox.draw(screen)
         else:

@@ -11,28 +11,28 @@ def ResetAnswerBox(answerbox):
     answerbox.answers = {}
     print("Answerbox reset")
 
-def ExitDialog(new_active_dialog, room, npc, inventory, answerbox, dialogbox):
+def ExitDialog(new_active_dialog, room, npc, inventory, answerbox):
     print("Exiting dialog: ", npc.name)
     npc.active_dialog = new_active_dialog
     answerbox.answers = {}
     answerbox.state = None
-    dialogbox.state = None
-    dialogbox.timer = time.time()
+    #dialogbox.state = None
+    #dialogbox.timer = time.time()
     print("Dialog exited")
     
-def ChangeDialog(npcString, new_dialog, room, npc, inventory, answerbox, dialogbox):
+def ChangeDialog(npcString, new_dialog, room, npc, inventory, answerbox):
     if npc.name == npcString:
         npc.active_dialog = new_dialog
         answerbox.state = npc.active_dialog
-        dialogbox.state = npc
-        dialogbox.timer = time.time()
-        npc.talk(room, inventory, dialogbox, answerbox)
+        #dialogbox.state = npc
+        #dialogbox.timer = time.time()
+        npc.talk(room, inventory, answerbox)
         print("Dialog changed to: ", new_dialog)
         return
     else:
         print("NPC not found")
 
-def TakeItemString(itemString, failure_dialog, success_dialog, room, npc, inventory, answerbox, dialogbox):
+def TakeItemString(itemString, failure_dialog, success_dialog, room, npc, inventory, answerbox):
     # go through the dict of all items and find the one with the same name
     # how should i get the inventory?
     for item in inventory.items.values():
@@ -44,12 +44,12 @@ def TakeItemString(itemString, failure_dialog, success_dialog, room, npc, invent
             #value.stashed = False
             #value.allow_destroy = True
             print("Item ID: ", item.id, " removed from inventory")
-            ChangeDialog(npc.name, success_dialog, room, npc, inventory, answerbox, dialogbox)
+            ChangeDialog(npc.name, success_dialog, room, npc, inventory, answerbox)
             return
     print("Item not found in inventory")
-    ChangeDialog(npc.name, failure_dialog, room, npc, inventory, answerbox, dialogbox)
+    ChangeDialog(npc.name, failure_dialog, room, npc, inventory, answerbox, )
 
-def UnlockNPC(npcString, room, npc, inventory, answerbox, dialogbox):
+def UnlockNPC(npcString, room, npc, inventory, answerbox, ):
     for npc in room.npcs.values():
         if npc.name == npcString:
             npc.unlock(npc.key, inventory)
