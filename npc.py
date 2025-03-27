@@ -98,7 +98,6 @@ class NPC(RectShape):
         dialbox = DialogBox(room, time.time())
         dialbox.state = self
         dialbox.room = room
-
         if self.locked:
             line = self.dialog["description"]["locked"]["line"]
             print("Describe Talking: ", self.name, "dialog:", line)
@@ -120,7 +119,6 @@ class NPC(RectShape):
         print("NPC right-clicked: ", self.name)
         self.speak_description()
         self.talk_description(room)
-
 
     # talk should only ensure the NPC talks and trigger an own dialogbox rather than using a shared one
     def talk(self, room, inventory, answerbox):
@@ -146,7 +144,6 @@ class NPC(RectShape):
             dialbox.rect = pygame.Rect(speaker.rect.left - SCREEN_WIDTH // 3, speaker.rect.top + at_percentage_height(5), SCREEN_WIDTH // 2, 0)
         else:
             dialbox.rect = pygame.Rect(speaker.rect.left + SCREEN_WIDTH // 3, speaker.rect.top + at_percentage_height(5), SCREEN_WIDTH // 2, 0)
-        #dialbox.rect = pygame.Rect(SCREEN_WIDTH // 3, SCREEN_HEIGHT // 2, SCREEN_WIDTH // 2, 0)
         dialbox.surface = text
         # check if the dialog unlocks something
         if "unlock" in self.dialog[self.active_dialog]:
@@ -193,9 +190,3 @@ class NPC(RectShape):
                             else:
                                 print(f"Function {k} not found.")
                         a.npc = self
-
-
-# find the correct position for the dialogbox
-
-# the speaker has a left and top position, the dialogbox should be placed relative to the speaker's position'
-# 

@@ -9,7 +9,6 @@ class DialogBox(pygame.sprite.Sprite):
     dialogboxes = []
     def __init__(self, room, time):
         pygame.sprite.Sprite.__init__(self, self.containers)
-        #self.rect = pygame.Rect(SCREEN_WIDTH // 2, SCREEN_HEIGHT // 2, SCREEN_WIDTH // 2, 0)
         self.timer = time
         self.state = None
         self.rects = []

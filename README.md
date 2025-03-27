@@ -82,7 +82,7 @@ You will need the pygame library. Then just run:
 ## inventory
 - items should get ordered / aligned in the inventory
 	- slot system size (currently 20) - what if i have more items? scrolling?
-	- slots currently do not get re-used
+	- slots currently do not get re-used (probably never properly released)
 
 ### useful dialog box positions?
 dialbox.rect = pygame.Rect(SCREEN_WIDTH // 5, SCREEN_HEIGHT // 5, SCREEN_WIDTH // 2, 0)
