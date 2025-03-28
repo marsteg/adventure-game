@@ -59,7 +59,7 @@ You will need the pygame library. Then just run:
 	- text currently stays X seconds - clicking should skip to the next line
 	- how to manage it when picking up an item should change dialog choices?
 		- should Items have actions, that get executed on pickup? could change active_dialogs or locked dialogs?
-	- how to have multiple NPC talk at the same time?
+	- how to have multiple NPCs talk at the same time?
 		- every NPC has now their own dialogbox. The position is still hard-coded.
 			- what is a smart way to find a position?
 				- i want to have it relative to the object but closer to the center of the screen
@@ -83,6 +83,11 @@ You will need the pygame library. Then just run:
 - items should get ordered / aligned in the inventory
 	- slot system size (currently 20) - what if i have more items? scrolling?
 	- slots currently do not get re-used (probably never properly released)
+
+## Items
+- I would like to implement an "endless" item, from which the player always pick up one
+- how to manage it when picking up an item should change dialog choices?
+		- should Items have actions, that get executed on pickup? could change active_dialogs or locked dialogs?
 
 ### useful dialog box positions?
 dialbox.rect = pygame.Rect(SCREEN_WIDTH // 5, SCREEN_HEIGHT // 5, SCREEN_WIDTH // 2, 0)

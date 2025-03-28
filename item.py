@@ -96,7 +96,7 @@ class Item(RectShape):
         print("Item stashed: ", self.name)
         print("Inventory items: ", inventory.items)
 
-    def unstash(self, inventory, pos):
+    def unstash(self, inventory):
         #del inventory.items[self.id]
         self.stashed = False
         inventory.release_slots(self)

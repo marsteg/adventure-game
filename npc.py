@@ -131,19 +131,21 @@ class NPC(RectShape):
         self.speak()
         # cater for the case where the speaker is another NPC
         speaker = self.dialog[self.active_dialog]["speaker"]
+        speaker_found = False
         for npc in room.npcs.values():
             if npc.name == speaker:
                 speaker = npc
+                speaker_found = True
                 break
-        if isinstance(speaker, str):
+        if not speaker_found and isinstance(speaker, str):
             speaker = self
-        print("NPC Talking: ", self.name, "dialog:", self.dialog[self.active_dialog]["line"])
+        print("NPC Talking: ", speaker.name, "dialog:", speaker.dialog[self.active_dialog]["line"])
         text = SPEECHFONT.render(self.dialog[self.active_dialog]["line"], True, speaker.speechcolor)
         #i shouldn't re-adjust the rect but rather use a position relative to the speaker
-        if SCREEN_WIDTH // 2 < speaker.rect.left:
-            dialbox.rect = pygame.Rect(speaker.rect.left - SCREEN_WIDTH // 3, speaker.rect.top + at_percentage_height(5), SCREEN_WIDTH // 2, 0)
+        if SCREEN_WIDTH / 2 < speaker.rect.left:
+            dialbox.rect = pygame.Rect(speaker.rect.left - at_percentage_width(5), speaker.rect.top - at_percentage_height(5), SCREEN_WIDTH // 2, 0)
         else:
-            dialbox.rect = pygame.Rect(speaker.rect.left + SCREEN_WIDTH // 3, speaker.rect.top + at_percentage_height(5), SCREEN_WIDTH // 2, 0)
+            dialbox.rect = pygame.Rect(speaker.rect.left + at_percentage_width(5), speaker.rect.top - at_percentage_height(5), SCREEN_WIDTH // 2, 0)
         dialbox.surface = text
         # check if the dialog unlocks something
         if "unlock" in self.dialog[self.active_dialog]:

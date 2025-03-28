@@ -46,7 +46,7 @@ def GiveItem(item, inventory):
 
     # Take Item from the Player
 def TakeItem(item, inventory):
-    item.unstash(inventory (0, 0))
+    item.unstash(inventory)
     inventory.release_slots(item)
     if item in inventory.items:
         del inventory.items[item.name]
