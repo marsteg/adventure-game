@@ -51,22 +51,30 @@ def main():
     missile = Item(100, 100, 50, 50, "assets/items/missile.png", "missile") # should come back to inventory
     missile2 = Item(200, 200, 50, 50, "assets/items/missile2.png", "missile2", True) # should self destruct
     comb = Item(at_percentage_width(88), at_percentage_height(80), 50, 50, "assets/items/comb.png", "comb", True) # should self destruct
-    herb = Item(300, 300, 50, 50, "assets/items/muckmuck_share.png", "herb") # should come back to inventory
+    herb = Item(300, 300, 50, 50, "assets/items/muckmuck_share.png", "herb", True) # should self destruct
+    hay = Item(at_percentage_width(88), at_percentage_height(40), 60, 60, "assets/items/hay.png", "hay", True) # should self destruct
+    BookofTruth = Item(at_percentage_width(85), at_percentage_height(30), 30, 30, "assets/items/bookoftruth.png", "BookofTruth", True) # should self destruct
+    Paper = Item(at_percentage_width(85), at_percentage_height(30), 20, 30, "assets/items/paper.png", "paper", True) # should self destruct
 
     # adding item descriptions
     missile.add_description("A durable key. I wonder what Door it is for?", "assets/sounds/items/missile_locked.wav")
     missile2.add_description("A Red shiny thing. Is it a Key?", "assets/sounds/items/missile2_locked.wav")
     comb.add_description("A comb... What is this doing here?", "assets/sounds/items/comb_locked.wav")
     herb.add_description("A herb. It smells like Muckmuck", "assets/sounds/items/herb_locked.wav")
+    hay.add_description("A haystack. It smells like a farm", "assets/sounds/items/hay_locked.wav")
+    BookofTruth.add_description("The Book I found in the Library. It looks like it is important", "assets/sounds/items/bookoftruth_locked.wav")
+    Paper.add_description("A piece of paper, torn from the Book of Truth. The page is about a spell of never ending sleep.", "assets/sounds/items/paper_locked.wav")
+
 
     # actions might require items
     button1 = Action(800, 100, 50, 50, "assets/actions/button.png", "button1", False, None)
     button2 = Action(400, 100, 50, 50, "assets/actions/button2.png", "button2", True, missile)
+    GreenPlant = Action(at_percentage_width(30), at_percentage_height(50), 50, 80, "assets/actions/greenplant.png", "GreenPlant", False, None) 
 
     # adding action descriptions
     button1.add_description("I think this switch opens the door", "I think this switch opens the door", "assets/sounds/actions/button1_locked.wav", "assets/sounds/actions/button1_locked.wav")
     button2.add_description("A button. I wonder what it does?", "Great, it can turn on and off...", "assets/sounds/actions/button2_locked.wav", "assets/sounds/actions/button2_unlocked.wav")
-
+    GreenPlant.add_description("The green plant, this strange Owl owns. It smells curious." ,"The green plant, this strange Owl owns. It smells curious.", "assets/sounds/items/greenplant_locked.wav" , "assets/sounds/items/greenplant_locked.wav")
 
     # NPCs might require Items
     wolfboy = NPC(750, 350, 150, 160, "assets/npcs/werewolfboy.png", "wolfboy", True, missile2, YELLOW, "assets/dialogs/wolfboy.yaml")
@@ -80,7 +88,7 @@ def main():
     Room1door2 = Door(880, 300, 100, 200, "assets/doors/door1.png", "Room1Door2",room2, True, button1)
     Room2door2 = Door(480, 300, 100, 200, "assets/doors/door1.png", "Room2Door2",room1, False, None)
     titledoor = Door(300, 300, 100, 200, "assets/doors/door1.png", "Titledoor", room1, False, None)
-    BeachBarExit = Door(300, 300, 100, 200, "assets/doors/door1.png", "BeachBarExit", title, False, None)
+    BeachBarExit = Door(0, at_percentage_height(80), 100, 200, "assets/doors/door1.png", "BeachBarExit", title, False, None)
 
     # adding door descriptions
     titledoor.add_description("", "This is where the Adventure begins!", "assets/sounds/doors/titledoor_unlocked.wav", "assets/sounds/doors/titledoor_unlocked.wav")
@@ -98,12 +106,14 @@ def main():
     button2.add_function(LogText, "Useless Button pressed")
     button2.add_function(PlaySound, "assets/sounds/actions/grunz.wav")
 
+    GreenPlant.add_function(GiveItem, herb, inventory)
+    GreenPlant.add_function(LogText, "You took the herb from the plant")
+
     #NPCs action funcs
     wolfboy.add_function(GiveItem, missile, inventory)
     wolfboy.add_function(AllowDestroy, missile2)
     wolfboy.add_function(DestroyItem, missile2, inventory)
     wolfboy.add_function(ActionChangeDialog, wolfboy, "bye2")
-    
     
     wolfboy2.add_function(ActionChangeDialog, wolfboy2, "bye")
     wolfboy2.add_function(AllowDestroy, comb)
@@ -113,6 +123,16 @@ def main():
     muckmuck.add_function(GiveItem, herb, inventory)
     muckmuck.add_function(LogText, "Muckmuck shared his herb with you")
 
+    # item action funcs (executed when picked up)
+
+    # item action funcs when combining items
+    # combinable items 
+    hay.add_combination(herb)
+    hay.add_combifunction(AllowDestroy, hay)
+    hay.add_combifunction(AllowDestroy, herb)
+    hay.add_combifunction(DestroyItem, hay, inventory)
+    hay.add_combifunction(DestroyItem, herb, inventory)
+    hay.add_combifunction(GiveItem, Paper, inventory)
     
   # appendings doors, items and actions to rooms
     title.doors[titledoor.name] = titledoor
@@ -123,10 +143,14 @@ def main():
     room1.actions[button1.name] = button1
     room1.items[missile2.name] = missile2
     room1.items[comb.name] = comb
+    room1.items[BookofTruth.name] = BookofTruth
     room2.npcs[wolfboy.name] = wolfboy
     room2.actions[button2.name] = button2
     BeachBar.doors[BeachBarExit.name] = BeachBarExit
     BeachBar.npcs[muckmuck.name] = muckmuck
+    BeachBar.items[hay.name] = hay
+    BeachBar.actions[GreenPlant.name] = GreenPlant
+
 
     # initial state
     active_room = title
@@ -210,7 +234,7 @@ def main():
                   active_click = answer
 
         if event.type == pygame.MOUSEBUTTONUP:
-          # dropping items (left mouse button)
+          # dropping and clicking on items (left mouse button)
           dragable = list(active_room.items.values()) + list(inventory.items.values())
           if event.button == 1:
             #clickable = list(active_room.actions.values()) + list(active_room.doors.values())
@@ -235,20 +259,48 @@ def main():
                     npc.unlock(box, inventory)
                     box.kill(inventory, Room.rooms)
                     break
+                # if item is dropped on other item in iventory
+                for item in list(inventory.items.values()):
+                  if item.collides_with(box):
+                    item.combine(box)
+                    box.kill(inventory, Room.rooms)
+                    #break
+                 # if item is dropped in inventory
+                if inventory.collidepoint(event.pos): 
+                  box.stash(inventory, active_room)
+                  if isinstance(box, Item):
+                    box.action()
+                  break 
                 # if item is dropped in room
                 if active_room.collidepoint(event.pos):
                   box.stash(inventory, active_room)
+                  if isinstance(box, Item):
+                    box.action()
                   break
-                # if item is dropped in inventory
-                if inventory.collidepoint(event.pos): 
-                  box.stash(inventory, active_room)
-                  break
+               
                 # if item is dropped outside of room or inventory
                 if not active_room.collidepoint(event.pos) and not inventory.collidepoint(event.pos):
                   box.stash(inventory, active_room)
+                  if isinstance(box, Item):
+                    box.action()
                   break
             active_box = None
 
+            # process clicking on answers
+            if answerbox.state != None:
+              for answer in answerbox.answers.values():
+                if answer.rect.collidepoint(event.pos):
+                  print("Answer pressed in position: ", answer.position)
+                  print(answer.answer)
+                  if isinstance(answer, Answer) and active_click == answer:
+                    active_talker = npc
+                    answer.action()
+                    print("Answer executed in position: ", answer.position)
+                    last_active_click = active_click
+                    active_click = None
+                  else:
+                    last_active_click = active_click
+                    active_click = None
             # process clicking on doors
             for door in active_room.doors.values():
               if door.rect.collidepoint(event.pos):
@@ -290,21 +342,7 @@ def main():
                   last_active_click = active_click
                   active_click = None
 
-              # process clicking on answers
-            if answerbox.state != None:
-              for answer in answerbox.answers.values():
-                if answer.rect.collidepoint(event.pos):
-                  print("Answer pressed in position: ", answer.position)
-                  print(answer.answer)
-                  if isinstance(answer, Answer) and active_click == answer:
-                    active_talker = npc
-                    answer.action()
-                    print("Answer executed in position: ", answer.position)
-                    last_active_click = active_click
-                    active_click = None
-                  else:
-                    last_active_click = active_click
-                    active_click = None
+
 
           if event.button == 3:
             # process right-clicking on doors

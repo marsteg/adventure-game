@@ -46,7 +46,7 @@ class Action(RectShape):
     
     def action(self):
         if self.locked:
-            print("Button is locked")
+            print("Action Object is locked")
             return
         for func, args, kwargs in self.functions:
             func(*args, **kwargs)

@@ -35,7 +35,7 @@ class Room(pygame.sprite.Sprite):
     def draw(self, screen, inventory, answerbox):
         pygame.draw.rect(screen, "purple", self.rect)
         screen.blit(self.image, self.rect)
-        inventory.draw(screen)
+        
         for door in self.doors.values():
             door.draw(screen)
         for action in self.actions.values():
@@ -47,6 +47,7 @@ class Room(pygame.sprite.Sprite):
         for dialogbox in DialogBox.dialogboxes:
             if dialogbox.room == self:
                 dialogbox.draw(screen)
+        inventory.draw(screen)
         if answerbox.state != None:
             answerbox.draw(screen)
         else:

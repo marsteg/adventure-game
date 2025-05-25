@@ -24,13 +24,31 @@ class Item(RectShape):
         Item.id_counter += 1
         self.selfdestruct = selfdestruct
         Item.items[self.name] = self
+        self.functions = []
         self.stashed = False
         self.allow_destroy = False
+        self.combinable_items = []
+        self.combifunctions = []
         
+    def add_function(self, func, *args, **kwargs):
+        self.functions.append((func, args, kwargs))
+
+    def action(self):
+        for func, args, kwargs in self.functions:
+            func(*args, **kwargs)
+            print("Item Action Function triggered in position: ", self.position)
 
     def draw(self, screen):
         pygame.draw.rect(screen, "purple", self.rect)
         screen.blit(self.image, self.rect)
+
+    def add_combifunction(self, func, *args, **kwargs):
+        self.combifunctions.append((func, args, kwargs))
+
+    def combiaction(self):
+        for func, args, kwargs in self.combifunctions:
+            func(*args, **kwargs)
+            print("Item combiAction Function triggered in position: ", self.position)
 
     def shine(self, screen):
         shiner = pygame.Surface((self.rect.width, self.rect.height))
@@ -135,3 +153,32 @@ class Item(RectShape):
         print("Item right-clicked: ", self.name)
         self.speak_description()
         self.talk_description(room)
+
+    def add_combination(self, other):
+        if not isinstance(other, Item):
+            print("Cannot combine with non-item object.")
+            return
+        if self.name == other.name:
+            print("will not attempt to combine the same item: " + self.name + other.name)
+            raise ValueError("Cannot combine the same item.")
+            return
+        self.combinable_items.append(other)
+        other.combinable_items.append(self)
+        print(f"Added combination: {self.name} with {other.name}")
+
+    def combine(self, other):
+        if not isinstance(other, Item):
+            print("Cannot combine with non-item object.")
+            return
+        if self.name == other.name:
+            print("will not attempt to combine the same item: " + self.name + " " +  other.name)
+            return
+        print("Items attmpted to combine:" + self.name + " and " + other.name)
+        if other not in self.combinable_items:
+            print(f"{other.name} is not combinable with {self.name}.")
+            return
+        self.combiaction()
+        other.combiaction()
+        print(f"Combined {self.name} with {other.name}.")
+        
+    

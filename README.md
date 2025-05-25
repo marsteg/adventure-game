@@ -8,6 +8,7 @@ You will need the pygame library. Then just run:
 - creation of items, doors, actions and rooms.
 - stashing of items
 - items can now be destroyed on usage or not. if not, they go back to the inventory after usage
+- Items can now be combined but it only works if done the correct way around..
 - switching rooms with doors
 - hitting space makes items, doors, NPCs and actions shine
 - Actionfuncs are a way to teach an action button tricks. With this theoretically anything can be executed via Actions
@@ -54,7 +55,6 @@ You will need the pygame library. Then just run:
 		- All NPCs in a Yaml
 		- all Doors in a Yaml
 - if actions, doors cannot be executed (are locked), there should be some "negative" feedback, like a comment by the player or narrator
-- items should be combinalbe
 ## Conversations
 	- text currently stays X seconds - clicking should skip to the next line
 	- how to manage it when picking up an item should change dialog choices?
@@ -86,8 +86,11 @@ You will need the pygame library. Then just run:
 
 ## Items
 - I would like to implement an "endless" item, from which the player always pick up one
+	- there is now a test case but somehow the item is only given once.
 - how to manage it when picking up an item should change dialog choices?
 		- should Items have actions, that get executed on pickup? could change active_dialogs or locked dialogs?
+		--> is implemented, requires testing (no test case implemented, yet)
+- items can be combined but until now only if the configured item is dragged on top of the other one. It should work vice-versa out-of-the-box
 
 ### useful dialog box positions?
 dialbox.rect = pygame.Rect(SCREEN_WIDTH // 5, SCREEN_HEIGHT // 5, SCREEN_WIDTH // 2, 0)

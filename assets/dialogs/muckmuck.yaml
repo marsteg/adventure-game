@@ -4,8 +4,8 @@ description:
     sound: "assets/sounds/dialogs/muckmuck-description-locked.wav"
     duration: 2
   unlocked:
-    line: "He really likes anything that is red... I wonder what door this Key is for"
-    sound: "assets/sounds/dialogs/wolfboy-description-unlocked.wav"
+    line: "This muckmuck looks really coool."
+    sound: "assets/sounds/dialogs/muckmuck-description-locked.wav"
     duration: 3
 bye:
   line: "Bye"
