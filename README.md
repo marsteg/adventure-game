@@ -90,7 +90,6 @@ You will need the pygame library. Then just run:
 - how to manage it when picking up an item should change dialog choices?
 		- should Items have actions, that get executed on pickup? could change active_dialogs or locked dialogs?
 		--> is implemented, requires testing (no test case implemented, yet)
-- items can be combined but until now only if the configured item is dragged on top of the other one. It should work vice-versa out-of-the-box
 
 ### useful dialog box positions?
 dialbox.rect = pygame.Rect(SCREEN_WIDTH // 5, SCREEN_HEIGHT // 5, SCREEN_WIDTH // 2, 0)

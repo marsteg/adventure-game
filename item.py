@@ -160,7 +160,6 @@ class Item(RectShape):
             return
         if self.name == other.name:
             print("will not attempt to combine the same item: " + self.name + other.name)
-            raise ValueError("Cannot combine the same item.")
             return
         self.combinable_items.append(other)
         other.combinable_items.append(self)
@@ -177,6 +176,8 @@ class Item(RectShape):
         if other not in self.combinable_items:
             print(f"{other.name} is not combinable with {self.name}.")
             return
+        print(f"Combining {self.name} with {other.name}.")
+        print(f"Item {self.name} with ID {self.id} is being combined with Item {other.name} with ID {other.id}.")
         self.combiaction()
         other.combiaction()
         print(f"Combined {self.name} with {other.name}.")

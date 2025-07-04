@@ -212,6 +212,7 @@ def main():
             for box in list(dict.fromkeys(list(active_room.items.values()) + list(inventory.items.values()))):
               if box.rect.collidepoint(event.pos):
                 active_box = box
+                active_click = box
                 print("Box pressed in position: ", box.position, "event pos: ", event.pos)
 
             # clicking doors - skip clicking doors, when an answer is outstanding
@@ -262,6 +263,11 @@ def main():
                 # if item is dropped on other item in iventory
                 for item in list(inventory.items.values()):
                   if item.collides_with(box):
+                    if isinstance(item, Item) and isinstance(box, Item):
+                      if box == item:
+                        print("Item dropped on itself, ignoring")
+                        continue
+                    item.stash(inventory, active_room)
                     item.combine(box)
                     box.kill(inventory, Room.rooms)
                     #break
