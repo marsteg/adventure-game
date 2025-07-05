@@ -64,6 +64,7 @@ You will need the pygame library. Then just run:
 			- what is a smart way to find a position?
 				- i want to have it relative to the object but closer to the center of the screen
 			- text should be positioned relative to the character speaking
+	- i partly implemented multiline text and auto-detection of speech length. Needs further thorough testing and improvement though
 ## Saving/Loading:
 	- how to save and load the game?
 		- save to yaml

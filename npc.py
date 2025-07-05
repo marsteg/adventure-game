@@ -27,6 +27,7 @@ class NPC(RectShape):
         self.dialogfile = dialogfile
         self.dialog = self.load_dialog()
         self.speechcolor = speechcolor
+        self.dialogline = 0
         NPC.NPCs[self.id] = self
         
     def add_function(self, func, *args, **kwargs):
@@ -78,7 +79,16 @@ class NPC(RectShape):
         self.active_dialog = "bye"
 
     def speak(self):
-        voiceline = pygame.mixer.Sound(self.dialog[self.active_dialog]["sound"])
+        sound = self.dialog[self.active_dialog]["sound"]
+        if isinstance(sound, list):
+            # if there are multiple sounds, we take the one from dialogline
+            sound = self.dialog[self.active_dialog]["sound"][self.dialogline]
+        else:
+            # otherwise we take the sound as it is
+            sound = self.dialog[self.active_dialog]["sound"]
+        print("Speaking: ", self.name, "dialog:", sound)
+        voiceline = pygame.mixer.Sound(sound)
+        #voiceline = pygame.mixer.Sound(self.dialog[self.active_dialog]["sound"])
         pygame.mixer.Sound.play(voiceline)
 
     def speak_description(self):
@@ -96,7 +106,7 @@ class NPC(RectShape):
     def talk_description(self, room):
         SPEECHFONT = pygame.font.Font(SPEECH_FONT, SPEECH_SIZE)
         dialbox = DialogBox(room, time.time())
-        dialbox.state = self
+        dialbox.state = "describe"
         dialbox.room = room
         if self.locked:
             line = self.dialog["description"]["locked"]["line"]
@@ -140,7 +150,16 @@ class NPC(RectShape):
         if not speaker_found and isinstance(speaker, str):
             speaker = self
         print("NPC Talking: ", speaker.name, "dialog:", speaker.dialog[self.active_dialog]["line"])
-        text = SPEECHFONT.render(self.dialog[self.active_dialog]["line"], True, speaker.speechcolor)
+        line = speaker.dialog[self.active_dialog]["line"]
+        ## let's test if there is an array
+        if isinstance(line, list):
+            line = speaker.dialog[self.active_dialog]["line"][self.dialogline]
+        else:
+            # otherwise we take the line as it is
+            line = speaker.dialog[self.active_dialog]["line"]
+        
+        text = SPEECHFONT.render(line, True, speaker.speechcolor)
+        #text = SPEECHFONT.render(self.dialog[self.active_dialog]["line"], True, speaker.speechcolor)
         #i shouldn't re-adjust the rect but rather use a position relative to the speaker
         if SCREEN_WIDTH / 2 < speaker.rect.left:
             dialbox.rect = pygame.Rect(speaker.rect.left - at_percentage_width(5), speaker.rect.top - at_percentage_height(5), SCREEN_WIDTH // 2, 0)

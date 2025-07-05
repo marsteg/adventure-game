@@ -12,6 +12,8 @@ from dialogbox import *
 from answerbox import *
 from save import *
 import time
+import wave
+import contextlib
 
 def main():
     pygame.init()
@@ -167,14 +169,29 @@ def main():
     # game loop start
     run = True
     while run:
-
+      #eval_dialboxes(active_room, active_timer, inventory, answerbox)
       for dialbox in DialogBox.dialogboxes:
             # cleanup unneeded dialogboxes
             if dialbox.room != active_room:
+              speaker = dialbox.state
+              if speaker is not None:
+                speaker.dialogline = 0
               dialbox.state = None
               active_talker = None
               dialbox.kill()
             if time.time() - dialbox.timer > active_timer:
+              #print(dialbox.state.name, "Dialogbox timed out")
+              
+              speaker = dialbox.state
+              if isinstance(speaker, NPC):
+                line = speaker.dialog[speaker.active_dialog]["line"]
+                if isinstance(line, list):
+                  speaker.dialogline += 1
+                  if speaker.dialogline >= len(line):
+                    speaker.dialogline = 0
+                  elif speaker.dialogline < len(line):
+                    speaker.talk(active_room, inventory, answerbox)
+                  
               dialbox.state = None
               active_talker = None
               dialbox.kill()
@@ -339,7 +356,19 @@ def main():
               if npc.rect.collidepoint(event.pos):
                 if isinstance(npc, NPC) and active_click == npc:
                   npc.talk(active_room, inventory, answerbox)
-                  active_timer = npc.dialog[npc.active_dialog]["duration"]
+                  # active_timer = npc.dialog[npc.active_dialog]["duration"]
+
+                  sound = npc.dialog[npc.active_dialog]["sound"]
+                  if isinstance(sound, list):
+                    # if there are multiple sounds, we take the one from dialogline
+                    sound = npc.dialog[npc.active_dialog]["sound"][npc.dialogline]
+                  else:
+                    # otherwise we take the sound as it is
+                    sound = npc.dialog[npc.active_dialog]["sound"]
+
+                  duration = get_sound_duration(sound)
+                  active_timer = duration
+
                   print("NPC pressed in position: ", npc.position)
                   last_active_click = active_click
                   active_click = None
@@ -385,9 +414,12 @@ def main():
                   active_talker = npc
                   npc.describe(active_room)
                   if npc.locked:
-                    active_timer = npc.dialog["description"]["locked"]["duration"]
+                    sound = npc.dialog["description"]["locked"]["sound"]
+                    active_timer = get_sound_duration(sound)
                   else:
-                    active_timer = npc.dialog["description"]["unlocked"]["duration"]
+                    #active_timer = npc.dialog["description"]["unlocked"]["duration"]
+                    sound = npc.dialog["description"]["unlocked"]["sound"]
+                    active_timer = get_sound_duration(sound)
                   print("NPC describe pressed in position: ", npc.position)
                   last_active_click = active_click
                   active_click = None

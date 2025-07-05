@@ -1,6 +1,7 @@
 import pygame
-import random
 from constants import *
+import wave
+import contextlib
 
 
 class DialogBox(pygame.sprite.Sprite):
@@ -25,3 +26,13 @@ class DialogBox(pygame.sprite.Sprite):
         DialogBox.dialogboxes.remove(self)
         pygame.sprite.Sprite.kill(self)
         print("DialogBox removed")
+
+
+def get_sound_duration(sound):
+    """Get the duration of a sound file."""
+    with contextlib.closing(wave.open(sound,'r')) as f:
+                    frames = f.getnframes()
+                    rate = f.getframerate()
+                    duration = frames / float(rate)
+                    print("Duration: "+ str(duration))
+    return duration

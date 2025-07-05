@@ -42,10 +42,14 @@ start:
         - ExitDialog: 
           - start
 wolfboytest2:
-  line: "A boy who is also a werewolf"
+  line: 
+    - "A boy who is also a werewolf"
+    - "What did you think?"
   duration: 2
   speaker: wolfboy
-  sound: "assets/sounds/dialogs/wolfboy-wolfboytest2.wav"
+  sound: 
+    - "assets/sounds/dialogs/wolfboy-wolfboytest2.wav"
+    - "assets/sounds/dialogs/wolfboy-wolfboytest2-2.wav"
   answers:
     - line: "What are you looking for?"
       actionfuncs:

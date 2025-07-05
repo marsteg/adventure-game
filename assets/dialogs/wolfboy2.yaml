@@ -15,7 +15,11 @@ bye:
   exit: 
     ExitDialog: bye
 start:
-  line: "Hi, I can't talk - my hair is everywhere!"
+  line: 
+    - "Hi, I can't talk - my hair is everywhere!"
+    - "Can you help me with that?"
   duration: 1
   speaker: wolfboy2
-  sound: "assets/sounds/dialogs/wolfboy2-start.wav"
+  sound: 
+    - "assets/sounds/dialogs/wolfboy2-start.wav"
+    - "assets/sounds/dialogs/wolfboy2-start-2.wav"
