@@ -11,6 +11,7 @@ from npc import *
 from dialogbox import *
 from answerbox import *
 from save import *
+from player import *
 import time
 import wave
 import contextlib
@@ -28,7 +29,7 @@ def main():
     updatable = pygame.sprite.Group()
     
     items = pygame.sprite.Group()
-    clickables = pygame.sprite.Group()   
+    clickables = pygame.sprite.Group()
     Door.containers = (updatable, clickables)
     Item.containers = (updatable, items)
     Action.containers = (updatable, clickables)
@@ -39,15 +40,18 @@ def main():
 
     answerbox = AnswerBox()
 
+    dude = Player(100, 100, 50, 50, "assets/player/daisy_waiting.png", "player")
+    player = pygame.sprite.Group(dude)
+
     # title screen
-    title = Room("assets/rooms/TitleScreen.png", "title", "assets/sounds/background/Talkline7.wav")
+    title = Room(player, "assets/rooms/TitleScreen.png", "title", "assets/sounds/background/Talkline7.wav")
    
 
     # room and door and item assignments specifics...
-    # rooms require nothing
-    room1 = Room("assets/rooms/RektorOffice.png", "room1", "assets/sounds/background/Albatros.wav")
-    room2 = Room("assets/rooms/LivingRoom.png", "room2", "assets/sounds/background/PrettyOrgan.wav")
-    BeachBar = Room("assets/rooms/BeachBar.png", "BeachBar", "assets/sounds/background/dancing_street.wav")
+    # rooms require the player
+    room1 = Room(player, "assets/rooms/RektorOffice.png", "room1", "assets/sounds/background/Albatros.wav")
+    room2 = Room(player, "assets/rooms/LivingRoom.png", "room2", "assets/sounds/background/PrettyOrgan.wav")
+    BeachBar = Room(player, "assets/rooms/BeachBar.png", "BeachBar", "assets/sounds/background/dancing_street.wav")
     
     # items require nothing (should require rooms and self-register?)
     missile = Item(100, 100, 50, 50, "assets/items/missile.png", "missile") # should come back to inventory
@@ -376,7 +380,9 @@ def main():
                 else:
                   last_active_click = active_click
                   active_click = None
-
+            ## process clicking for walking the player
+            for char in player.sprites():
+                    char.set_target(pygame.mouse.get_pos())
 
 
           if event.button == 3:
@@ -450,7 +456,7 @@ def main():
 
         if event.type == pygame.QUIT:
           run = False
-
+      player.update(dt)
       dt = clock.tick(FPS)
       pygame.display.flip()
 

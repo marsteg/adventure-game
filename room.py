@@ -15,7 +15,7 @@ class Room(pygame.sprite.Sprite):
         (pygame.Vector2(-1, 0), lambda y: pygame.Vector2(0, y))
     ]
 
-    def __init__(self, image, name, music):
+    def __init__(self, player, image, name, music):
         pygame.sprite.Sprite.__init__(self, self.containers)
         self.rect = pygame.Rect(0, 0, SCREEN_WIDTH, SCREEN_HEIGHT-INVENTORY_HEIGHT)
         self.spawn_timer = 0.0
@@ -29,6 +29,7 @@ class Room(pygame.sprite.Sprite):
         self.npcs = {}
         self.name = name
         self.music = music
+        self.player = player
         Room.rooms[self.name] = self
         
 
@@ -44,6 +45,7 @@ class Room(pygame.sprite.Sprite):
             npc.draw(screen)
         for item in self.items.values():
             item.draw(screen)
+        self.player.draw(screen)
         for dialogbox in DialogBox.dialogboxes:
             if dialogbox.room == self:
                 dialogbox.draw(screen)
