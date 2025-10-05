@@ -12,6 +12,7 @@ from dialogbox import *
 from answerbox import *
 from save import *
 from player import *
+from queueing import *
 import time
 import wave
 import contextlib
@@ -158,6 +159,98 @@ def main():
     BeachBar.actions[GreenPlant.name] = GreenPlant
 
 
+    # interaction queue state
+    pending_interaction = None
+    interaction_target = None
+
+    def queue_interaction(obj_or_qi):
+        nonlocal pending_interaction, interaction_target, player
+        # Allow only one at a time (could be extended to a queue list)
+        pending_interaction = obj_or_qi
+        target_obj = obj_or_qi.target if isinstance(obj_or_qi, QueuedInteraction) else obj_or_qi
+        interaction_target = pygame.Vector2(target_obj.rect.centerx, target_obj.rect.centery)
+        #_set_player_target(interaction_target)
+        for char in player.sprites():
+            char.set_target(interaction_target)
+        name = getattr(target_obj, "name", repr(target_obj))
+        print(f"Queued interaction with {name}")
+
+        # If already close enough execute immediately
+        pchar = next(iter(player.sprites()))
+        if (pchar.pos - interaction_target).length() <= INTERACTION_DISTANCE:
+            try_execute_pending(force=True)
+
+    def execute_base_interaction(obj):
+        nonlocal active_room, active_timer, active_talker
+        if isinstance(obj, Door):
+            if obj.locked:
+                print(f"Door locked: {obj.name}")
+                obj.describe(active_room)
+            else:
+                print(f"Entering door: {obj.name}")
+                active_room = obj.target_room
+                active_room.play()
+        elif isinstance(obj, Action):
+            if obj.locked:
+                print(f"Action locked: {obj.name}")
+                obj.describe(active_room)
+            else:
+                print(f"Trigger action: {obj.name}")
+                obj.action()
+        elif isinstance(obj, NPC):
+            print(f"Talk to NPC: {obj.name}")
+            obj.talk(active_room, inventory, answerbox)
+            sound = obj.dialog[obj.active_dialog]["sound"]
+            if isinstance(sound, list):
+                sound = obj.dialog[obj.active_dialog]["sound"][obj.dialogline]
+            duration = get_sound_duration(sound)
+            active_timer = duration
+            active_talker = obj
+        elif isinstance(obj, Item):
+            print(f"Pickup item: {obj.name}")
+            obj.stash(inventory, active_room)
+            obj.action()
+
+    def try_execute_pending(force=False):
+        nonlocal pending_interaction
+        if not pending_interaction:
+            return
+        target_obj = pending_interaction.target if isinstance(pending_interaction, QueuedInteraction) else pending_interaction
+        pchar = next(iter(player.sprites()))
+        dist = (pchar.pos - interaction_target).length()
+        if force or dist <= INTERACTION_DISTANCE:
+            for char in player.sprites():
+                char.clear_target()
+            qi = pending_interaction
+            pending_interaction = None
+            if isinstance(qi, QueuedInteraction):
+                # run custom deferred action
+                print(f"Executing queued action: {qi.description or qi.action_callable.__name__}")
+                qi.action_callable(*qi.args)
+            else:
+                execute_base_interaction(qi)
+
+    def queue_unlock_door(door, item):
+        def _do():
+            if door.locked:
+                door.unlock(item)
+            item.kill(inventory, Room.rooms)
+        queue_interaction(QueuedInteraction(door, _do, description=f"Unlock {door.name} with {item.name}"))
+
+    def queue_unlock_action(action, item):
+        def _do():
+            if action.locked:
+                action.unlock(item, inventory)
+            item.kill(inventory, Room.rooms)
+        queue_interaction(QueuedInteraction(action, _do, description=f"Use {item.name} on {action.name}"))
+
+    def queue_unlock_npc(npc, item):
+        def _do():
+            if npc.locked:
+                npc.unlock(item, inventory)
+            item.kill(inventory, Room.rooms)
+        queue_interaction(QueuedInteraction(npc, _do, description=f"Give {item.name} to {npc.name}"))
+
     # initial state
     active_room = title
     pygame.mixer.music.load(active_room.music)
@@ -230,11 +323,16 @@ def main():
         if event.type == pygame.MOUSEBUTTONDOWN:
           if event.button == 1 or 3:
             # dragging items
-            for box in list(dict.fromkeys(list(active_room.items.values()) + list(inventory.items.values()))):
+            for box in list(dict.fromkeys(list(inventory.items.values()))):
               if box.rect.collidepoint(event.pos):
                 active_box = box
                 active_click = box
-                print("Box pressed in position: ", box.position, "event pos: ", event.pos)
+                print("Inventory Item Box pressed in position: ", box.position, "event pos: ", event.pos)
+            for box in list(dict.fromkeys(list(active_room.items.values()))):
+              if box.rect.collidepoint(event.pos):
+                active_click = box
+                print("Inventory Item Box pressed in position: ", box.position, "event pos: ", event.pos)
+
 
             # clicking doors - skip clicking doors, when an answer is outstanding
             if answerbox.state == None:
@@ -257,7 +355,7 @@ def main():
 
         if event.type == pygame.MOUSEBUTTONUP:
           # dropping and clicking on items (left mouse button)
-          dragable = list(active_room.items.values()) + list(inventory.items.values())
+          dragable = list(inventory.items.values())
           if event.button == 1:
             #clickable = list(active_room.actions.values()) + list(active_room.doors.values())
               
@@ -266,20 +364,17 @@ def main():
                 # process dropping on doors
                 for door in active_room.doors.values():
                   if door.collides_with(box):
-                    door.unlock(box)
-                    box.kill(inventory, Room.rooms)
+                    queue_unlock_door(door, box)
                     break
                 # process dropping on  actions
                 for action in active_room.actions.values():
                   if action.collides_with(box):
-                    action.unlock(box, inventory)
-                    box.kill(inventory, Room.rooms)
+                    queue_unlock_action(action, box)
                     break
                 # process dropping on  NPCs
                 for npc in active_room.npcs.values():
                   if npc.collides_with(box):
-                    npc.unlock(box, inventory)
-                    box.kill(inventory, Room.rooms)
+                    queue_unlock_npc(npc, box)
                     break
                 # if item is dropped on other item in iventory
                 for item in list(inventory.items.values()):
@@ -332,11 +427,7 @@ def main():
             for door in active_room.doors.values():
               if door.rect.collidepoint(event.pos):
                 if isinstance(door, Door) and active_click == door:
-                  if not door.locked:
-                    active_room = door.target_room
-                    active_room.play()
-                  else:
-                    print("Door is locked in position: ", door.position)
+                  queue_interaction(door)
                   last_active_click = active_click
                   active_click = None
                   print("Button pressed in position: ", door.position)
@@ -347,10 +438,7 @@ def main():
             for action in active_room.actions.values():
               if action.rect.collidepoint(event.pos):
                 if isinstance(action, Action) and active_click == action:
-                  action.action()
-                  print("Button pressed in position: ", action.position)
-                  last_active_click = active_click
-                  active_click = None
+                  queue_interaction(action)
                 else:
                   last_active_click = active_click
                   active_click = None
@@ -359,24 +447,21 @@ def main():
             for npc in active_room.npcs.values():
               if npc.rect.collidepoint(event.pos):
                 if isinstance(npc, NPC) and active_click == npc:
-                  npc.talk(active_room, inventory, answerbox)
-                  # active_timer = npc.dialog[npc.active_dialog]["duration"]
+                  queue_interaction(npc)
 
-                  sound = npc.dialog[npc.active_dialog]["sound"]
-                  if isinstance(sound, list):
-                    # if there are multiple sounds, we take the one from dialogline
-                    sound = npc.dialog[npc.active_dialog]["sound"][npc.dialogline]
-                  else:
-                    # otherwise we take the sound as it is
-                    sound = npc.dialog[npc.active_dialog]["sound"]
-
-                  duration = get_sound_duration(sound)
-                  active_timer = duration
+                  #duration = get_sound_duration(sound)
+                  #active_timer = duration
 
                   print("NPC pressed in position: ", npc.position)
                   last_active_click = active_click
                   active_click = None
-                  active_talker = npc
+            for item in active_room.items.values():
+              if item.rect.collidepoint(event.pos):
+                if isinstance(item, Item) and active_click == item:
+                  queue_interaction(item)
+                  last_active_click = active_click
+                  active_click = None
+                  print("Item pressed in position: ", item.position)
                 else:
                   last_active_click = active_click
                   active_click = None
@@ -457,6 +542,7 @@ def main():
         if event.type == pygame.QUIT:
           run = False
       player.update(dt)
+      try_execute_pending()
       dt = clock.tick(FPS)
       pygame.display.flip()
 

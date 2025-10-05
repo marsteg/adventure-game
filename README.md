@@ -56,7 +56,8 @@ You will need the pygame library. Then just run:
 		- All Rooms in a Yaml
 		- All NPCs in a Yaml
 		- all Doors in a Yaml
-- if actions, doors cannot be executed (are locked), there should be some "negative" feedback, like a comment by the player or narrator
+- provide a small button that displays the objectname of whatever you are pointing at
+- unlock actions should only happen after the character arrived
 ## Conversations
 	- text currently stays X seconds - clicking should skip to the next line
 	- how to manage it when picking up an item should change dialog choices?
@@ -75,12 +76,11 @@ You will need the pygame library. Then just run:
 		- load from yaml
 			- select savefile
 ## Player Character
-	- doubleclick on items for faster collecting
+	- doubleclick on actions, doors, items for faster walking speed
 	- Let the Player Character Walk
 		- requires a walkable area as clickable area per room
+			- do not walk to answers or into the inventory
 		- improve player walking animation
-	- make the character walk to items, doors, actions and NPCs before executing them
-	- do not walk to answers or into the inventory
 
 ## inventory
 - items should get ordered / aligned in the inventory

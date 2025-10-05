@@ -45,6 +45,9 @@ class Player(pygame.sprite.Sprite):
         newpos = px - self.rect.width // 2, py - self.rect.height 
         self.target = pygame.Vector2(newpos)
 
+    def clear_target(self):
+        self.target = self.pos
+
     def draw(self, screen):
         #pygame.draw.rect(screen, "purple", self.rect)
         screen.blit(self.image, self.rect)
