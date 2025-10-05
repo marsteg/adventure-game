@@ -40,8 +40,8 @@ def main():
 
     answerbox = AnswerBox()
 
-    dude = Player(100, 100, 50, 50, "assets/player/daisy_waiting.png", "player")
-    player = pygame.sprite.Group(dude)
+    daisy = Player(100, 100, 50, 75, "assets/player/daisy_waiting.png", "player")
+    player = pygame.sprite.Group(daisy)
 
     # title screen
     title = Room(player, "assets/rooms/TitleScreen.png", "title", "assets/sounds/background/Talkline7.wav")

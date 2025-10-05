@@ -44,6 +44,8 @@ You will need the pygame library. Then just run:
 							- text
 							- actionfuncs
 							- trigger next speech line or exit dialog
+- Introduced a Player. At the moment it simply spawns and can be send to a destination
+	- The Player has now a left and right walking animation
 		
 
 
@@ -72,13 +74,13 @@ You will need the pygame library. Then just run:
 			- support multiple savefiles
 		- load from yaml
 			- select savefile
-## Player Character?
+## Player Character
 	- doubleclick on items for faster collecting
-	- Introduce Player Character
 	- Let the Player Character Walk
 		- requires a walkable area as clickable area per room
-		- requires player walking animation
+		- improve player walking animation
 	- make the character walk to items, doors, actions and NPCs before executing them
+	- do not walk to answers or into the inventory
 
 ## inventory
 - items should get ordered / aligned in the inventory
