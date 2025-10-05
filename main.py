@@ -316,8 +316,18 @@ def main():
             inventory.items = {}
             (active_room, new_inventory) = LoadState("save.yaml")
             inventory.items = new_inventory.items
+      if keys[pygame.K_ESCAPE]:
+            print("Escape key pressed, exiting game")
+            run = False
 
-    
+      for box in list(active_room.items.values())+ list(inventory.items.values()) + list(active_room.doors.values()) + list(active_room.actions.values()) + list(active_room.npcs.values()):
+        if box.rect.collidepoint(pygame.mouse.get_pos()):
+          #box.shine(screen)
+          active_room.current_hovertext = box.name
+          break
+        else:
+          active_room.current_hovertext = ""
+
     # events (mouse actions)
       for event in pygame.event.get():
         if event.type == pygame.MOUSEBUTTONDOWN:
@@ -467,6 +477,9 @@ def main():
                   active_click = None
             ## process clicking for walking the player
             for char in player.sprites():
+                    mouse = pygame.mouse.get_pos()
+                    if mouse[1] > SCREEN_HEIGHT - INVENTORY_HEIGHT:
+                       continue
                     char.set_target(pygame.mouse.get_pos())
 
 

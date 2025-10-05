@@ -46,6 +46,7 @@ You will need the pygame library. Then just run:
 							- trigger next speech line or exit dialog
 - Introduced a Player. At the moment it simply spawns and can be send to a destination
 	- The Player has now a left and right walking animation
+- There is now a small Text Area that displays the objectname of whatever you are pointing at
 		
 
 
@@ -56,7 +57,6 @@ You will need the pygame library. Then just run:
 		- All Rooms in a Yaml
 		- All NPCs in a Yaml
 		- all Doors in a Yaml
-- provide a small button that displays the objectname of whatever you are pointing at
 ## Conversations
 	- text currently stays X seconds - clicking should skip to the next line
 	- how to manage it when picking up an item should change dialog choices?
@@ -76,9 +76,9 @@ You will need the pygame library. Then just run:
 			- select savefile
 ## Player Character
 	- doubleclick on actions, doors, items for faster walking speed
-	- Let the Player Character Walk
+	- Improve Walking
 		- requires a walkable area as clickable area per room
-			- do not walk to answers or into the inventory
+		- how to define that area?
 		- improve player walking animation
 
 ## inventory

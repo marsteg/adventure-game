@@ -31,6 +31,7 @@ class Room(pygame.sprite.Sprite):
         self.music = music
         self.player = player
         Room.rooms[self.name] = self
+        self.current_hovertext = ""
         
 
     def draw(self, screen, inventory, answerbox):
@@ -57,8 +58,9 @@ class Room(pygame.sprite.Sprite):
         hover = pygame.draw.rect(screen, "darkorange", (SCREEN_WIDTH/2-(at_percentage_width(10)/2), self.rect.top, at_percentage_width(10), at_percentage_height(5)), 5)
         screen.fill("darkorange", hover)
         SPEECHFONT = pygame.font.Font(SPEECH_FONT, SPEECH_SIZE-5)
-        text = SPEECHFONT.render(">", True, BLACK)
-        screen.blit(text, (SCREEN_WIDTH/2-(at_percentage_width(10)/2), self.rect.top+at_percentage_height(9)))
+        text = SPEECHFONT.render(self.current_hovertext, True, BLACK)
+        #screen.blit(text, (SCREEN_WIDTH/2-(at_percentage_width(10)/2), self.rect.top+at_percentage_height(9)))
+        screen.blit(text, hover.center - pygame.Vector2(text.get_width()/2, text.get_height()/2))
 
     def play(self):
         print("Playing music: ", self.music)
