@@ -4,8 +4,6 @@ from door import *
 from action import *
 from npc import *
 from item import *
-import pygame
-import time
 
 
 class QueuedInteraction:

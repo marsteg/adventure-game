@@ -21,11 +21,11 @@ BACKGROUND_VOLUME = 0.1
 
 
 def at_percentage_width(percentage):
-    print((SCREEN_WIDTH/100)*percentage)
+    #print((SCREEN_WIDTH/100)*percentage)
     return (SCREEN_WIDTH/100)*percentage
 
 def at_percentage_height(percentage):
-    print(((SCREEN_HEIGHT-INVENTORY_HEIGHT)/100)*percentage)
+    #print(((SCREEN_HEIGHT-INVENTORY_HEIGHT)/100)*percentage)
     return ((SCREEN_HEIGHT-INVENTORY_HEIGHT)/100)*percentage
 
 ASTEROID_MIN_RADIUS = 20

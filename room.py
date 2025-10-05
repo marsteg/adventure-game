@@ -49,12 +49,16 @@ class Room(pygame.sprite.Sprite):
         for dialogbox in DialogBox.dialogboxes:
             if dialogbox.room == self:
                 dialogbox.draw(screen)
-        inventory.draw(screen)
+        
         if answerbox.state != None:
             answerbox.draw(screen)
         else:
-            for inventory_item in inventory.items.values():
-                inventory_item.draw(screen)
+            inventory.draw(screen)
+        hover = pygame.draw.rect(screen, "darkorange", (SCREEN_WIDTH/2-(at_percentage_width(10)/2), self.rect.top, at_percentage_width(10), at_percentage_height(5)), 5)
+        screen.fill("darkorange", hover)
+        SPEECHFONT = pygame.font.Font(SPEECH_FONT, SPEECH_SIZE-5)
+        text = SPEECHFONT.render(">", True, BLACK)
+        screen.blit(text, (SCREEN_WIDTH/2-(at_percentage_width(10)/2), self.rect.top+at_percentage_height(9)))
 
     def play(self):
         print("Playing music: ", self.music)

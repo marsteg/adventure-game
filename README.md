@@ -57,7 +57,6 @@ You will need the pygame library. Then just run:
 		- All NPCs in a Yaml
 		- all Doors in a Yaml
 - provide a small button that displays the objectname of whatever you are pointing at
-- unlock actions should only happen after the character arrived
 ## Conversations
 	- text currently stays X seconds - clicking should skip to the next line
 	- how to manage it when picking up an item should change dialog choices?

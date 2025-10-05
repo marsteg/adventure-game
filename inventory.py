@@ -15,6 +15,8 @@ class Inventory(pygame.sprite.Sprite):
     def draw(self, screen):
         inv = pygame.draw.rect(screen, "brown", self.rect)
         screen.fill("brown", inv)
+        for item in self.items.values():
+            item.draw(screen)
 
     def update(self, dt):
         pass
