@@ -100,6 +100,9 @@ class Item(RectShape):
                 self.unstash(inventory)
                 return
         inventory.items[self.name] = self
+        inventory.items[self.name].rect.width = 50
+        inventory.items[self.name].rect.height = 50
+        self.image = pygame.transform.scale(self.image, (50, 50))
         self.stashed = True
         if room != None:
             if self.name in room.items:

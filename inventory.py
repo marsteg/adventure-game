@@ -31,13 +31,13 @@ class Inventory(pygame.sprite.Sprite):
     def get_available_slots(self, item):
         for slot in Inventory.slot.values():
             if slot["item"] == None:
-                slot["item"] = item
+                slot["item"] = item.name
                 return slot["pos"] 
         return None
     
     def release_slots(self, item):
         for slot in Inventory.slot.values():
-            if slot["item"] == item:
+            if slot["item"] == item.name:
                 slot["item"] = None
                 return
         return None

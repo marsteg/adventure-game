@@ -29,6 +29,7 @@ class NPC(RectShape):
         self.speechcolor = speechcolor
         self.dialogline = 0
         NPC.NPCs[self.id] = self
+        self.lastsound = None
         
     def add_function(self, func, *args, **kwargs):
         self.functions.append((func, args, kwargs))
@@ -89,7 +90,10 @@ class NPC(RectShape):
         print("Speaking: ", self.name, "dialog:", sound)
         voiceline = pygame.mixer.Sound(sound)
         #voiceline = pygame.mixer.Sound(self.dialog[self.active_dialog]["sound"])
+        #if self.lastsound is not None:
+        #    pygame.mixer.Sound.stop(self.lastsound)
         pygame.mixer.Sound.play(voiceline)
+        self.lastsound = voiceline
 
     def speak_description(self):
         if self.locked:

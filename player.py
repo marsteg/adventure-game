@@ -11,7 +11,7 @@ def load_image(path, width, height):
 class Player(pygame.sprite.Sprite):
     _id_counter = 1
     containers = []
-    def __init__(self, left, top, width, height, image, name):
+    def __init__(self, left, top, width, height, image, name, walkingspritesheet_right, walkingspritesheet_left):
         super().__init__()  
         self.rotation = 0
         self.pos = pygame.Vector2(left, top)
@@ -23,6 +23,7 @@ class Player(pygame.sprite.Sprite):
         #self.set_target((0, 0))
         self.speed = 5
         self.target = self.pos
+        # walking animation
         self.rightsprites = []
         self.leftsprites = []
         self.current_sprite = 0
@@ -38,7 +39,7 @@ class Player(pygame.sprite.Sprite):
         self.leftsprites.append(load_image("assets/player/walking/left3.png", width, height))
         self.leftsprites.append(load_image("assets/player/walking/left4.png", width, height))
         self.leftsprites.append(load_image("assets/player/walking/left5.png", width, height))
-        self.image = self.rightsprites[self.current_sprite]
+        self.image = self.rightsprites[0]
 
     def set_target(self, pos):
         px, py = pos

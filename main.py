@@ -41,7 +41,7 @@ def main():
 
     answerbox = AnswerBox()
 
-    daisy = Player(100, 100, 50, 75, "assets/player/daisy_waiting.png", "player")
+    daisy = Player(100, 100, 50, 75, "assets/player/daisy_waiting.png", "player", "assets/player/daisy_walking_right.png", "assets/player/daisy_walking_left.png")
     player = pygame.sprite.Group(daisy)
 
     # title screen
@@ -169,7 +169,7 @@ def main():
         pending_interaction = obj_or_qi
         target_obj = obj_or_qi.target if isinstance(obj_or_qi, QueuedInteraction) else obj_or_qi
         interaction_target = pygame.Vector2(target_obj.rect.centerx, target_obj.rect.centery)
-        #_set_player_target(interaction_target)
+        #set_player_target(interaction_target)
         for char in player.sprites():
             char.set_target(interaction_target)
         name = getattr(target_obj, "name", repr(target_obj))

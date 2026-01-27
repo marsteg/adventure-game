@@ -55,6 +55,8 @@ class Room(pygame.sprite.Sprite):
             answerbox.draw(screen)
         else:
             inventory.draw(screen)
+        
+        # Hoverbox
         hover = pygame.draw.rect(screen, "darkorange", (SCREEN_WIDTH/2-(at_percentage_width(10)/2), self.rect.top, at_percentage_width(10), at_percentage_height(5)), 5)
         screen.fill("darkorange", hover)
         SPEECHFONT = pygame.font.Font(SPEECH_FONT, SPEECH_SIZE-5)

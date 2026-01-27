@@ -94,6 +94,6 @@ class Door(RectShape):
             dialbox.surface = text
 
     def describe(self, room):
-        print("Action right-clicked: ", self.name)
+        print("Door right-clicked: ", self.name)
         self.speak_description()
         self.talk_description(room)
