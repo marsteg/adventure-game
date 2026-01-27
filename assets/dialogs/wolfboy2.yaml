@@ -1,25 +1,177 @@
 description:
   locked:
-    line: "He seems to struggle with his Hair... maybe I can help with something in here"
-    sound: "assets/sounds/dialogs/wolfboy2-description-locked.wav"
+    line: "Another werewolf? This school is basically Twilight without the budget. He wants a comb."
+    sound: "assets/sounds/dialogs/wolfboy-description-locked.wav"
     duration: 3
   unlocked:
-    line: "He looks happy now! But still terrible..."
-    sound: "assets/sounds/dialogs/wolfboy2-description-unlocked.wav"
+    line: "He looks fabulous now. The comb was worth it. His fur is GLOWING."
+    sound: "assets/sounds/dialogs/wolfboy-description-unlocked.wav"
     duration: 3
 bye:
-  line: "Thanks! Let me open that door for you!"
+  line: "See ya! Remember - fur care is self care!"
   duration: 2
   speaker: wolfboy2
-  sound: "assets/sounds/dialogs/wolfboy2-bye.wav"
-  exit: 
-    ExitDialog: bye
+  sound: "assets/sounds/dialogs/wolfboy-bye.wav"
+  exit:
+    ExitDialog: start
 start:
-  line: 
-    - "Hi, I can't talk - my hair is everywhere!"
-    - "Can you help me with that?"
-  duration: 1
+  line: "Oh. My. Howl. Is that DEATH'S DAUGHTER?! I follow your dad on DeadTok. He's iconic."
+  duration: 4
   speaker: wolfboy2
-  sound: 
-    - "assets/sounds/dialogs/wolfboy2-start.wav"
-    - "assets/sounds/dialogs/wolfboy2-start-2.wav"
+  sound: "assets/sounds/dialogs/wolfboy-start.wav"
+  answers:
+    - line: "My dad is on social media?"
+      actionfuncs:
+        - ChangeDialog:
+          - wolfboy2
+          - social_media
+    - line: "DeadTok? Is that like TikTok for dead people?"
+      actionfuncs:
+        - ChangeDialog:
+          - wolfboy2
+          - deadtok
+    - line: "You seem... very enthusiastic."
+      actionfuncs:
+        - ChangeDialog:
+          - wolfboy2
+          - enthusiastic
+enthusiastic:
+  line: "I'm Lupin! Yes, like the Harry Potter guy. My parents are HUGE fans. It's exhausting."
+  duration: 4
+  speaker: wolfboy2
+  sound: "assets/sounds/dialogs/wolfboy-wolfboytest2.wav"
+  answers:
+    - line: "Do they know JK Rowling is... problematic?"
+      actionfuncs:
+        - ChangeDialog:
+          - wolfboy2
+          - rowling
+    - line: "What's with your fur? It looks... rough."
+      actionfuncs:
+        - ChangeDialog:
+          - wolfboy2
+          - fur_problem
+social_media:
+  line: "Girl, YES! '@TheGrimReaper'. 50 million followers. His 'harvest of the day' posts are SO aesthetic."
+  duration: 4
+  speaker: wolfboy2
+  sound: "assets/sounds/dialogs/wolfboy-wolfboytest3.wav"
+  answers:
+    - line: "I need to have a serious talk with my father."
+      actionfuncs:
+        - ChangeDialog:
+          - wolfboy2
+          - bye
+    - line: "Anyway... I need to find the switch to open a door."
+      actionfuncs:
+        - ChangeDialog:
+          - wolfboy2
+          - switch_hint
+deadtok:
+  line: "Social media for the supernatural! Vampires do makeup tutorials. Zombies do mukbangs. It's... a lot."
+  duration: 4
+  speaker: wolfboy2
+  sound: "assets/sounds/dialogs/wolfboy-wolfboytest2.wav"
+  answers:
+    - line: "Zombie mukbangs? That's concerning."
+      actionfuncs:
+        - ChangeDialog:
+          - wolfboy2
+          - zombie_food
+    - line: "I need help with something."
+      actionfuncs:
+        - ChangeDialog:
+          - wolfboy2
+          - switch_hint
+rowling:
+  line: "We don't talk about her. The werewolf community sent a strongly worded letter. Twice."
+  duration: 3
+  speaker: wolfboy2
+  sound: "assets/sounds/dialogs/wolfboy-wolfboytest3.wav"
+  exit:
+    ExitDialog: start
+zombie_food:
+  line: "They only eat plant-based brains now. Very progressive. The texture's the same, apparently."
+  duration: 3
+  speaker: wolfboy2
+  sound: "assets/sounds/dialogs/wolfboy-wolfboytest2.wav"
+  exit:
+    ExitDialog: start
+fur_problem:
+  line: "UGH don't remind me! I lost my comb. Without it, I look like a wet dog. A LITERALLY wet dog."
+  duration: 4
+  speaker: wolfboy2
+  sound: "assets/sounds/dialogs/wolfboy-wolfboytest3.wav"
+  answers:
+    - line: "I think I saw a comb somewhere..."
+      actionfuncs:
+        - ChangeDialog:
+          - wolfboy2
+          - comb_trade
+    - line: "That's rough, buddy."
+      actionfuncs:
+        - ChangeDialog:
+          - wolfboy2
+          - rough
+rough:
+  line: "Did you just Avatar reference me? I love this school. Anyway, find me a comb and I'll help you!"
+  duration: 4
+  speaker: wolfboy2
+  sound: "assets/sounds/dialogs/wolfboy-wolfboytest2.wav"
+  exit:
+    ExitDialog: start
+switch_hint:
+  line: "Oh, the door to the Courtyard? There's a switch but it's locked. I know who has info though..."
+  duration: 4
+  speaker: wolfboy2
+  sound: "assets/sounds/dialogs/wolfboy-wolfboytest3.wav"
+  answers:
+    - line: "Who has the info?"
+      actionfuncs:
+        - ChangeDialog:
+          - wolfboy2
+          - info_hint
+    - line: "What do you want in exchange?"
+      actionfuncs:
+        - ChangeDialog:
+          - wolfboy2
+          - fur_problem
+info_hint:
+  line: "I'll tell you IF you find me a comb. My reputation is at stake! I can't be seen looking basic."
+  duration: 4
+  speaker: wolfboy2
+  sound: "assets/sounds/dialogs/wolfboy-wolfboytest2.wav"
+  exit:
+    ExitDialog: start
+comb_trade:
+  line: "OMG REALLY?! Bring it to me! I'll unlock the switch for you AND tell you a secret about the Dean!"
+  duration: 4
+  speaker: wolfboy2
+  sound: "assets/sounds/dialogs/wolfboy-wolfboytest3.wav"
+  answers:
+    - line: "Here's the comb!"
+      actionfuncs:
+        - TakeItemString:
+          - comb
+          - no_comb
+          - got_comb
+    - line: "I'll be back with it."
+      actionfuncs:
+        - ChangeDialog:
+          - wolfboy2
+          - bye
+no_comb:
+  line: "Girl... that's not a comb. Are you pranking me? Is this a DeadTok prank? Am I being filmed?"
+  sound: "assets/sounds/dialogs/wolfboy-wolffailure.wav"
+  duration: 3
+  speaker: wolfboy2
+  exit:
+    ExitDialog: start
+got_comb:
+  line: "YAAAS! Okay, the switch is now unlocked. And the secret? The Dean has midnight meetings in the library!"
+  sound: "assets/sounds/dialogs/wolfboy-wolfsuccess.wav"
+  duration: 4
+  speaker: wolfboy2
+  exit:
+    ExitDialog: bye
+  unlock: True

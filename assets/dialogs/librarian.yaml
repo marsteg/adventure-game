@@ -1,0 +1,205 @@
+description:
+  locked:
+    line: "The librarian. She's giving 'I know things you don't want to know' energy. Classic librarian."
+    sound: "assets/sounds/dialogs/wolfboy-description-locked.wav"
+    duration: 3
+  unlocked:
+    line: "She gave me the key. We're cool now. I think. Hard to tell with the whole 'mysterious' vibe."
+    sound: "assets/sounds/dialogs/wolfboy-description-unlocked.wav"
+    duration: 3
+
+bye:
+  line: "Knowledge is power. Also, shhh. This is still a library."
+  duration: 2
+  speaker: librarian
+  sound: "assets/sounds/dialogs/wolfboy-bye.wav"
+  exit:
+    ExitDialog: start
+
+start:
+  line: "Ah, Death's daughter graces our humble forbidden section. Your father still owes me a book from 1347."
+  duration: 4
+  speaker: librarian
+  sound: "assets/sounds/dialogs/wolfboy-start.wav"
+  answers:
+    - line: "What book?"
+      actionfuncs:
+        - ChangeDialog: ["librarian", "book_debt"]
+    - line: "This library is forbidden? Edgy."
+      actionfuncs:
+        - ChangeDialog: ["librarian", "forbidden"]
+    - line: "I'm investigating the Order of the Crimson Moon."
+      actionfuncs:
+        - ChangeDialog: ["librarian", "order"]
+
+book_debt:
+  line: "'How to Win Souls and Influence People'. Self-help classic. He never returned it. Typical Death."
+  duration: 4
+  speaker: librarian
+  sound: "assets/sounds/dialogs/wolfboy-wolfboytest2.wav"
+  answers:
+    - line: "I'll... tell him you're still waiting."
+      actionfuncs:
+        - ChangeDialog: ["librarian", "waiting"]
+    - line: "What do you know about the Order?"
+      actionfuncs:
+        - ChangeDialog: ["librarian", "order"]
+
+forbidden:
+  line: "Every book too dangerous for mortal minds ends up here. Also romance novels. The Dean banned those."
+  duration: 4
+  speaker: librarian
+  sound: "assets/sounds/dialogs/wolfboy-wolfboytest3.wav"
+  answers:
+    - line: "Romance novels? Really?"
+      actionfuncs:
+        - ChangeDialog: ["librarian", "romance"]
+    - line: "I heard there's a secret chamber..."
+      actionfuncs:
+        - ChangeDialog: ["librarian", "chamber"]
+
+romance:
+  line: "'Twilight' started a vampire uprising in 2008. 'Fifty Shades' traumatized the ghost population. We learned."
+  duration: 4
+  speaker: librarian
+  sound: "assets/sounds/dialogs/wolfboy-wolfboytest2.wav"
+  exit:
+    ExitDialog: start
+
+waiting:
+  line: "I've been waiting 677 years. What's a few more decades? *passive aggressive shelving*"
+  duration: 3
+  speaker: librarian
+  sound: "assets/sounds/dialogs/wolfboy-wolfboytest3.wav"
+  exit:
+    ExitDialog: start
+
+order:
+  line: "The Order of the Crimson Moon... *looks around* They have eyes everywhere. Even in the cafeteria."
+  duration: 4
+  speaker: librarian
+  sound: "assets/sounds/dialogs/wolfboy-wolfboytest2.wav"
+  answers:
+    - line: "Is the Dean part of it?"
+      actionfuncs:
+        - ChangeDialog: ["librarian", "dean_order"]
+    - line: "Where's their secret chamber?"
+      actionfuncs:
+        - ChangeDialog: ["librarian", "chamber"]
+
+dean_order:
+  line: "The Dean? Sweetie, the Dean IS the Order. Founded it. Runs it. Reviews it on Yelp. 5 stars."
+  duration: 4
+  speaker: librarian
+  sound: "assets/sounds/dialogs/wolfboy-wolfboytest3.wav"
+  answers:
+    - line: "How do I expose him?"
+      actionfuncs:
+        - ChangeDialog: ["librarian", "expose"]
+    - line: "This is worse than I thought..."
+      actionfuncs:
+        - ChangeDialog: ["librarian", "worse"]
+
+expose:
+  line: "You need proof. There's a chamber behind this library. But you'll need the Crystal Key to enter."
+  duration: 4
+  speaker: librarian
+  sound: "assets/sounds/dialogs/wolfboy-wolfboytest2.wav"
+  answers:
+    - line: "Where's the Crystal Key?"
+      actionfuncs:
+        - ChangeDialog: ["librarian", "key_trade"]
+    - line: "What's in the chamber?"
+      actionfuncs:
+        - ChangeDialog: ["librarian", "chamber_contents"]
+
+worse:
+  line: "It always is. That's like, the first rule of magic schools. Second rule: never eat the mystery meat."
+  duration: 3
+  speaker: librarian
+  sound: "assets/sounds/dialogs/wolfboy-wolfboytest3.wav"
+  exit:
+    ExitDialog: start
+
+chamber:
+  line: "There's a hidden door behind that bookshelf. But it's locked with ancient crystal magic. Need a key."
+  duration: 4
+  speaker: librarian
+  sound: "assets/sounds/dialogs/wolfboy-wolfboytest2.wav"
+  answers:
+    - line: "Do you have this key?"
+      actionfuncs:
+        - ChangeDialog: ["librarian", "key_trade"]
+    - line: "What's inside?"
+      actionfuncs:
+        - ChangeDialog: ["librarian", "chamber_contents"]
+
+chamber_contents:
+  line: "The Dark Artifact. An ancient relic that proves the Dean's corruption. Netflix would LOVE this story."
+  duration: 4
+  speaker: librarian
+  sound: "assets/sounds/dialogs/wolfboy-wolfboytest3.wav"
+  exit:
+    ExitDialog: start
+
+key_trade:
+  line: "I have it. BUT... I need something first. The Ancient Scroll from the Dean's office. Quid pro quo, Clarice."
+  duration: 4
+  speaker: librarian
+  sound: "assets/sounds/dialogs/wolfboy-wolfboytest2.wav"
+  answers:
+    - line: "Silence of the Lambs reference? Nice."
+      actionfuncs:
+        - ChangeDialog: ["librarian", "movie_buff"]
+    - line: "Deal. I'll get the scroll."
+      actionfuncs:
+        - ChangeDialog: ["librarian", "deal"]
+    - line: "That sounds dangerous..."
+      actionfuncs:
+        - ChangeDialog: ["librarian", "dangerous"]
+
+movie_buff:
+  line: "I've had 400 years to watch films. I've seen everything. Even the Star Wars prequels. Dark times."
+  duration: 4
+  speaker: librarian
+  sound: "assets/sounds/dialogs/wolfboy-wolfboytest3.wav"
+  answers:
+    - line: "The prequels aren't THAT bad..."
+      actionfuncs:
+        - ChangeDialog: ["librarian", "prequels"]
+    - line: "About that scroll..."
+      actionfuncs:
+        - ChangeDialog: ["librarian", "deal"]
+
+prequels:
+  line: "Jar Jar Binks. That's my entire argument. Now, about the scroll..."
+  duration: 3
+  speaker: librarian
+  sound: "assets/sounds/dialogs/wolfboy-wolfboytest2.wav"
+  exit:
+    ExitDialog: start
+
+dangerous:
+  line: "Girl, your dad is literally Death. What's a little breaking and entering to the Grim family?"
+  duration: 3
+  speaker: librarian
+  sound: "assets/sounds/dialogs/wolfboy-wolfboytest3.wav"
+  exit:
+    ExitDialog: start
+
+deal:
+  line: "Excellent. The scroll is in the Dean's bookshelf. Return it, and the Crystal Key is yours."
+  duration: 3
+  speaker: librarian
+  sound: "assets/sounds/dialogs/wolfboy-bye2.wav"
+  exit:
+    ExitDialog: start
+
+success:
+  line: "The scroll! Finally! Here's the Crystal Key. The door is behind that suspicious-looking bookcase."
+  duration: 4
+  speaker: librarian
+  sound: "assets/sounds/dialogs/wolfboy-bye2.wav"
+  exit:
+    ExitDialog: bye
+  unlock: true

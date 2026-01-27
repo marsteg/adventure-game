@@ -1,16 +1,18 @@
-from rectshape import *
-from constants import *
-from room import *
+import pygame
 import time
 
-import random
+from rectshape import RectShape
+from constants import SCREEN_WIDTH, SCREEN_HEIGHT, SPEECH_FONT, SPEECH_SIZE, BLUE
+from dialogbox import DialogBox
+
 
 class Item(RectShape):
-    id_counter = 1
+    _id_counter = 1
     containers = []
     items = {}
-    def __init__(self, left, top, width, height, image, name, selfdestruct = False):
-        super().__init__(left, top, width, height, image)  
+
+    def __init__(self, left, top, width, height, image, name, self_destruct=False):
+        super().__init__(left, top, width, height, image)
         self.rotation = 0
         self.position = pygame.Vector2(left, top)
         self.original_position = pygame.Vector2(left, top)
@@ -19,17 +21,16 @@ class Item(RectShape):
         self.image = pygame.image.load(image).convert_alpha()
         self.image = pygame.transform.scale(self.image, (width, height))
         self.name = name
-        self.timer = 0
-        self.id = Item.id_counter
-        Item.id_counter += 1
-        self.selfdestruct = selfdestruct
+        self.id = Item._id_counter
+        Item._id_counter += 1
+        self.self_destruct = self_destruct
         Item.items[self.name] = self
         self.functions = []
         self.stashed = False
         self.allow_destroy = False
         self.combinable_items = []
         self.combifunctions = []
-        
+
     def add_function(self, func, *args, **kwargs):
         self.functions.append((func, args, kwargs))
 
@@ -39,7 +40,6 @@ class Item(RectShape):
             print("Item Action Function triggered in position: ", self.position)
 
     def draw(self, screen):
-        pygame.draw.rect(screen, "purple", self.rect)
         screen.blit(self.image, self.rect)
 
     def add_combifunction(self, func, *args, **kwargs):
@@ -50,20 +50,14 @@ class Item(RectShape):
             func(*args, **kwargs)
             print("Item combiAction Function triggered in position: ", self.position)
 
-    def shine(self, screen):
-        shiner = pygame.Surface((self.rect.width, self.rect.height))
-        shiner.fill((255, 255, 255))
-        shiner.set_alpha(100)
-        screen.blit(shiner, self.rect.topleft)
-
     def update(self, dt):
         pass
 
     def kill(self, inventory, rooms):
-        print("attempting Item destroy: ", self.name," on position: ", self.position, "selfdestruct: ", self.selfdestruct, "allow_destroy: ", self.allow_destroy)
-        # how to destroy the item?
-        # i would need to remove it from the inventory and the room
-        if self.selfdestruct and self.allow_destroy:
+        print(f"Attempting Item destroy: {self.name} on position: {self.position}, "
+              f"self_destruct: {self.self_destruct}, allow_destroy: {self.allow_destroy}")
+
+        if self.self_destruct and self.allow_destroy:
             if self.name in inventory.items:
                 if self == inventory.items[self.name]:
                     del inventory.items[self.name]
@@ -77,80 +71,66 @@ class Item(RectShape):
         else:
             self.stash(inventory)
 
-    def collidepoint(self, pos):
-        return self.rect.collidepoint(pos)
-    
     def move_ip(self, rel):
         self.rect.move_ip(rel)
         self.position = pygame.Vector2(self.rect.topleft)
-        #return self.rect.move_ip(rel)
-    
+
     def stash(self, inventory, room=None):
         inventory.release_slots(self)
         if self.stashed:
-            # just reposition the item in the inventory
+            # Just reposition the item in the inventory
             pos = inventory.get_available_slots(self)
+            if pos:
+                self.rect.topleft = pos
+                self.position = pygame.Vector2(pos)
+            return
+
+        if self.allow_destroy and self.self_destruct:
+            print(f"Item {self.name} is self-destructable")
+            self.unstash(inventory)
+            return
+
+        inventory.items[self.name] = self
+        self.stashed = True
+
+        if room is not None and self.name in room.items:
+            if self == room.items[self.name]:
+                del room.items[self.name]
+                print("Item removed from room: ", room.name)
+
+        pos = inventory.get_available_slots(self)
+        if pos:
             self.rect.topleft = pos
             self.position = pygame.Vector2(pos)
-            return
-        if self.allow_destroy:
-            print("Item Name: ", self.name, " could be destroyed")
-            if self.selfdestruct:
-                print("Item Name: ", self.name, " is selfdestructable")
-                self.unstash(inventory)
-                return
-        inventory.items[self.name] = self
-        inventory.items[self.name].rect.width = 50
-        inventory.items[self.name].rect.height = 50
-        self.image = pygame.transform.scale(self.image, (50, 50))
-        self.stashed = True
-        if room != None:
-            if self.name in room.items:
-                if self == room.items[self.name]:
-                    del room.items[self.name]
-                    print("Item removed from room: ", room.name)
-        # how to stash properly? inventroy slots?
-        pos = inventory.get_available_slots(self)
-        self.rect.topleft = (pos)
-        self.position = pygame.Vector2(pos)
-        print("Item Name stashed: ", self.name)
-        print("Item stashed: ", self.name)
-        print("Inventory items: ", inventory.items)
+        print(f"Item stashed: {self.name}")
 
     def unstash(self, inventory):
-        #del inventory.items[self.id]
         self.stashed = False
         inventory.release_slots(self)
-        #self.position = self.original_position
-        #self.rect.topleft = self.original_position
-        print("Item unstashed: ", self.name)
-        print("Inventory items: ", inventory.items)
+        print(f"Item unstashed: {self.name}")
 
     def add_description(self, description_text, description_sound):
         self.description_sound = description_sound
         self.description_text = description_text
 
     def speak_description(self):
-        line = self.description_sound
-        print(line)
-        sound = pygame.mixer.Sound(line)
+        print(self.description_sound)
+        sound = pygame.mixer.Sound(self.description_sound)
         pygame.mixer.Sound.play(sound)
 
     def talk_description(self, room):
-        SPEECHFONT = pygame.font.Font(SPEECH_FONT, SPEECH_SIZE)
-        #dialogbox.state = self
-        #dialogbox.room = room
+        speech_font = pygame.font.Font(SPEECH_FONT, SPEECH_SIZE)
         dialbox = DialogBox(room, time.time())
         dialbox.state = self
         dialbox.room = room
-        line = self.description_text
-        print("Item Describe Talking: ", self.name, "dialog:", line)
-        text = SPEECHFONT.render(line, True, BLUE)
-        #i shouldn't re-adjust the rect but rather use a player's or narrator's dialogbox
-        #dialogbox.rect = pygame.Rect(SCREEN_WIDTH // 3, SCREEN_HEIGHT // 2, SCREEN_WIDTH // 2, 0)
-        #dialogbox.surface = text
+
+        print("Item Describe Talking: ", self.name, "dialog:", self.description_text)
+        text = speech_font.render(self.description_text, True, BLUE)
         dialbox.rect = pygame.Rect(SCREEN_WIDTH // 4, SCREEN_HEIGHT // 4, SCREEN_WIDTH // 2, 0)
         dialbox.surface = text
+        # Store text for new renderer
+        dialbox.dialog_text = self.description_text
+        dialbox.speaker_name = ""
 
     def describe(self, room):
         print("Item right-clicked: ", self.name)
@@ -162,7 +142,7 @@ class Item(RectShape):
             print("Cannot combine with non-item object.")
             return
         if self.name == other.name:
-            print("will not attempt to combine the same item: " + self.name + other.name)
+            print(f"Will not attempt to combine the same item: {self.name}")
             return
         self.combinable_items.append(other)
         other.combinable_items.append(self)
@@ -173,16 +153,13 @@ class Item(RectShape):
             print("Cannot combine with non-item object.")
             return
         if self.name == other.name:
-            print("will not attempt to combine the same item: " + self.name + " " +  other.name)
+            print(f"Will not attempt to combine the same item: {self.name}")
             return
-        print("Items attmpted to combine:" + self.name + " and " + other.name)
+        print(f"Items attempted to combine: {self.name} and {other.name}")
         if other not in self.combinable_items:
             print(f"{other.name} is not combinable with {self.name}.")
             return
         print(f"Combining {self.name} with {other.name}.")
-        print(f"Item {self.name} with ID {self.id} is being combined with Item {other.name} with ID {other.id}.")
         self.combiaction()
         other.combiaction()
         print(f"Combined {self.name} with {other.name}.")
-        
-    

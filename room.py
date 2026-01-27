@@ -1,28 +1,22 @@
 import pygame
-import random
-from constants import *
-from dialogbox import *
+
+from constants import SCREEN_WIDTH, SCREEN_HEIGHT, INVENTORY_HEIGHT, BACKGROUND_VOLUME
+from dialogbox import DialogBox
+from ui import dialog_renderer
 
 
 class Room(pygame.sprite.Sprite):
     _id_counter = 1
     containers = []
     rooms = {}
-    edges = [
-        (pygame.Vector2(0, -1), lambda x: pygame.Vector2(x, 0)),
-        (pygame.Vector2(1, 0), lambda y: pygame.Vector2(SCREEN_WIDTH, y)),
-        (pygame.Vector2(0, 1), lambda x: pygame.Vector2(x, SCREEN_HEIGHT)),
-        (pygame.Vector2(-1, 0), lambda y: pygame.Vector2(0, y))
-    ]
 
     def __init__(self, player, image, name, music):
         pygame.sprite.Sprite.__init__(self, self.containers)
-        self.rect = pygame.Rect(0, 0, SCREEN_WIDTH, SCREEN_HEIGHT-INVENTORY_HEIGHT)
-        self.spawn_timer = 0.0
+        self.rect = pygame.Rect(0, 0, SCREEN_WIDTH, SCREEN_HEIGHT - INVENTORY_HEIGHT)
         self.id = Room._id_counter
         Room._id_counter += 1
-        self.image = pygame.image.load(image)
-        self.image = pygame.transform.scale(self.image, (SCREEN_WIDTH, SCREEN_HEIGHT-INVENTORY_HEIGHT))
+        self.image = pygame.image.load(image).convert()
+        self.image = pygame.transform.scale(self.image, (SCREEN_WIDTH, SCREEN_HEIGHT - INVENTORY_HEIGHT))
         self.doors = {}
         self.items = {}
         self.actions = {}
@@ -31,13 +25,10 @@ class Room(pygame.sprite.Sprite):
         self.music = music
         self.player = player
         Room.rooms[self.name] = self
-        self.current_hovertext = ""
-        
 
     def draw(self, screen, inventory, answerbox):
-        pygame.draw.rect(screen, "purple", self.rect)
         screen.blit(self.image, self.rect)
-        
+
         for door in self.doors.values():
             door.draw(screen)
         for action in self.actions.values():
@@ -47,31 +38,29 @@ class Room(pygame.sprite.Sprite):
         for item in self.items.values():
             item.draw(screen)
         self.player.draw(screen)
+
+        # Draw dialogs with new renderer
         for dialogbox in DialogBox.dialogboxes:
-            if dialogbox.room == self:
-                dialogbox.draw(screen)
-        
-        if answerbox.state != None:
-            answerbox.draw(screen)
-        else:
-            inventory.draw(screen)
-        
-        # Hoverbox
-        hover = pygame.draw.rect(screen, "darkorange", (SCREEN_WIDTH/2-(at_percentage_width(10)/2), self.rect.top, at_percentage_width(10), at_percentage_height(5)), 5)
-        screen.fill("darkorange", hover)
-        SPEECHFONT = pygame.font.Font(SPEECH_FONT, SPEECH_SIZE-5)
-        text = SPEECHFONT.render(self.current_hovertext, True, BLACK)
-        #screen.blit(text, (SCREEN_WIDTH/2-(at_percentage_width(10)/2), self.rect.top+at_percentage_height(9)))
-        screen.blit(text, hover.center - pygame.Vector2(text.get_width()/2, text.get_height()/2))
+            if dialogbox.room == self and dialogbox.surface:
+                # Extract text from the rendered surface or use stored text
+                if hasattr(dialogbox, 'dialog_text') and dialogbox.dialog_text:
+                    speaker = getattr(dialogbox, 'speaker_name', "")
+                    dialog_renderer.render_dialog_box(screen, dialogbox.dialog_text, speaker_name=speaker)
+                else:
+                    # Fallback: draw old style if no text stored
+                    dialogbox.draw(screen)
+
+        # Inventory/answerbox drawn by main.py with new renderers
 
     def play(self):
         print("Playing music: ", self.music)
         pygame.mixer.music.stop()
         pygame.mixer.music.load(self.music)
         pygame.mixer.music.set_volume(BACKGROUND_VOLUME)
-        pygame.mixer.music.play(-1,0.0)
-        
+        pygame.mixer.music.play(-1, 0.0)
+
     def shine(self, screen):
+        """Highlight all interactive objects in the room."""
         for item in self.items.values():
             item.shine(screen)
         for door in self.doors.values():
@@ -85,5 +74,4 @@ class Room(pygame.sprite.Sprite):
         return self.rect.collidepoint(pos)
 
     def update(self, dt):
-        self.spawn_timer += dt
         pass

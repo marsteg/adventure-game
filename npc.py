@@ -1,17 +1,33 @@
-from rectshape import *
-from constants import *
-from answer import *
-from dialogfuncs import *
-from actionfuncs import *
+import pygame
 import yaml
+import time
+
+from rectshape import RectShape
+from constants import (
+    SCREEN_WIDTH, SCREEN_HEIGHT, SPEECH_FONT, SPEECH_SIZE, BLUE,
+    at_percentage_width, at_percentage_height
+)
+from dialogbox import DialogBox
+from answer import Answer
+from dialogfuncs import ChangeDialog, ExitDialog, TakeItemString, UnlockNPC
+
+
+# Registry for dialog functions - safer than using globals()
+DIALOG_FUNCTIONS = {
+    'ChangeDialog': ChangeDialog,
+    'ExitDialog': ExitDialog,
+    'TakeItemString': TakeItemString,
+    'UnlockNPC': UnlockNPC,
+}
 
 
 class NPC(RectShape):
     _id_counter = 1
     containers = []
     NPCs = {}
+
     def __init__(self, left, top, width, height, image, name, locked, key, speechcolor, dialogfile):
-        super().__init__(left, top, width, height, image)  
+        super().__init__(left, top, width, height, image)
         self.rotation = 0
         self.id = NPC._id_counter
         NPC._id_counter += 1
@@ -25,25 +41,20 @@ class NPC(RectShape):
         self.key = key
         self.active_dialog = "start"
         self.dialogfile = dialogfile
-        self.dialog = self.load_dialog()
+        self.dialog = self._load_dialog()
         self.speechcolor = speechcolor
         self.dialogline = 0
         NPC.NPCs[self.id] = self
-        self.lastsound = None
-        
+
     def add_function(self, func, *args, **kwargs):
         self.functions.append((func, args, kwargs))
 
     def draw(self, screen):
-        #pygame.draw.rect(screen, "purple", self.rect)
         screen.blit(self.image, self.rect)
 
     def update(self, dt):
-        pass # check for "locked" condition?
+        pass
 
-    def collidepoint(self, pos):
-        return self.rect.collidepoint(pos)
-    
     def action(self):
         if self.locked:
             print("NPC is locked")
@@ -51,9 +62,9 @@ class NPC(RectShape):
         for func, args, kwargs in self.functions:
             func(*args, **kwargs)
             print("Action Function triggered in position: ", self.position)
-    
+
     def unlock(self, key, inventory):
-        if self.key == None:
+        if self.key is None:
             print("No key required")
             return
         if key.name != self.key.name:
@@ -64,154 +75,153 @@ class NPC(RectShape):
         key.allow_destroy = True
         self.action()
 
-    def shine(self, screen):
-        shiner = pygame.Surface((self.rect.width, self.rect.height))
-        shiner.fill((255, 255, 255))
-        shiner.set_alpha(100)
-        screen.blit(shiner, self.rect.topleft)
+    def _load_dialog(self):
+        """Load dialog from YAML file with error handling."""
+        try:
+            with open(self.dialogfile, 'r') as file:
+                dialog = yaml.safe_load(file)
+                print("Dialog loaded: ", dialog)
+                return dialog
+        except FileNotFoundError:
+            print(f"Dialog file not found: {self.dialogfile}")
+            return {}
+        except yaml.YAMLError as e:
+            print(f"Error parsing dialog file {self.dialogfile}: {e}")
+            return {}
 
-    def load_dialog(self):
-        with open(self.dialogfile, 'r') as file:
-            dialog = yaml.safe_load(file)
-            print("Dialog loaded: ", dialog)
-            return dialog
-        
     def shutup(self):
         self.active_dialog = "bye"
 
     def speak(self):
         sound = self.dialog[self.active_dialog]["sound"]
         if isinstance(sound, list):
-            # if there are multiple sounds, we take the one from dialogline
-            sound = self.dialog[self.active_dialog]["sound"][self.dialogline]
-        else:
-            # otherwise we take the sound as it is
-            sound = self.dialog[self.active_dialog]["sound"]
+            sound = sound[self.dialogline]
         print("Speaking: ", self.name, "dialog:", sound)
         voiceline = pygame.mixer.Sound(sound)
-        #voiceline = pygame.mixer.Sound(self.dialog[self.active_dialog]["sound"])
-        #if self.lastsound is not None:
-        #    pygame.mixer.Sound.stop(self.lastsound)
         pygame.mixer.Sound.play(voiceline)
-        self.lastsound = voiceline
 
     def speak_description(self):
         if self.locked:
             line = self.dialog["description"]["locked"]["sound"]
-            print(line)
-            sound = pygame.mixer.Sound(line)
-            pygame.mixer.Sound.play(sound)
         else:
             line = self.dialog["description"]["unlocked"]["sound"]
-            print(line)
-            sound = pygame.mixer.Sound(line)
-            pygame.mixer.Sound.play(sound)
+        print(line)
+        sound = pygame.mixer.Sound(line)
+        pygame.mixer.Sound.play(sound)
 
     def talk_description(self, room):
-        SPEECHFONT = pygame.font.Font(SPEECH_FONT, SPEECH_SIZE)
+        speech_font = pygame.font.Font(SPEECH_FONT, SPEECH_SIZE)
         dialbox = DialogBox(room, time.time())
         dialbox.state = "describe"
         dialbox.room = room
+
         if self.locked:
             line = self.dialog["description"]["locked"]["line"]
-            print("Describe Talking: ", self.name, "dialog:", line)
-            text = SPEECHFONT.render(line, True, BLUE)
-            #i shouldn't re-adjust the rect but rather use a player's or narrator's dialogbox
-            dialbox.rect = pygame.Rect(SCREEN_WIDTH // 3, SCREEN_HEIGHT // 2, SCREEN_WIDTH // 2, 0)
-            dialbox.surface = text
-            print("Dialogbox worked")
         else:
             line = self.dialog["description"]["unlocked"]["line"]
-            print("Describe Talking: ", self.name, "dialog:", line)
-            text = SPEECHFONT.render(line, True, BLUE)
-            #i shouldn't re-adjust the rect but rather use a player's or narrator's dialogbox
-            dialbox.rect = pygame.Rect(SCREEN_WIDTH // 3, SCREEN_HEIGHT // 2, SCREEN_WIDTH // 2, 0)
-            dialbox.surface = text
-            print("Dialogbox worked")
+
+        print("Describe Talking: ", self.name, "dialog:", line)
+        text = speech_font.render(line, True, BLUE)
+        dialbox.rect = pygame.Rect(SCREEN_WIDTH // 3, SCREEN_HEIGHT // 2, SCREEN_WIDTH // 2, 0)
+        dialbox.surface = text
+        # Store text for new renderer
+        dialbox.dialog_text = line
+        dialbox.speaker_name = ""
 
     def describe(self, room):
         print("NPC right-clicked: ", self.name)
         self.speak_description()
         self.talk_description(room)
 
-    # talk should only ensure the NPC talks and trigger an own dialogbox rather than using a shared one
     def talk(self, room, inventory, answerbox):
+        """Main dialog interaction method."""
         self.timer = time.time()
-        SPEECHFONT = pygame.font.Font(SPEECH_FONT, SPEECH_SIZE)
+        speech_font = pygame.font.Font(SPEECH_FONT, SPEECH_SIZE)
         print("NPC Talking: ", self.name)
+
         dialbox = DialogBox(room, time.time())
         dialbox.state = self
         dialbox.room = room
         self.speak()
-        # cater for the case where the speaker is another NPC
-        speaker = self.dialog[self.active_dialog]["speaker"]
-        speaker_found = False
-        for npc in room.npcs.values():
-            if npc.name == speaker:
-                speaker = npc
-                speaker_found = True
-                break
-        if not speaker_found and isinstance(speaker, str):
-            speaker = self
-        print("NPC Talking: ", speaker.name, "dialog:", speaker.dialog[self.active_dialog]["line"])
+
+        # Find the speaker (might be a different NPC)
+        speaker = self._find_speaker(room)
+
         line = speaker.dialog[self.active_dialog]["line"]
-        ## let's test if there is an array
         if isinstance(line, list):
-            line = speaker.dialog[self.active_dialog]["line"][self.dialogline]
-        else:
-            # otherwise we take the line as it is
-            line = speaker.dialog[self.active_dialog]["line"]
-        
-        text = SPEECHFONT.render(line, True, speaker.speechcolor)
-        #text = SPEECHFONT.render(self.dialog[self.active_dialog]["line"], True, speaker.speechcolor)
-        #i shouldn't re-adjust the rect but rather use a position relative to the speaker
+            line = line[self.dialogline]
+
+        print("NPC Talking: ", speaker.name, "dialog:", line)
+        text = speech_font.render(line, True, speaker.speechcolor)
+
+        # Position dialog box relative to speaker
         if SCREEN_WIDTH / 2 < speaker.rect.left:
-            dialbox.rect = pygame.Rect(speaker.rect.left - at_percentage_width(5), speaker.rect.top - at_percentage_height(5), SCREEN_WIDTH // 2, 0)
+            dialbox.rect = pygame.Rect(
+                speaker.rect.left - at_percentage_width(5),
+                speaker.rect.top - at_percentage_height(5),
+                SCREEN_WIDTH // 2, 0
+            )
         else:
-            dialbox.rect = pygame.Rect(speaker.rect.left + at_percentage_width(5), speaker.rect.top - at_percentage_height(5), SCREEN_WIDTH // 2, 0)
+            dialbox.rect = pygame.Rect(
+                speaker.rect.left + at_percentage_width(5),
+                speaker.rect.top - at_percentage_height(5),
+                SCREEN_WIDTH // 2, 0
+            )
         dialbox.surface = text
-        # check if the dialog unlocks something
-        if "unlock" in self.dialog[self.active_dialog]:
-            print("Unlocking is in yaml")
-            if self.dialog[self.active_dialog]["unlock"] == True:
-                print("calling unlock function")
-                self.unlock(self.key, inventory)
-        # check if dialog has an exit
-        if "exit" in self.dialog[self.active_dialog]:
-            if "ExitDialog" in self.dialog[self.active_dialog]["exit"]:
-                answerbox.answers = {}
-                answerbox.state = None
-                answerbox.room = None
-                self.active_dialog = self.dialog[self.active_dialog]["exit"]["ExitDialog"]
-                return
-        
-        # done, talking; building answers now.
-        if "answers" in self.dialog[self.active_dialog]:
-            # clear old answers:
+        # Store text for new renderer
+        dialbox.dialog_text = line
+        dialbox.speaker_name = speaker.name
+
+        # Check if the dialog unlocks something
+        if self.dialog[self.active_dialog].get("unlock") is True:
+            print("Calling unlock function")
+            self.unlock(self.key, inventory)
+
+        # Check if dialog has an exit
+        exit_data = self.dialog[self.active_dialog].get("exit", {})
+        if "ExitDialog" in exit_data:
             answerbox.answers = {}
-            if self.dialog[self.active_dialog]["answers"] != None:
-                answerbox.state = self.dialog[self.active_dialog]["answers"]
-                answerbox.room = room
-            # generate answerboxes
-            if len(self.dialog[self.active_dialog]["answers"]) > 0:
-                for i, answer in enumerate(self.dialog[self.active_dialog]["answers"]):
-                    a = Answer(answer["line"], i)
-                    answerbox.add_answer(a)
-                    for num, action in enumerate(self.dialog[self.active_dialog]["answers"][i]["actionfuncs"]):
-                        for k,v in action.items():
-                            func = globals().get(k)
-                            if func:
-                                if isinstance(v, list):
-                                    #func_args = (*v, room, self, inventory, answerbox, dialogbox)
-                                    func_args = (*v, room, self, inventory, answerbox)
-                                else:
-                                    func_args = (v, room, self, inventory, answerbox)
-                                    #func_args = (v, room, self, inventory, answerbox, dialogbox)
-                                a.add_dialogfunction(func, *func_args)
-                                print("funcs added: ", func, func_args)
-                                print("Action added: ", action)
-                                print("Function: ", func)
-                                print("Arguments: ", v)
-                            else:
-                                print(f"Function {k} not found.")
-                        a.npc = self
+            answerbox.state = None
+            answerbox.room = None
+            self.active_dialog = exit_data["ExitDialog"]
+            return
+
+        # Build answers
+        self._build_answers(room, inventory, answerbox)
+
+    def _find_speaker(self, room):
+        """Find the NPC who should speak (might be different from self)."""
+        speaker_name = self.dialog[self.active_dialog]["speaker"]
+        for npc in room.npcs.values():
+            if npc.name == speaker_name:
+                return npc
+        return self
+
+    def _build_answers(self, room, inventory, answerbox):
+        """Build answer options from dialog data."""
+        answers_data = self.dialog[self.active_dialog].get("answers")
+        if not answers_data:
+            return
+
+        answerbox.answers = {}
+        answerbox.state = answers_data
+        answerbox.room = room
+
+        for i, answer_data in enumerate(answers_data):
+            answer = Answer(answer_data["line"], i)
+            answerbox.add_answer(answer)
+
+            for action in answer_data.get("actionfuncs", []):
+                for func_name, args in action.items():
+                    func = DIALOG_FUNCTIONS.get(func_name)
+                    if func:
+                        if isinstance(args, list):
+                            func_args = (*args, room, self, inventory, answerbox)
+                        else:
+                            func_args = (args, room, self, inventory, answerbox)
+                        answer.add_dialogfunction(func, *func_args)
+                        print(f"Function added: {func_name} with args: {args}")
+                    else:
+                        print(f"Function {func_name} not found in DIALOG_FUNCTIONS.")
+
+            answer.npc = self

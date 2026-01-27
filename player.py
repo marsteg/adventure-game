@@ -1,80 +1,78 @@
-from rectshape import *
-from constants import *
+import pygame
+
 
 def load_image(path, width, height):
+    """Load and scale an image with transparency."""
     image = pygame.image.load(path).convert_alpha()
     image = pygame.transform.scale(image, (width, height))
-    image.set_colorkey(WHITE)
-    image.convert_alpha()
     return image
 
+
 class Player(pygame.sprite.Sprite):
+    """The player character with walking animation."""
     _id_counter = 1
     containers = []
-    def __init__(self, left, top, width, height, image, name, walkingspritesheet_right, walkingspritesheet_left):
-        super().__init__()  
-        self.rotation = 0
+
+    def __init__(self, left, top, width, height, image, name):
+        super().__init__()
         self.pos = pygame.Vector2(left, top)
         self.rect = pygame.Rect(left, top, width, height)
-        #self.defaultimage = pygame.image.load(image).convert_alpha()
-        #self.defaultimage = pygame.transform.scale(pygame.image.load(image).convert_alpha(), (width, height))
         self.defaultimage = load_image(image, width, height)
         self.name = name
-        #self.set_target((0, 0))
         self.speed = 5
-        self.target = self.pos
-        # walking animation
-        self.rightsprites = []
-        self.leftsprites = []
-        self.current_sprite = 0
-        self.rightsprites.append(load_image("assets/player/walking/right0.png", width, height))
-        self.rightsprites.append(load_image("assets/player/walking/right1.png", width, height))
-        self.rightsprites.append(load_image("assets/player/walking/right2.png", width, height))
-        self.rightsprites.append(load_image("assets/player/walking/right3.png", width, height))
-        self.rightsprites.append(load_image("assets/player/walking/right4.png", width, height))
-        self.rightsprites.append(load_image("assets/player/walking/right5.png", width, height))
-        self.leftsprites.append(load_image("assets/player/walking/left0.png", width, height))
-        self.leftsprites.append(load_image("assets/player/walking/left1.png", width, height))
-        self.leftsprites.append(load_image("assets/player/walking/left2.png", width, height))
-        self.leftsprites.append(load_image("assets/player/walking/left3.png", width, height))
-        self.leftsprites.append(load_image("assets/player/walking/left4.png", width, height))
-        self.leftsprites.append(load_image("assets/player/walking/left5.png", width, height))
-        self.image = self.rightsprites[0]
+        self.target = self.pos.copy()
+
+        # Load walking animation sprites
+        self.rightsprites = [
+            load_image(f"assets/player/walking/right{i}.png", width, height)
+            for i in range(6)
+        ]
+        self.leftsprites = [
+            load_image(f"assets/player/walking/left{i}.png", width, height)
+            for i in range(6)
+        ]
+        self.current_sprite = 0.0
+        self.image = self.defaultimage
 
     def set_target(self, pos):
+        """Set a target position for the player to walk to."""
         px, py = pos
-        newpos = px - self.rect.width // 2, py - self.rect.height 
+        # Center the player on the click position
+        newpos = px - self.rect.width // 2, py - self.rect.height
         self.target = pygame.Vector2(newpos)
 
     def clear_target(self):
-        self.target = self.pos
+        """Stop the player's movement."""
+        self.target = self.pos.copy()
 
     def draw(self, screen):
-        #pygame.draw.rect(screen, "purple", self.rect)
         screen.blit(self.image, self.rect)
 
     def update(self, dt):
+        # Animate walking
         self.current_sprite += 0.1
         if self.current_sprite >= len(self.rightsprites):
-            self.current_sprite = 0
+            self.current_sprite = 0.0
+
+        # Update sprite based on movement direction
         if self.target == self.pos:
             self.image = self.defaultimage
-        elif self.target[0] > self.pos[0]:
+        elif self.target.x > self.pos.x:
             self.image = self.rightsprites[int(self.current_sprite)]
-        elif self.target[0] < self.pos[0]:
+        elif self.target.x < self.pos.x:
             self.image = self.leftsprites[int(self.current_sprite)]
+
+        # Move towards target
         move = self.target - self.pos
         move_length = move.length()
 
         if move_length < self.speed:
-            self.pos = self.target
-        elif move_length != 0:
+            self.pos = self.target.copy()
+        elif move_length > 0:
             move.normalize_ip()
-            move = move * self.speed
-            self.pos += move
+            self.pos += move * self.speed
 
-        self.rect.topleft = list(int(v) for v in self.pos)   
+        self.rect.topleft = (int(self.pos.x), int(self.pos.y))
 
     def collidepoint(self, pos):
         return self.rect.collidepoint(pos)
-        

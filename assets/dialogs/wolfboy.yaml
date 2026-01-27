@@ -1,96 +1,172 @@
 description:
   locked:
-    line: "A wolfboy who seems to like red stuff. I wonder if he would like a red missile."
+    line: "A wolfboy obsessed with red things. Typical. My therapist would have a field day."
     sound: "assets/sounds/dialogs/wolfboy-description-locked.wav"
     duration: 3
   unlocked:
-    line: "He really likes anything that is red... I wonder what door this Key is for"
+    line: "He traded his red obsession for a gray key. Character development, I guess."
     sound: "assets/sounds/dialogs/wolfboy-description-unlocked.wav"
     duration: 3
 bye:
-  line: "Bye"
-  duration: 1
-  speaker: wolfboy
-  sound: "assets/sounds/dialogs/wolfboy-bye.wav"
-  exit: 
-    ExitDialog: start
-bye2:
-  line: "Thanks for the red missile! I hope you enjoy the Gray One!"
+  line: "Later! May the moon be with you... wait, that's Star Wars. Whatever."
   duration: 2
   speaker: wolfboy
+  sound: "assets/sounds/dialogs/wolfboy-bye.wav"
+  exit:
+    ExitDialog: start
+bye2:
+  line: "Thanks for the red one! This gray key opens the door to the Main Hall. Don't ask why I had it."
+  duration: 3
+  speaker: wolfboy
   sound: "assets/sounds/dialogs/wolfboy-bye2.wav"
-  exit: 
+  exit:
     ExitDialog: bye2
 start:
-  line: "Hi, I'm a wolfboy. I like red stuff."
-  duration: 3
+  line: "Yo! I'm Wolfgang. Yes, my parents thought they were hilarious. I collect red things."
+  duration: 4
   speaker: wolfboy
   sound: "assets/sounds/dialogs/wolfboy-start.wav"
   answers:
-    - line: "What's a wolfboy?"
+    - line: "A werewolf named Wolfgang? Really?"
       actionfuncs:
-        - ChangeDialog: 
+        - ChangeDialog:
             - wolfboy
-            - wolfboytest2
-    - line: "What do you do here?"
+            - name_joke
+    - line: "Why red things specifically?"
       actionfuncs:
-        - ChangeDialog: 
+        - ChangeDialog:
             - wolfboy
-            - wolfboytest3
-    - line: "I don't care"
+            - red_obsession
+    - line: "I'm Morticia. Daughter of Death."
       actionfuncs:
-        - ExitDialog: 
-          - start
-wolfboytest2:
-  line: 
-    - "A boy who is also a werewolf"
-    - "What did you think?"
-  duration: 2
+        - ChangeDialog:
+            - wolfboy
+            - morticia_intro
+name_joke:
+  line:
+    - "Hey, at least I'm not named 'Howl McWolfface' like my cousin."
+    - "He legally changed it. From Kevin. Kevin McWolfface."
+  duration: 3
   speaker: wolfboy
-  sound: 
+  sound:
     - "assets/sounds/dialogs/wolfboy-wolfboytest2.wav"
     - "assets/sounds/dialogs/wolfboy-wolfboytest2-2.wav"
   answers:
-    - line: "What are you looking for?"
-      actionfuncs:
-        - ChangeDialog: 
-          - wolfboy
-          - wolfboytest3
-    - line: "For a moment, I thought I'd care"
+    - line: "Your family reunions must be wild."
       actionfuncs:
         - ChangeDialog:
           - wolfboy
-          - bye
-wolfboytest3:
-  line: "I need a red missile. I would exchange it for a gray one."
-  duration: 2
+          - family
+    - line: "Anyway, I need to get into the Main Hall..."
+      actionfuncs:
+        - ChangeDialog:
+          - wolfboy
+          - trade_hint
+red_obsession:
+  line: "It's a werewolf thing. We see red, we want it. Like bulls, but fluffier and with better lawyers."
+  duration: 3
   speaker: wolfboy
   sound: "assets/sounds/dialogs/wolfboy-wolfboytest3.wav"
   answers:
-    - line: "Oh, I have a red missile"
+    - line: "That sounds like a medical condition."
+      actionfuncs:
+        - ChangeDialog:
+          - wolfboy
+          - medical
+    - line: "I have something red, actually..."
+      actionfuncs:
+        - ChangeDialog:
+          - wolfboy
+          - trade_hint
+morticia_intro:
+  line: "Death's daughter? Cool, cool. My dad's a full moon. Literally. It's complicated."
+  duration: 3
+  speaker: wolfboy
+  sound: "assets/sounds/dialogs/wolfboy-wolfboytest2.wav"
+  answers:
+    - line: "How does that even work biologically?"
+      actionfuncs:
+        - ChangeDialog:
+          - wolfboy
+          - biology
+    - line: "I need to explore the school. Know anything useful?"
+      actionfuncs:
+        - ChangeDialog:
+          - wolfboy
+          - school_info
+medical:
+  line: "The school nurse says it's 'Chromatic Acquisition Disorder'. I say it's a lifestyle."
+  duration: 3
+  speaker: wolfboy
+  sound: "assets/sounds/dialogs/wolfboy-wolfboytest3.wav"
+  exit:
+    ExitDialog: start
+family:
+  line: "We don't talk about the '97 incident. Too many mailmen. Not enough therapy."
+  duration: 3
+  speaker: wolfboy
+  sound: "assets/sounds/dialogs/wolfboy-wolfboytest2.wav"
+  exit:
+    ExitDialog: start
+biology:
+  line: "I asked the same thing. Mom just cries. Dad waxes and wanes. It's awkward."
+  duration: 3
+  speaker: wolfboy
+  sound: "assets/sounds/dialogs/wolfboy-wolfboytest3.wav"
+  exit:
+    ExitDialog: start
+school_info:
+  line: "The Dean's suspicious. The library's forbidden. The cafeteria's... actually decent on Taco Tuesday."
+  duration: 4
+  speaker: wolfboy
+  sound: "assets/sounds/dialogs/wolfboy-wolfboytest2.wav"
+  answers:
+    - line: "What's suspicious about the Dean?"
+      actionfuncs:
+        - ChangeDialog:
+          - wolfboy
+          - dean_info
+    - line: "I need to get past this door first."
+      actionfuncs:
+        - ChangeDialog:
+          - wolfboy
+          - trade_hint
+dean_info:
+  line: "He smiles. ALL. THE. TIME. Nobody's that happy running a school of monster kids. Trust issues, man."
+  duration: 4
+  speaker: wolfboy
+  sound: "assets/sounds/dialogs/wolfboy-wolfboytest3.wav"
+  exit:
+    ExitDialog: start
+trade_hint:
+  line: "Oh, that door? I have the key! But I'll only trade it for something RED. Hook me up?"
+  duration: 3
+  speaker: wolfboy
+  sound: "assets/sounds/dialogs/wolfboy-wolfboytest3.wav"
+  answers:
+    - line: "Here, take this red shiny thing!"
       actionfuncs:
         - TakeItemString:
           - missile2
           - wolffailure
           - wolfsuccess
-    - line: "I don't care"
+    - line: "I'll find something red."
       actionfuncs:
         - ChangeDialog:
           - wolfboy
           - bye
 wolffailure:
-  line: "you don't have the red missile"
+  line: "Uh... that's not red. Are you colorblind? No judgment, my uncle is."
   sound: "assets/sounds/dialogs/wolfboy-wolffailure.wav"
   duration: 2
   speaker: wolfboy
-  exit: 
+  exit:
     ExitDialog: start
 wolfsuccess:
-  line: "Thanks! There you go! Enjoy the gray missile!"
+  line: "YESSS! RED! Here's the gray key - it opens the Main Hall door. Go bother someone else now!"
   sound: "assets/sounds/dialogs/wolfboy-wolfsuccess.wav"
-  duration: 2
+  duration: 3
   speaker: wolfboy
-  exit: 
+  exit:
     ExitDialog: bye2
   unlock: True
-

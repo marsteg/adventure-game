@@ -67,29 +67,24 @@ You will need the pygame library. Then just run:
 				- i want to have it relative to the object but closer to the center of the screen
 			- text should be positioned relative to the character speaking
 	- i partly implemented multiline text and auto-detection of speech length. Needs further thorough testing and improvement though
-
+## Saving/Loading:
+	- how to save and load the game?
+		- save to yaml
+			- should provide some savename input
+			- support multiple savefiles
+		- load from yaml
+			- select savefile
 ## Player Character
 	- doubleclick on actions, doors, items for faster walking speed
 	- Improve Walking
 		- requires a walkable area as clickable area per room
 		- how to define that area?
 		- improve player walking animation
-		- use spritesheet instead of single pics
-
-## Game Menu
-	- start game 
-	- options (resolution)
-	- load/save game
-		- save to yaml
-			- should provide some savename input
-			- support multiple savefiles
-		- load from yaml
-			- select savefile
 
 ## inventory
 - items should get ordered / aligned in the inventory
 	- slot system size (currently 20) - what if i have more items? scrolling?
-	- slots currently get re-used but a bit too late, so empty slots appear
+	- slots currently do not get re-used (probably never properly released)
 
 ## Items
 - I would like to implement an "endless" item, from which the player always pick up one
