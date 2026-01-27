@@ -1,0 +1,241 @@
+description:
+  locked:
+    line: "A talking portrait. His eyes literally follow you. Claims to be the school founder. Very creepy. Very knowledgeable."
+    sound: "assets/sounds/dialogs/wolfboy-description-locked.wav"
+    duration: 3
+  unlocked:
+    line: "Sir Portrait confessed everything. 400 years of guilt poured out. Therapy would've been cheaper."
+    sound: "assets/sounds/dialogs/wolfboy-description-unlocked.wav"
+    duration: 3
+
+bye:
+  line: "Remember my tale! Let not history repeat! Also, don't touch the frame. It's been freshly polished."
+  duration: 3
+  speaker: sir_portrait
+  sound: "assets/sounds/dialogs/wolfboy-bye.wav"
+  exit:
+    ExitDialog: start
+
+start:
+  line: "Ah, a visitor to my humble frame! I am Sir Aldric Grimwood. Founder of this... establishment. Trapped in paint."
+  duration: 4
+  speaker: sir_portrait
+  sound: "assets/sounds/dialogs/wolfboy-start.wav"
+  answers:
+    - line: "You're the school founder?"
+      actionfuncs:
+        - ChangeDialog: ["sir_portrait", "founder"]
+    - line: "How are you in a painting?"
+      actionfuncs:
+        - ChangeDialog: ["sir_portrait", "trapped"]
+    - line: "What do you know about the Order?"
+      actionfuncs:
+        - ChangeDialog: ["sir_portrait", "order_knowledge"]
+
+founder:
+  line: "Indeed! Built this school in 1624! Vision of magical education! Then... things went wrong. Very wrong."
+  duration: 4
+  speaker: sir_portrait
+  sound: "assets/sounds/dialogs/wolfboy-wolfboytest2.wav"
+  answers:
+    - line: "What went wrong?"
+      actionfuncs:
+        - ChangeDialog: ["sir_portrait", "went_wrong"]
+    - line: "How did you end up like this?"
+      actionfuncs:
+        - ChangeDialog: ["sir_portrait", "trapped"]
+
+trapped:
+  line: "Punishment. For my sins. I created the Order of the Crimson Moon. Now I watch its victims... forever."
+  duration: 4
+  speaker: sir_portrait
+  sound: "assets/sounds/dialogs/wolfboy-wolfboytest3.wav"
+  answers:
+    - line: "YOU created the Order?!"
+      actionfuncs:
+        - ChangeDialog: ["sir_portrait", "confession"]
+    - line: "Is this... guilt?"
+      actionfuncs:
+        - ChangeDialog: ["sir_portrait", "guilt"]
+
+order_knowledge:
+  line: "The Order? *bitter laugh* I KNOW it intimately. I founded it. In my arrogance. My cruelty. My fear of death."
+  duration: 4
+  speaker: sir_portrait
+  sound: "assets/sounds/dialogs/wolfboy-wolfboytest2.wav"
+  answers:
+    - line: "Tell me everything."
+      actionfuncs:
+        - ChangeDialog: ["sir_portrait", "full_story"]
+    - line: "How do I stop the current Dean?"
+      actionfuncs:
+        - ChangeDialog: ["sir_portrait", "stop_dean"]
+
+went_wrong:
+  line: "I wanted immortality. Instead I got... this. A portrait. Watching generations suffer. Poetic. Terrible."
+  duration: 4
+  speaker: sir_portrait
+  sound: "assets/sounds/dialogs/wolfboy-wolfboytest3.wav"
+  exit:
+    ExitDialog: start
+
+confession:
+  line: "In 1624. Young. Foolish. Terrified of death. I discovered soul binding. Used students as... fuel. I was a monster."
+  duration: 4
+  speaker: sir_portrait
+  sound: "assets/sounds/dialogs/wolfboy-wolfboytest2.wav"
+  answers:
+    - line: "How many?"
+      actionfuncs:
+        - ChangeDialog: ["sir_portrait", "how_many"]
+    - line: "What happened to you?"
+      actionfuncs:
+        - ChangeDialog: ["sir_portrait", "punishment"]
+
+guilt:
+  line: "400 years of it. Every soul harvested since then... I see them. Know them. Cannot help them. Cannot die."
+  duration: 4
+  speaker: sir_portrait
+  sound: "assets/sounds/dialogs/wolfboy-wolfboytest3.wav"
+  exit:
+    ExitDialog: start
+
+full_story:
+  line: "I created the ritual. The current Dean is the 12th to inherit it. Each one... worse than the last. Power corrupts."
+  duration: 4
+  speaker: sir_portrait
+  sound: "assets/sounds/dialogs/wolfboy-wolfboytest2.wav"
+  answers:
+    - line: "How do I end it?"
+      actionfuncs:
+        - ChangeDialog: ["sir_portrait", "ending"]
+    - line: "Why haven't YOU stopped it?"
+      actionfuncs:
+        - ChangeDialog: ["sir_portrait", "helpless"]
+
+stop_dean:
+  line: "The soul contracts! Break them and his power crumbles! But you'll need proof. Evidence. His journal."
+  duration: 4
+  speaker: sir_portrait
+  sound: "assets/sounds/dialogs/wolfboy-wolfboytest3.wav"
+  answers:
+    - line: "Where's the journal?"
+      actionfuncs:
+        - ChangeDialog: ["sir_portrait", "journal_location"]
+    - line: "Can you help me?"
+      actionfuncs:
+        - ChangeDialog: ["sir_portrait", "help"]
+
+how_many:
+  line: "I harvested 13 souls. The first 13. Before guilt consumed me. Before I was... punished. Trapped here."
+  duration: 4
+  speaker: sir_portrait
+  sound: "assets/sounds/dialogs/wolfboy-wolfboytest2.wav"
+  exit:
+    ExitDialog: start
+
+punishment:
+  line: "A student's parent. Death himself. YOUR ancestor. Cursed me to watch but never act. Very Death-like punishment."
+  duration: 4
+  speaker: sir_portrait
+  sound: "assets/sounds/dialogs/wolfboy-wolfboytest3.wav"
+  exit:
+    ExitDialog: start
+
+ending:
+  line: "The Dean's journal has the ritual to break ALL contracts. But it's hidden behind my portrait. Literally."
+  duration: 4
+  speaker: sir_portrait
+  sound: "assets/sounds/dialogs/wolfboy-wolfboytest2.wav"
+  exit:
+    ExitDialog: start
+
+helpless:
+  line: "I am PAINT. I cannot move. Cannot touch. Can only watch and advise. The curse of my ancestor's making."
+  duration: 4
+  speaker: sir_portrait
+  sound: "assets/sounds/dialogs/wolfboy-wolfboytest3.wav"
+  exit:
+    ExitDialog: start
+
+journal_location:
+  line: "Behind my frame! A hidden safe! But to open it... you need to swap my portrait with the founder's. Real irony."
+  duration: 4
+  speaker: sir_portrait
+  sound: "assets/sounds/dialogs/wolfboy-wolfboytest2.wav"
+  answers:
+    - line: "I have the Founder's Portrait!"
+      actionfuncs:
+        - TakeItemString:
+          - FoundersPortrait
+          - no_portrait
+          - got_portrait
+    - line: "Where do I find the portrait?"
+      actionfuncs:
+        - ChangeDialog: ["sir_portrait", "portrait_where"]
+
+help:
+  line: "I can guide you! But I need... a token. The Cursed Trophy from this room. Give it to me as proof of commitment."
+  duration: 4
+  speaker: sir_portrait
+  sound: "assets/sounds/dialogs/wolfboy-wolfboytest3.wav"
+  answers:
+    - line: "Here's the Cursed Trophy!"
+      actionfuncs:
+        - TakeItemString:
+          - CursedTrophy
+          - no_trophy
+          - got_trophy
+    - line: "I'll find it."
+      actionfuncs:
+        - ChangeDialog: ["sir_portrait", "bye"]
+
+portrait_where:
+  line: "The Teachers' Lounge has one. Or the Basement archives. Somewhere dusty and forgotten. Like my conscience."
+  duration: 4
+  speaker: sir_portrait
+  sound: "assets/sounds/dialogs/wolfboy-wolfboytest2.wav"
+  exit:
+    ExitDialog: start
+
+no_portrait:
+  line: "That's not the founder's portrait! I need the OFFICIAL one! With the creepy eyes! We all have creepy eyes!"
+  sound: "assets/sounds/dialogs/wolfboy-wolffailure.wav"
+  duration: 3
+  speaker: sir_portrait
+  exit:
+    ExitDialog: start
+
+no_trophy:
+  line: "That's not the Cursed Trophy! I need the 1666 Dark Arts Championship trophy! It's VERY cursed! Glows ominously!"
+  sound: "assets/sounds/dialogs/wolfboy-wolffailure.wav"
+  duration: 3
+  speaker: sir_portrait
+  exit:
+    ExitDialog: start
+
+got_trophy:
+  line: "The trophy! My guilt manifested! Take this portrait - it opens the safe! And... tell them I'm sorry. All of them."
+  sound: "assets/sounds/dialogs/wolfboy-wolfsuccess.wav"
+  duration: 4
+  speaker: sir_portrait
+  exit:
+    ExitDialog: confessed
+  unlock: true
+
+got_portrait:
+  line: "You found it! Now swap it with me! Behind my frame lies the Dean's journal! 400 years of guilt... finally useful."
+  sound: "assets/sounds/dialogs/wolfboy-wolfsuccess.wav"
+  duration: 4
+  speaker: sir_portrait
+  exit:
+    ExitDialog: confessed
+  unlock: true
+
+confessed:
+  line: "End this cycle. Break the contracts. Free the souls. And maybe... maybe I'll finally be able to close my eyes."
+  duration: 3
+  speaker: sir_portrait
+  sound: "assets/sounds/dialogs/wolfboy-bye2.wav"
+  exit:
+    ExitDialog: confessed

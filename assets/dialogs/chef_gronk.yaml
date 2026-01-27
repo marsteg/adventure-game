@@ -1,0 +1,195 @@
+description:
+  locked:
+    line: "A troll chef. His food is... questionable. His hygiene is... also questionable. Everything is questionable."
+    sound: "assets/sounds/dialogs/wolfboy-description-locked.wav"
+    duration: 3
+  unlocked:
+    line: "Gronk's my food guy now. Never ask what's in the soup. Ignorance is bliss. And survival."
+    sound: "assets/sounds/dialogs/wolfboy-description-unlocked.wav"
+    duration: 3
+
+bye:
+  line: "Come back! Tuesday is Taco Day! Gronk put extra... flavor. You no want know what flavor."
+  duration: 3
+  speaker: chef_gronk
+  sound: "assets/sounds/dialogs/wolfboy-bye.wav"
+  exit:
+    ExitDialog: start
+
+start:
+  line: "WELCOME TO GRONK'S KITCHEN! Gronk make food! Some of it even for eating!"
+  duration: 4
+  speaker: chef_gronk
+  sound: "assets/sounds/dialogs/wolfboy-start.wav"
+  answers:
+    - line: "What do you mean 'some of it'?"
+      actionfuncs:
+        - ChangeDialog: ["chef_gronk", "food_quality"]
+    - line: "I'm investigating the Order of the Crimson Moon."
+      actionfuncs:
+        - ChangeDialog: ["chef_gronk", "order_info"]
+    - line: "What's in the mystery meat?"
+      actionfuncs:
+        - ChangeDialog: ["chef_gronk", "mystery"]
+
+food_quality:
+  line: "Some food for eating. Some for... other things. Potions. Curses. Emergency projectiles. Gronk versatile!"
+  duration: 4
+  speaker: chef_gronk
+  sound: "assets/sounds/dialogs/wolfboy-wolfboytest2.wav"
+  answers:
+    - line: "Emergency projectiles?!"
+      actionfuncs:
+        - ChangeDialog: ["chef_gronk", "projectiles"]
+    - line: "What potions do you make?"
+      actionfuncs:
+        - ChangeDialog: ["chef_gronk", "potions"]
+
+order_info:
+  line: "Gronk see many things in kitchen! Late night meetings. Hooded figures. They order extra garlic bread. Suspicious!"
+  duration: 4
+  speaker: chef_gronk
+  sound: "assets/sounds/dialogs/wolfboy-wolfboytest3.wav"
+  answers:
+    - line: "Who comes to these meetings?"
+      actionfuncs:
+        - ChangeDialog: ["chef_gronk", "meeting_people"]
+    - line: "Garlic bread is suspicious?"
+      actionfuncs:
+        - ChangeDialog: ["chef_gronk", "garlic"]
+
+mystery:
+  line: "MYSTERY is in the name! If Gronk tell, not mystery anymore! That ruin the brand!"
+  duration: 4
+  speaker: chef_gronk
+  sound: "assets/sounds/dialogs/wolfboy-wolfboytest2.wav"
+  answers:
+    - line: "Fair point, actually."
+      actionfuncs:
+        - ChangeDialog: ["chef_gronk", "fair"]
+    - line: "Is it... students?"
+      actionfuncs:
+        - ChangeDialog: ["chef_gronk", "dark_joke"]
+
+projectiles:
+  line: "Last week, dragon in courtyard. Gronk throw meatball. Dragon go boom. Meatball champion!"
+  duration: 4
+  speaker: chef_gronk
+  sound: "assets/sounds/dialogs/wolfboy-wolfboytest3.wav"
+  exit:
+    ExitDialog: start
+
+potions:
+  line: "Love potions - very popular! Also hate potions. And 'meh' potions for when you feel nothing. Full emotional range!"
+  duration: 4
+  speaker: chef_gronk
+  sound: "assets/sounds/dialogs/wolfboy-wolfboytest2.wav"
+  exit:
+    ExitDialog: start
+
+meeting_people:
+  line: "Dean always there. Smile too big. Teeth too white. He brush after eating souls. Dental hygiene important."
+  duration: 4
+  speaker: chef_gronk
+  sound: "assets/sounds/dialogs/wolfboy-wolfboytest3.wav"
+  answers:
+    - line: "After eating... SOULS?!"
+      actionfuncs:
+        - ChangeDialog: ["chef_gronk", "souls"]
+    - line: "What else have you seen?"
+      actionfuncs:
+        - ChangeDialog: ["chef_gronk", "more_info"]
+
+garlic:
+  line: "This vampire school. Nobody eat garlic! But THEY do. Either not vampires, or very brave. Or evil. Evil works."
+  duration: 4
+  speaker: chef_gronk
+  sound: "assets/sounds/dialogs/wolfboy-wolfboytest2.wav"
+  exit:
+    ExitDialog: start
+
+fair:
+  line: "Gronk like you! You understand branding! Here, have special soup. Only MOSTLY vegetables!"
+  duration: 3
+  speaker: chef_gronk
+  sound: "assets/sounds/dialogs/wolfboy-wolfboytest3.wav"
+  exit:
+    ExitDialog: start
+
+dark_joke:
+  line: "HAH! Good joke! ...Wait, you serious? Gronk no cook students! Too stringy. Need marinating. I MEAN NO!"
+  duration: 4
+  speaker: chef_gronk
+  sound: "assets/sounds/dialogs/wolfboy-wolfboytest2.wav"
+  exit:
+    ExitDialog: start
+
+souls:
+  line: "Gronk see many things. Some things better not seeing. Gronk have NDA. Non-Disclosure Agreement. Very legally binding!"
+  duration: 4
+  speaker: chef_gronk
+  sound: "assets/sounds/dialogs/wolfboy-wolfboytest3.wav"
+  answers:
+    - line: "Can anything make you talk?"
+      actionfuncs:
+        - ChangeDialog: ["chef_gronk", "bribe"]
+    - line: "What kind of soul-eating?"
+      actionfuncs:
+        - ChangeDialog: ["chef_gronk", "ritual"]
+
+more_info:
+  line: "Students go in meetings. Not all come out. Gronk thought they use back door. Now Gronk think... no back door."
+  duration: 4
+  speaker: chef_gronk
+  sound: "assets/sounds/dialogs/wolfboy-wolfboytest2.wav"
+  exit:
+    ExitDialog: start
+
+bribe:
+  line: "Gronk like VIP pass to greenhouse! Fresh ingredients! You get pass, Gronk give you EVERYTHING. Even recipe!"
+  duration: 4
+  speaker: chef_gronk
+  sound: "assets/sounds/dialogs/wolfboy-wolfboytest3.wav"
+  answers:
+    - line: "Here's a Cafeteria Pass!"
+      actionfuncs:
+        - TakeItemString:
+          - CafeteriaPass
+          - no_pass
+          - got_pass
+    - line: "I'll find the pass."
+      actionfuncs:
+        - ChangeDialog: ["chef_gronk", "bye"]
+
+ritual:
+  line: "They chant. Lights flicker. Then... silence. Like someone turned off. Gronk pretend washing dishes VERY LOUDLY."
+  duration: 4
+  speaker: chef_gronk
+  sound: "assets/sounds/dialogs/wolfboy-wolfboytest2.wav"
+  exit:
+    ExitDialog: start
+
+no_pass:
+  line: "That not VIP pass! Gronk need OFFICIAL access! No pass, no secrets. That how bribery work!"
+  sound: "assets/sounds/dialogs/wolfboy-wolffailure.wav"
+  duration: 3
+  speaker: chef_gronk
+  exit:
+    ExitDialog: start
+
+got_pass:
+  line: "YES! FRESH HERBS! Okay, truth: Dean keeps extra souls in Trophy Room. Also, here - mystery meat for energy!"
+  sound: "assets/sounds/dialogs/wolfboy-wolfsuccess.wav"
+  duration: 4
+  speaker: chef_gronk
+  exit:
+    ExitDialog: fed
+  unlock: true
+
+fed:
+  line: "Gronk friend now! Come back anytime! Gronk make special not-poison cake for friend! Promise only LITTLE poison!"
+  duration: 3
+  speaker: chef_gronk
+  sound: "assets/sounds/dialogs/wolfboy-bye2.wav"
+  exit:
+    ExitDialog: fed

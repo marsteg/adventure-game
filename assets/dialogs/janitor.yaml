@@ -1,0 +1,239 @@
+description:
+  locked:
+    line: "The janitor. He's seen things. Cleaned things. Probably knows where the bodies are buried. Literally."
+    sound: "assets/sounds/dialogs/wolfboy-description-locked.wav"
+    duration: 3
+  unlocked:
+    line: "We're conspirators now. He slipped me info, I kept his secret. Classic school noir."
+    sound: "assets/sounds/dialogs/wolfboy-description-unlocked.wav"
+    duration: 3
+
+bye:
+  line: "Remember: you never talked to me. I was never here. Also, don't tell anyone about the mop closet portal."
+  duration: 3
+  speaker: janitor
+  sound: "assets/sounds/dialogs/wolfboy-bye.wav"
+  exit:
+    ExitDialog: start
+
+start:
+  line: "*nervous sweeping* Oh! Death's daughter! I've been expecting you. Well, dreading you. Same thing."
+  duration: 4
+  speaker: janitor
+  sound: "assets/sounds/dialogs/wolfboy-start.wav"
+  answers:
+    - line: "Why were you expecting me?"
+      actionfuncs:
+        - ChangeDialog: ["janitor", "expecting"]
+    - line: "Why dread ME specifically?"
+      actionfuncs:
+        - ChangeDialog: ["janitor", "dread"]
+    - line: "What's with the mop closet?"
+      actionfuncs:
+        - ChangeDialog: ["janitor", "mop_closet"]
+
+expecting:
+  line: "Your father sends his regards. He said 'clean up the mess.' I assume he meant metaphorically? Please?"
+  duration: 4
+  speaker: janitor
+  sound: "assets/sounds/dialogs/wolfboy-wolfboytest2.wav"
+  answers:
+    - line: "Dad talks to you?"
+      actionfuncs:
+        - ChangeDialog: ["janitor", "dad_contact"]
+    - line: "What mess?"
+      actionfuncs:
+        - ChangeDialog: ["janitor", "the_mess"]
+
+dread:
+  line: "Last time Death's family visited, we had a 'retirement party'. No cake. Lots of screaming. Bad Yelp reviews."
+  duration: 4
+  speaker: janitor
+  sound: "assets/sounds/dialogs/wolfboy-wolfboytest3.wav"
+  answers:
+    - line: "That wasn't me. Probably my uncle."
+      actionfuncs:
+        - ChangeDialog: ["janitor", "uncle"]
+    - line: "I'm just here for school."
+      actionfuncs:
+        - ChangeDialog: ["janitor", "school_concern"]
+
+mop_closet:
+  line: "The portal? Oh that's just to the shadow realm. Very convenient for disposing of... evidence. I MEAN TRASH."
+  duration: 4
+  speaker: janitor
+  sound: "assets/sounds/dialogs/wolfboy-wolfboytest2.wav"
+  exit:
+    ExitDialog: start
+
+dad_contact:
+  line: "We have a group chat. 'Employees of Immortal Entities'. Mostly it's complaints about benefits and PTO."
+  duration: 4
+  speaker: janitor
+  sound: "assets/sounds/dialogs/wolfboy-wolfboytest3.wav"
+  answers:
+    - line: "My dad is in a GROUP CHAT?!"
+      actionfuncs:
+        - ChangeDialog: ["janitor", "group_chat"]
+    - line: "What did he say about the mess?"
+      actionfuncs:
+        - ChangeDialog: ["janitor", "the_mess"]
+
+group_chat:
+  line: "He mainly shares work memes. 'Another day, another harvest.' Gets pity laughs. Satan's the worst. Only sends minion memes."
+  duration: 4
+  speaker: janitor
+  sound: "assets/sounds/dialogs/wolfboy-wolfboytest2.wav"
+  exit:
+    ExitDialog: start
+
+uncle:
+  line: "Uncle Pestilence? Yeah, we had to deep clean for WEEKS. Still find plague rats in the vents sometimes."
+  duration: 4
+  speaker: janitor
+  sound: "assets/sounds/dialogs/wolfboy-wolfboytest3.wav"
+  exit:
+    ExitDialog: start
+
+school_concern:
+  line: "School, right. Look, this place is dangerous. The Dean's running something dark. Darker than your family reunions even."
+  duration: 4
+  speaker: janitor
+  sound: "assets/sounds/dialogs/wolfboy-wolfboytest2.wav"
+  answers:
+    - line: "What do you know about the Dean?"
+      actionfuncs:
+        - ChangeDialog: ["janitor", "dean_info"]
+    - line: "My family reunions aren't THAT dark..."
+      actionfuncs:
+        - ChangeDialog: ["janitor", "family_defense"]
+
+the_mess:
+  line: "The Order of the Crimson Moon. They're using students for... experiments. Magical ones. Very unethical. Like EA-level evil."
+  duration: 4
+  speaker: janitor
+  sound: "assets/sounds/dialogs/wolfboy-wolfboytest3.wav"
+  answers:
+    - line: "EA-level? That IS evil."
+      actionfuncs:
+        - ChangeDialog: ["janitor", "ea_joke"]
+    - line: "What kind of experiments?"
+      actionfuncs:
+        - ChangeDialog: ["janitor", "experiments"]
+
+ea_joke:
+  line: "I know, right? At least demons are upfront about their soul-stealing. EA hides it in loot boxes."
+  duration: 4
+  speaker: janitor
+  sound: "assets/sounds/dialogs/wolfboy-wolfboytest2.wav"
+  answers:
+    - line: "You're very aware of gaming controversies."
+      actionfuncs:
+        - ChangeDialog: ["janitor", "gaming"]
+    - line: "Tell me about the experiments."
+      actionfuncs:
+        - ChangeDialog: ["janitor", "experiments"]
+
+gaming:
+  line: "I have a Steam account. 347 games. Played 12. The janitor life is slower than people think."
+  duration: 3
+  speaker: janitor
+  sound: "assets/sounds/dialogs/wolfboy-wolfboytest3.wav"
+  exit:
+    ExitDialog: start
+
+family_defense:
+  line: "Your Aunt Famine started a food fight at Thanksgiving. With actual famine. Three kingdoms fell. I heard stories."
+  duration: 4
+  speaker: janitor
+  sound: "assets/sounds/dialogs/wolfboy-wolfboytest2.wav"
+  exit:
+    ExitDialog: start
+
+dean_info:
+  line: "He runs the Order. Has midnight meetings. I've seen hooded figures entering the library. Very Scooby-Doo villain energy."
+  duration: 4
+  speaker: janitor
+  sound: "assets/sounds/dialogs/wolfboy-wolfboytest3.wav"
+  answers:
+    - line: "Do you have proof?"
+      actionfuncs:
+        - ChangeDialog: ["janitor", "proof"]
+    - line: "Where do they meet?"
+      actionfuncs:
+        - ChangeDialog: ["janitor", "meeting_place"]
+
+experiments:
+  line: "They're trying to summon something ancient. The Dark Artifact in their chamber is key. Very 'Raiders of the Lost Ark'. Face melting likely."
+  duration: 4
+  speaker: janitor
+  sound: "assets/sounds/dialogs/wolfboy-wolfboytest2.wav"
+  answers:
+    - line: "I need to stop them."
+      actionfuncs:
+        - ChangeDialog: ["janitor", "hero_mode"]
+    - line: "Face melting? I should call my dad..."
+      actionfuncs:
+        - ChangeDialog: ["janitor", "dad_help"]
+
+proof:
+  line: "There's a note in the library. I couldn't grab it - too risky. But if someone brings it to me, I can decode it..."
+  duration: 4
+  speaker: janitor
+  sound: "assets/sounds/dialogs/wolfboy-wolfboytest3.wav"
+  answers:
+    - line: "I'll find this note."
+      actionfuncs:
+        - ChangeDialog: ["janitor", "note_quest"]
+    - line: "What's in it for you?"
+      actionfuncs:
+        - ChangeDialog: ["janitor", "motivation"]
+
+meeting_place:
+  line: "The Forbidden Library. There's a secret chamber behind the books. You'll need a Crystal Key. Talk to the librarian."
+  duration: 4
+  speaker: janitor
+  sound: "assets/sounds/dialogs/wolfboy-wolfboytest2.wav"
+  exit:
+    ExitDialog: start
+
+hero_mode:
+  line: "Finally, someone with spine! Get the Dark Artifact from their chamber. Expose the Dean. Save the school. Basic hero stuff."
+  duration: 4
+  speaker: janitor
+  sound: "assets/sounds/dialogs/wolfboy-wolfboytest3.wav"
+  exit:
+    ExitDialog: start
+
+dad_help:
+  line: "Don't bother him. He's busy with the quarterly reaping reports. Fiscal year-end is BRUTAL in the death business."
+  duration: 4
+  speaker: janitor
+  sound: "assets/sounds/dialogs/wolfboy-wolfboytest2.wav"
+  exit:
+    ExitDialog: start
+
+note_quest:
+  line: "The Mysterious Note is in the library. Bring it to me. I'll decode it and give you something useful. Old janitor knowledge."
+  duration: 4
+  speaker: janitor
+  sound: "assets/sounds/dialogs/wolfboy-wolfboytest3.wav"
+  exit:
+    ExitDialog: start
+
+motivation:
+  line: "My pension! The Dean cut our retirement fund for 'Order expenses'. I sweep floors, I deserve 401k matching!"
+  duration: 4
+  speaker: janitor
+  sound: "assets/sounds/dialogs/wolfboy-wolfboytest2.wav"
+  exit:
+    ExitDialog: start
+
+careful:
+  line: "You got the note! Here's a secret - the Dean keeps an Old Key in storage that opens a shortcut. Take this paper too - important clue!"
+  duration: 4
+  speaker: janitor
+  sound: "assets/sounds/dialogs/wolfboy-bye2.wav"
+  exit:
+    ExitDialog: bye
+  unlock: true

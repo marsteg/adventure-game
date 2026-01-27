@@ -1,12 +1,15 @@
-import pygame
+"""Game constants and configuration."""
 
+# Screen settings
 SCREEN_WIDTH = 1280
 SCREEN_HEIGHT = 720
-
-INVENTORY_HEIGHT = (SCREEN_HEIGHT/100) * 15 # 15% of the screen height
+INVENTORY_HEIGHT = 54  # Slim bar at bottom
 FPS = 60
+
+# Interaction settings
 INTERACTION_DISTANCE = 80
 
+# Colors
 WHITE = (255, 255, 255)
 YELLOW = (255, 255, 0)
 BLACK = (0, 0, 0)
@@ -14,35 +17,20 @@ RED = (255, 0, 0)
 GREEN = (0, 255, 0)
 BLUE = (0, 0, 255)
 PURPLE = (160, 32, 240)
+
+# Font settings
 SPEECH_SIZE = 25
 SPEECH_FONT = 'freesansbold.ttf'
 
+# Audio settings
 BACKGROUND_VOLUME = 0.1
 
 
 def at_percentage_width(percentage):
-    #print((SCREEN_WIDTH/100)*percentage)
-    return (SCREEN_WIDTH/100)*percentage
+    """Calculate a position as percentage of screen width."""
+    return SCREEN_WIDTH * percentage / 100
+
 
 def at_percentage_height(percentage):
-    #print(((SCREEN_HEIGHT-INVENTORY_HEIGHT)/100)*percentage)
-    return ((SCREEN_HEIGHT-INVENTORY_HEIGHT)/100)*percentage
-
-ASTEROID_MIN_RADIUS = 20
-ASTEROID_KINDS = 3
-ASTEROID_SPAWN_RATE = 0.8  # seconds
-ASTEROID_MAX_RADIUS = ASTEROID_MIN_RADIUS * ASTEROID_KINDS
-
-PLAYER_RADIUS = 20
-PLAYER_TURN_SPEED = 300
-PLAYER_SPEED = 200
-PLAYER_SHOOT_SPEED = 500
-PLAYER_SHOOT_COOLDOWN = 0.3
-PLAYER_LIVES = 3
-
-SHIP_SPAWN_RATE = 2  # seconds
-SHIP_MAX_RADIUS = 20
-SHIP_MIN_RADIUS = 10
-
-
-AMMO_SPAWN_RATE = 5  # seconds
+    """Calculate a position as percentage of playable screen height (excluding inventory)."""
+    return (SCREEN_HEIGHT - INVENTORY_HEIGHT) * percentage / 100

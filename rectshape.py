@@ -1,37 +1,45 @@
 import pygame
 
-# Base class for game objects
+
 class RectShape(pygame.sprite.Sprite):
+    """Base class for rectangular game objects (Items, Doors, Actions, NPCs)."""
+
     def __init__(self, left, top, width, height, image):
-        # we will be using this later
         if hasattr(self, "containers"):
             super().__init__(self.containers)
         else:
             super().__init__()
 
-        #self.position = pygame.Vector2(x, y)
         self.velocity = pygame.Vector2(0, 0)
         self.left = left
         self.top = top
         self.width = width
         self.height = height
         self.image = image
-     
 
     def draw(self, screen):
-        # sub-classes must override
+        """Override in subclasses to draw the object."""
         pass
 
     def update(self, dt):
-        # sub-classes must override
+        """Override in subclasses to update the object."""
         pass
 
     def kill(self, arg1, arg2):
-        # sub-classes must override
+        """Override in subclasses to handle object destruction."""
         pass
 
     def collides_with(self, other):
+        """Check if this object collides with another."""
         return self.rect.colliderect(other.rect)
 
-    
-    
+    def collidepoint(self, pos):
+        """Check if a point is within this object's rect."""
+        return self.rect.collidepoint(pos)
+
+    def shine(self, screen):
+        """Draw a highlight overlay on the object."""
+        shiner = pygame.Surface((self.rect.width, self.rect.height))
+        shiner.fill((255, 255, 255))
+        shiner.set_alpha(100)
+        screen.blit(shiner, self.rect.topleft)

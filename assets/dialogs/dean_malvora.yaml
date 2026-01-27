@@ -1,0 +1,219 @@
+description:
+  locked:
+    line: "Dean Malvora. Smiles too much. Never ages. Definitely evil. Very villain energy. Very punchable face."
+    sound: "assets/sounds/dialogs/wolfboy-description-locked.wav"
+    duration: 3
+  unlocked:
+    line: "The Dean is exposed. His power is broken. Netflix documentary incoming. For real this time."
+    sound: "assets/sounds/dialogs/wolfboy-description-unlocked.wav"
+    duration: 3
+
+bye:
+  line: "Leaving so soon? Nobody leaves. Not really. Ask the 'graduated' students. Oh wait... you can't. *evil laugh*"
+  duration: 3
+  speaker: dean_malvora
+  sound: "assets/sounds/dialogs/wolfboy-bye.wav"
+  exit:
+    ExitDialog: start
+
+start:
+  line: "Ah, Miss Grimwood! Death's daughter! How... interesting that you found this place. Very few do. Fewer leave."
+  duration: 4
+  speaker: dean_malvora
+  sound: "assets/sounds/dialogs/wolfboy-start.wav"
+  answers:
+    - line: "I know what you've been doing."
+      actionfuncs:
+        - ChangeDialog: ["dean_malvora", "accusations"]
+    - line: "You won't get away with this!"
+      actionfuncs:
+        - ChangeDialog: ["dean_malvora", "cliche"]
+    - line: "Where are all the missing students?"
+      actionfuncs:
+        - ChangeDialog: ["dean_malvora", "students"]
+
+accusations:
+  line: "Do you? Please, enlighten me. What TERRIBLE crimes has the humble Dean of Grimwood Academy committed?"
+  duration: 4
+  speaker: dean_malvora
+  sound: "assets/sounds/dialogs/wolfboy-wolfboytest2.wav"
+  answers:
+    - line: "Soul harvesting! Student sacrifices!"
+      actionfuncs:
+        - ChangeDialog: ["dean_malvora", "denying"]
+    - line: "I have proof!"
+      actionfuncs:
+        - ChangeDialog: ["dean_malvora", "proof_demand"]
+
+cliche:
+  line: "How delightfully cliche! You sound like every hero who's stood there. They're all... how do I put this... unavailable now."
+  duration: 4
+  speaker: dean_malvora
+  sound: "assets/sounds/dialogs/wolfboy-wolfboytest3.wav"
+  answers:
+    - line: "I'm not like the others."
+      actionfuncs:
+        - ChangeDialog: ["dean_malvora", "different"]
+    - line: "You're threatening me?"
+      actionfuncs:
+        - ChangeDialog: ["dean_malvora", "threat"]
+
+students:
+  line: "Missing? They GRADUATED! Very successfully! Their... essence... contributes to this school's excellence. Forever."
+  duration: 4
+  speaker: dean_malvora
+  sound: "assets/sounds/dialogs/wolfboy-wolfboytest2.wav"
+  answers:
+    - line: "You absorb their souls!"
+      actionfuncs:
+        - ChangeDialog: ["dean_malvora", "revealing"]
+    - line: "I've talked to their ghosts."
+      actionfuncs:
+        - ChangeDialog: ["dean_malvora", "ghosts"]
+
+denying:
+  line: "Such imagination! Soul harvesting? That's barbaric! Also technically very difficult. Not that I'd know. *adjusts collar*"
+  duration: 4
+  speaker: dean_malvora
+  sound: "assets/sounds/dialogs/wolfboy-wolfboytest3.wav"
+  exit:
+    ExitDialog: start
+
+proof_demand:
+  line: "*smile falters* Proof? What... kind of proof? Hypothetically. For academic discussion purposes."
+  duration: 4
+  speaker: dean_malvora
+  sound: "assets/sounds/dialogs/wolfboy-wolfboytest2.wav"
+  answers:
+    - line: "Your journal. The contracts. Everything."
+      actionfuncs:
+        - ChangeDialog: ["dean_malvora", "nervous"]
+    - line: "Witnesses. Lots of witnesses."
+      actionfuncs:
+        - ChangeDialog: ["dean_malvora", "witnesses"]
+
+different:
+  line: "Oh, they ALL say that! Right before they become part of my... retirement fund. Death's daughter or not, you're mortal."
+  duration: 4
+  speaker: dean_malvora
+  sound: "assets/sounds/dialogs/wolfboy-wolfboytest3.wav"
+  exit:
+    ExitDialog: start
+
+threat:
+  line: "Threatening? Me? I'm just... stating facts. Historical facts. About what happens to troublemakers. Educational, really."
+  duration: 4
+  speaker: dean_malvora
+  sound: "assets/sounds/dialogs/wolfboy-wolfboytest2.wav"
+  exit:
+    ExitDialog: start
+
+revealing:
+  line: "Absorb? Such a harsh word! I prefer 'reallocate spiritual resources'! Much more corporate! Very sustainable!"
+  duration: 4
+  speaker: dean_malvora
+  sound: "assets/sounds/dialogs/wolfboy-wolfboytest3.wav"
+  exit:
+    ExitDialog: start
+
+ghosts:
+  line: "Ghosts? Talking? That's impossible! Their souls are BOUND! They can't... *realization* ...you have ghost glasses, don't you?"
+  duration: 4
+  speaker: dean_malvora
+  sound: "assets/sounds/dialogs/wolfboy-wolfboytest2.wav"
+  answers:
+    - line: "They told me EVERYTHING."
+      actionfuncs:
+        - ChangeDialog: ["dean_malvora", "everything"]
+    - line: "Timmy says hi."
+      actionfuncs:
+        - ChangeDialog: ["dean_malvora", "timmy"]
+
+nervous:
+  line: "The journal... the contracts... *sweating* Those are CONFIDENTIAL! Academic records! Very PRIVATE villainy!"
+  duration: 4
+  speaker: dean_malvora
+  sound: "assets/sounds/dialogs/wolfboy-wolfboytest3.wav"
+  answers:
+    - line: "Here's the Proof of Corruption!"
+      actionfuncs:
+        - TakeItemString:
+          - ProofOfCorruption
+          - no_proof
+          - got_proof
+    - line: "Nervous? You should be."
+      actionfuncs:
+        - ChangeDialog: ["dean_malvora", "standoff"]
+
+witnesses:
+  line: "Witnesses? Who would believe... *looks around* ...the ghosts? The vampire? The TALKING PLANT?! Actually... that's a lot."
+  duration: 4
+  speaker: dean_malvora
+  sound: "assets/sounds/dialogs/wolfboy-wolfboytest2.wav"
+  exit:
+    ExitDialog: start
+
+everything:
+  line: "Everything?! The ritual? The contracts? The Netflix password sharing?! That's the REAL crime! *panicking*"
+  duration: 4
+  speaker: dean_malvora
+  sound: "assets/sounds/dialogs/wolfboy-wolfboytest3.wav"
+  exit:
+    ExitDialog: start
+
+timmy:
+  line: "T-TIMMY?! My first... I mean... the student who 'transferred' in 1984?! He's STILL TALKING?!"
+  duration: 4
+  speaker: dean_malvora
+  sound: "assets/sounds/dialogs/wolfboy-wolfboytest2.wav"
+  exit:
+    ExitDialog: start
+
+standoff:
+  line: "This is a standoff, isn't it? Classic hero-villain moment? Fine. What do you WANT? Everyone has a price!"
+  duration: 4
+  speaker: dean_malvora
+  sound: "assets/sounds/dialogs/wolfboy-wolfboytest3.wav"
+  answers:
+    - line: "Justice for the students!"
+      actionfuncs:
+        - ChangeDialog: ["dean_malvora", "justice"]
+    - line: "Here's the Proof of Corruption!"
+      actionfuncs:
+        - TakeItemString:
+          - ProofOfCorruption
+          - no_proof
+          - got_proof
+
+justice:
+  line: "Justice?! How BORING! I could offer power! Immortality! Really good parking! ...No? Fine. Let's do this the hard way."
+  duration: 4
+  speaker: dean_malvora
+  sound: "assets/sounds/dialogs/wolfboy-wolfboytest2.wav"
+  exit:
+    ExitDialog: start
+
+no_proof:
+  line: "HA! That's not proof! That's... whatever that is! Come back when you have REAL evidence! *relieved but trying to hide it*"
+  sound: "assets/sounds/dialogs/wolfboy-wolffailure.wav"
+  duration: 3
+  speaker: dean_malvora
+  exit:
+    ExitDialog: start
+
+got_proof:
+  line: "NO! THE CONTRACTS! MY JOURNAL! *power crackling, fading* You... you've done it. The souls are... free. I'm... old now."
+  sound: "assets/sounds/dialogs/wolfboy-wolfsuccess.wav"
+  duration: 5
+  speaker: dean_malvora
+  exit:
+    ExitDialog: defeated
+  unlock: true
+
+defeated:
+  line: "*ancient and withered* 40 years... I felt every stolen year leaving. You win, Death's daughter. Your father will collect me now."
+  duration: 4
+  speaker: dean_malvora
+  sound: "assets/sounds/dialogs/wolfboy-bye2.wav"
+  exit:
+    ExitDialog: defeated

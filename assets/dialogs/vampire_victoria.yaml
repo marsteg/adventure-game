@@ -1,0 +1,250 @@
+description:
+  locked:
+    line: "A vampire who's 'eternally 17'. Been doing high school for 300 years. That's real horror."
+    sound: "assets/sounds/dialogs/wolfboy-description-locked.wav"
+    duration: 3
+  unlocked:
+    line: "Victoria and I are cool now. She's seen a lot of students 'graduate'. The air quotes are hers."
+    sound: "assets/sounds/dialogs/wolfboy-description-unlocked.wav"
+    duration: 3
+
+bye:
+  line: "See you around! Unless I don't. People here have a habit of... not being seen around. Just saying."
+  duration: 3
+  speaker: vampire_victoria
+  sound: "assets/sounds/dialogs/wolfboy-bye.wav"
+  exit:
+    ExitDialog: start
+
+start:
+  line: "Oh, you're new. I'm Victoria. Been here since 1724. Before you ask - yes, that's THREE HUNDRED YEARS of homework."
+  duration: 4
+  speaker: vampire_victoria
+  sound: "assets/sounds/dialogs/wolfboy-start.wav"
+  answers:
+    - line: "300 years of high school?!"
+      actionfuncs:
+        - ChangeDialog: ["vampire_victoria", "long_time"]
+    - line: "You must have seen a lot of changes."
+      actionfuncs:
+        - ChangeDialog: ["vampire_victoria", "changes"]
+    - line: "I'm Death's daughter. Morticia."
+      actionfuncs:
+        - ChangeDialog: ["vampire_victoria", "death_daughter"]
+
+long_time:
+  line: "I've done Algebra ONE HUNDRED TIMES. I know every answer. Still somehow get C's. The curse of immortality."
+  duration: 4
+  speaker: vampire_victoria
+  sound: "assets/sounds/dialogs/wolfboy-wolfboytest2.wav"
+  answers:
+    - line: "Why stay here so long?"
+      actionfuncs:
+        - ChangeDialog: ["vampire_victoria", "why_stay"]
+    - line: "You must know all the school secrets."
+      actionfuncs:
+        - ChangeDialog: ["vampire_victoria", "secrets"]
+
+changes:
+  line: "The building changed. The uniforms changed. The torture methods... wait, I mean 'discipline'. Very different."
+  duration: 4
+  speaker: vampire_victoria
+  sound: "assets/sounds/dialogs/wolfboy-wolfboytest3.wav"
+  answers:
+    - line: "Torture methods?!"
+      actionfuncs:
+        - ChangeDialog: ["vampire_victoria", "old_days"]
+    - line: "What about the Dean?"
+      actionfuncs:
+        - ChangeDialog: ["vampire_victoria", "dean_history"]
+
+death_daughter:
+  line: "Your dad and I have an... arrangement. He doesn't collect me, I don't ask questions. Very professional."
+  duration: 4
+  speaker: vampire_victoria
+  sound: "assets/sounds/dialogs/wolfboy-wolfboytest2.wav"
+  answers:
+    - line: "He just lets you exist?"
+      actionfuncs:
+        - ChangeDialog: ["vampire_victoria", "arrangement"]
+    - line: "I'm investigating the Order."
+      actionfuncs:
+        - ChangeDialog: ["vampire_victoria", "order_knowledge"]
+
+why_stay:
+  line: "Tried to leave once. 1856. Didn't work out. Let's say... the school has ways of keeping students. PERMANENT ways."
+  duration: 4
+  speaker: vampire_victoria
+  sound: "assets/sounds/dialogs/wolfboy-wolfboytest3.wav"
+  answers:
+    - line: "Permanent ways?"
+      actionfuncs:
+        - ChangeDialog: ["vampire_victoria", "trapped"]
+    - line: "The Order?"
+      actionfuncs:
+        - ChangeDialog: ["vampire_victoria", "order_knowledge"]
+
+secrets:
+  line: "I've seen 47 Deans. Most lasted 5-10 years. THIS one? Been here since 1984. That's not normal. Even for us."
+  duration: 4
+  speaker: vampire_victoria
+  sound: "assets/sounds/dialogs/wolfboy-wolfboytest2.wav"
+  answers:
+    - line: "How has he lasted so long?"
+      actionfuncs:
+        - ChangeDialog: ["vampire_victoria", "dean_secret"]
+    - line: "What happened to the other Deans?"
+      actionfuncs:
+        - ChangeDialog: ["vampire_victoria", "other_deans"]
+
+old_days:
+  line: "The 1800s were ROUGH. Detention meant actual dungeons. Homework was written in blood. Mine. Standards have improved."
+  duration: 4
+  speaker: vampire_victoria
+  sound: "assets/sounds/dialogs/wolfboy-wolfboytest3.wav"
+  exit:
+    ExitDialog: start
+
+dean_history:
+  line: "Forty years. Same smile. Same suit. Never ages. Either amazing skincare or... well, you know. Soul stuff."
+  duration: 4
+  speaker: vampire_victoria
+  sound: "assets/sounds/dialogs/wolfboy-wolfboytest2.wav"
+  exit:
+    ExitDialog: start
+
+arrangement:
+  line: "Grandfather clause. Literally. My grandfather made a deal with HIS grandfather. Grim family reunions are awkward."
+  duration: 4
+  speaker: vampire_victoria
+  sound: "assets/sounds/dialogs/wolfboy-wolfboytest3.wav"
+  exit:
+    ExitDialog: start
+
+order_knowledge:
+  line: "The Order? I've watched them for centuries. They're REALLY obvious about the evil. Matching robes, midnight meetings..."
+  duration: 4
+  speaker: vampire_victoria
+  sound: "assets/sounds/dialogs/wolfboy-wolfboytest2.wav"
+  answers:
+    - line: "What do they actually do?"
+      actionfuncs:
+        - ChangeDialog: ["vampire_victoria", "order_activities"]
+    - line: "How do I stop them?"
+      actionfuncs:
+        - ChangeDialog: ["vampire_victoria", "stopping"]
+
+trapped:
+  line: "Students who try to leave... 'transfer'. Air quotes because they don't go anywhere. They just... stop existing."
+  duration: 4
+  speaker: vampire_victoria
+  sound: "assets/sounds/dialogs/wolfboy-wolfboytest3.wav"
+  answers:
+    - line: "That's horrifying."
+      actionfuncs:
+        - ChangeDialog: ["vampire_victoria", "horror_agree"]
+    - line: "Where do they actually go?"
+      actionfuncs:
+        - ChangeDialog: ["vampire_victoria", "where_go"]
+
+dean_secret:
+  line: "Soul harvesting. I've seen it. Students go into the Trophy Room's secret chamber... and don't come out the same."
+  duration: 4
+  speaker: vampire_victoria
+  sound: "assets/sounds/dialogs/wolfboy-wolfboytest2.wav"
+  exit:
+    ExitDialog: start
+
+other_deans:
+  line: "Natural causes. Unnatural causes. 'Accidents'. One was literally eaten by the cafeteria. We don't talk about that."
+  duration: 4
+  speaker: vampire_victoria
+  sound: "assets/sounds/dialogs/wolfboy-wolfboytest3.wav"
+  exit:
+    ExitDialog: start
+
+order_activities:
+  line: "Rituals. Chanting. Questionable fashion choices. They've been doing the same stuff since the 1700s. No innovation."
+  duration: 4
+  speaker: vampire_victoria
+  sound: "assets/sounds/dialogs/wolfboy-wolfboytest2.wav"
+  exit:
+    ExitDialog: start
+
+stopping:
+  line: "Evidence. The Dean keeps records - he's obsessively organized. Find his journal, find the truth. I'd help but..."
+  duration: 4
+  speaker: vampire_victoria
+  sound: "assets/sounds/dialogs/wolfboy-wolfboytest3.wav"
+  answers:
+    - line: "But what?"
+      actionfuncs:
+        - ChangeDialog: ["vampire_victoria", "why_not_help"]
+    - line: "Where's his journal?"
+      actionfuncs:
+        - ChangeDialog: ["vampire_victoria", "journal_location"]
+
+horror_agree:
+  line: "Right? Anyway, I stay quiet, I survive. Eternal life and all. Can't enjoy immortality if you're... not mortal-ing."
+  duration: 4
+  speaker: vampire_victoria
+  sound: "assets/sounds/dialogs/wolfboy-wolfboytest2.wav"
+  exit:
+    ExitDialog: start
+
+where_go:
+  line: "The Dean's collection. Their essence powers his immortality. I've counted 312 missing students since 1984."
+  duration: 4
+  speaker: vampire_victoria
+  sound: "assets/sounds/dialogs/wolfboy-wolfboytest3.wav"
+  exit:
+    ExitDialog: start
+
+why_not_help:
+  line: "I'm being watched. But if someone brought me proof another student knew - like a diary - I could share more..."
+  duration: 4
+  speaker: vampire_victoria
+  sound: "assets/sounds/dialogs/wolfboy-wolfboytest2.wav"
+  answers:
+    - line: "Here's a Student Diary!"
+      actionfuncs:
+        - TakeItemString:
+          - StudentDiary
+          - no_diary
+          - got_diary
+    - line: "I'll find one."
+      actionfuncs:
+        - ChangeDialog: ["vampire_victoria", "bye"]
+
+journal_location:
+  line: "Trophy Room. Behind a painting. Classic villain move. They NEVER innovate. It's almost disappointing."
+  duration: 4
+  speaker: vampire_victoria
+  sound: "assets/sounds/dialogs/wolfboy-wolfboytest3.wav"
+  exit:
+    ExitDialog: start
+
+no_diary:
+  line: "That's not a student diary. I need proof that others know. Find a diary, then we talk."
+  sound: "assets/sounds/dialogs/wolfboy-wolffailure.wav"
+  duration: 3
+  speaker: vampire_victoria
+  exit:
+    ExitDialog: start
+
+got_diary:
+  line: "Another student documenting the truth! We're not alone! Here - this wand belonged to a victim. Use it as evidence."
+  sound: "assets/sounds/dialogs/wolfboy-wolfsuccess.wav"
+  duration: 4
+  speaker: vampire_victoria
+  exit:
+    ExitDialog: trusting
+  unlock: true
+
+trusting:
+  line: "I've waited 300 years for someone brave enough to fight back. Don't die. I mean it. Dying is permanent for most."
+  duration: 3
+  speaker: vampire_victoria
+  sound: "assets/sounds/dialogs/wolfboy-bye2.wav"
+  exit:
+    ExitDialog: trusting

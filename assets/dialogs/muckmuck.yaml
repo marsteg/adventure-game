@@ -1,56 +1,215 @@
 description:
   locked:
-    line: "This muckmuck looks really coool."
+    line: "A muckmuck running a bar in a school courtyard. This place has... interesting zoning laws."
     sound: "assets/sounds/dialogs/muckmuck-description-locked.wav"
-    duration: 2
+    duration: 3
   unlocked:
-    line: "This muckmuck looks really coool."
+    line: "My herbal dealer. I mean... botanical friend. Very legal. Probably."
     sound: "assets/sounds/dialogs/muckmuck-description-locked.wav"
     duration: 3
 bye:
-  line: "Bye"
-  duration: 1
+  line: "Come back anytime! Happy hour is when the sun sets. So, like, always in the Underworld wing."
+  duration: 3
   speaker: muckmuck
   sound: "assets/sounds/dialogs/wolfboy-bye.wav"
-  exit: 
+  exit:
     ExitDialog: start
 start:
-  line: "Welcome to my Bar! Sit down and have a drink!"
-  duration: 2
+  line: "Welcome to The Tipsy Cauldron! Best bar in a school courtyard! ...Only bar in a school courtyard."
+  duration: 4
   speaker: muckmuck
   sound: "assets/sounds/dialogs/muckmuck-start.wav"
   answers:
-    - line: "Ok."
+    - line: "How is there a bar in a school?"
       actionfuncs:
-        - ChangeDialog: 
+        - ChangeDialog:
             - muckmuck
-            - muckmuck2
-    - line: "Aha."
+            - bar_explain
+    - line: "What do you serve?"
       actionfuncs:
-        - ExitDialog: 
-          - start
-muckmuck2:
-  line: "Do you need some healing herbs? I got them from Raccoon City!"
-  duration: 2
+        - ChangeDialog:
+            - muckmuck
+            - menu
+    - line: "I need information."
+      actionfuncs:
+        - ChangeDialog:
+            - muckmuck
+            - info
+bar_explain:
+  line: "Magic school, magic rules. Also, the health inspector is a ghost. He just... phases through violations."
+  duration: 4
   speaker: muckmuck
-  sound: "assets/sounds/dialogs/muckmuck-muckmuck2.wav"
+  sound: "assets/sounds/dialogs/wolfboy-wolfboytest2.wav"
   answers:
-    - line: "Sure!"
-      actionfuncs:
-        - ChangeDialog: 
-          - muckmuck
-          - mucksuccess
-    - line: "Nah, thanks!"
+    - line: "That seems like a liability issue."
       actionfuncs:
         - ChangeDialog:
           - muckmuck
-          - bye
-mucksuccess:
-  line: "Enjoy my friend!"
-  sound: "assets/sounds/dialogs/muckmuck-mucksuccess.wav"
-  duration: 2
+          - liability
+    - line: "What's on the menu?"
+      actionfuncs:
+        - ChangeDialog:
+          - muckmuck
+          - menu
+liability:
+  line: "The school's lawyer is a vampire. He's been handling lawsuits for 800 years. Nobody wins against him."
+  duration: 4
   speaker: muckmuck
-  exit: 
+  sound: "assets/sounds/dialogs/wolfboy-wolfboytest3.wav"
+  exit:
+    ExitDialog: start
+menu:
+  line: "We got potions, elixirs, and 'totally not suspicious green herbs' from Raccoon City. Resident Evil fans know."
+  duration: 4
+  speaker: muckmuck
+  sound: "assets/sounds/dialogs/muckmuck-muckmuck2.wav"
+  answers:
+    - line: "Raccoon City? The zombie outbreak place?!"
+      actionfuncs:
+        - ChangeDialog:
+          - muckmuck
+          - raccoon
+    - line: "I'll take the green herbs."
+      actionfuncs:
+        - ChangeDialog:
+          - muckmuck
+          - herb_offer
+raccoon:
+  line: "Best prices after an apocalypse! Everything's clearance when there's zombies. Supply chain issues, you know."
+  duration: 4
+  speaker: muckmuck
+  sound: "assets/sounds/dialogs/wolfboy-wolfboytest2.wav"
+  answers:
+    - line: "Capitalism truly never dies."
+      actionfuncs:
+        - ChangeDialog:
+          - muckmuck
+          - capitalism
+    - line: "Give me those herbs."
+      actionfuncs:
+        - ChangeDialog:
+          - muckmuck
+          - herb_offer
+capitalism:
+  line: "Neither does student debt. But that's a conversation for the philosophy building. Want herbs or not?"
+  duration: 3
+  speaker: muckmuck
+  sound: "assets/sounds/dialogs/wolfboy-wolfboytest3.wav"
+  exit:
+    ExitDialog: start
+info:
+  line: "Information? This is a bar. I know everything. Who's cheating on who. Which professor's a fraud. Dean stuff."
+  duration: 4
+  speaker: muckmuck
+  sound: "assets/sounds/dialogs/wolfboy-wolfboytest2.wav"
+  answers:
+    - line: "Dean stuff? Tell me more."
+      actionfuncs:
+        - ChangeDialog:
+          - muckmuck
+          - dean_gossip
+    - line: "Just give me something useful."
+      actionfuncs:
+        - ChangeDialog:
+          - muckmuck
+          - useful_info
+dean_gossip:
+  line: "The Dean? That guy's shadier than a vampire's sunglasses collection. I heard he runs some secret society."
+  duration: 4
+  speaker: muckmuck
+  sound: "assets/sounds/dialogs/wolfboy-wolfboytest3.wav"
+  answers:
+    - line: "The Order of the Crimson Moon?"
+      actionfuncs:
+        - ChangeDialog:
+          - muckmuck
+          - order_knowledge
+    - line: "What else do you know?"
+      actionfuncs:
+        - ChangeDialog:
+          - muckmuck
+          - more_info
+order_knowledge:
+  line: "Ooh, you know about that? They meet in some chamber. My cousin worked security there. Keyword: worked."
+  duration: 4
+  speaker: muckmuck
+  sound: "assets/sounds/dialogs/wolfboy-wolfboytest2.wav"
+  answers:
+    - line: "What happened to your cousin?"
+      actionfuncs:
+        - ChangeDialog:
+          - muckmuck
+          - cousin
+    - line: "I need to find this chamber."
+      actionfuncs:
+        - ChangeDialog:
+          - muckmuck
+          - chamber_hint
+cousin:
+  line: "He's fine! Got transferred to the 'Eternal Silence Department'. Great benefits. Can't talk about it. Literally."
+  duration: 4
+  speaker: muckmuck
+  sound: "assets/sounds/dialogs/wolfboy-wolfboytest3.wav"
+  exit:
+    ExitDialog: start
+chamber_hint:
+  line: "Library. Behind a bookshelf. Classic villain move. They all read the same 'How to Hide Evil Lairs' book."
+  duration: 4
+  speaker: muckmuck
+  sound: "assets/sounds/dialogs/wolfboy-wolfboytest2.wav"
+  exit:
+    ExitDialog: start
+more_info:
+  line: "There's a plant here that contains something special. Combine it with hay and you get a magical paper."
+  duration: 4
+  speaker: muckmuck
+  sound: "assets/sounds/dialogs/wolfboy-wolfboytest3.wav"
+  answers:
+    - line: "Wait, what plant?"
+      actionfuncs:
+        - ChangeDialog:
+          - muckmuck
+          - plant_hint
+    - line: "Thanks for the tip."
+      actionfuncs:
+        - ChangeDialog:
+          - muckmuck
+          - herb_offer
+plant_hint:
+  line: "That suspicious green plant in the corner. Don't ask where I got it. Just... combine it with the hay outside."
+  duration: 4
+  speaker: muckmuck
+  sound: "assets/sounds/dialogs/wolfboy-wolfboytest2.wav"
+  exit:
+    ExitDialog: start
+useful_info:
+  line: "Useful? Fine. Take these healing herbs. You'll need them. This school has a 'survival optional' policy."
+  duration: 3
+  speaker: muckmuck
+  sound: "assets/sounds/dialogs/wolfboy-wolfboytest3.wav"
+  answers:
+    - line: "That's terrifying. Give me the herbs."
+      actionfuncs:
+        - ChangeDialog:
+          - muckmuck
+          - herb_offer
+    - line: "What's the survival rate?"
+      actionfuncs:
+        - ChangeDialog:
+          - muckmuck
+          - survival
+survival:
+  line: "About 85%. The other 15% become ghosts. They still graduate though. Very inclusive afterlife program."
+  duration: 4
+  speaker: muckmuck
+  sound: "assets/sounds/dialogs/wolfboy-wolfboytest2.wav"
+  exit:
+    ExitDialog: start
+herb_offer:
+  line: "Here's the green herb! Mix it with stuff for magical effects. Or just... enjoy it. I don't judge."
+  duration: 3
+  speaker: muckmuck
+  sound: "assets/sounds/dialogs/muckmuck-mucksuccess.wav"
+  exit:
     ExitDialog: bye
   unlock: True
-

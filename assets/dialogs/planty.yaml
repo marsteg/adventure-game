@@ -1,0 +1,195 @@
+description:
+  locked:
+    line: "A sentient plant. Photosynthesizes judgment. Also oxygen. But mostly judgment."
+    sound: "assets/sounds/dialogs/wolfboy-description-locked.wav"
+    duration: 3
+  unlocked:
+    line: "Planty and I are rooted in friendship now. Plant pun. I'm not sorry."
+    sound: "assets/sounds/dialogs/wolfboy-description-unlocked.wav"
+    duration: 3
+
+bye:
+  line: "May you grow towards the light! Metaphorically. Also literally. Sunlight is important for vitamin D."
+  duration: 3
+  speaker: planty
+  sound: "assets/sounds/dialogs/wolfboy-bye.wav"
+  exit:
+    ExitDialog: start
+
+start:
+  line: "*rustling leaves* A visitor! How delightful! I am Planty, keeper of the Greenhouse. Pronouns are they/them. Roots are deep."
+  duration: 4
+  speaker: planty
+  sound: "assets/sounds/dialogs/wolfboy-start.wav"
+  answers:
+    - line: "A talking plant?!"
+      actionfuncs:
+        - ChangeDialog: ["planty", "talking"]
+    - line: "What do you grow here?"
+      actionfuncs:
+        - ChangeDialog: ["planty", "growing"]
+    - line: "I'm investigating the Order of the Crimson Moon."
+      actionfuncs:
+        - ChangeDialog: ["planty", "order_info"]
+
+talking:
+  line: "Plants always talk. Humans just don't listen. Except here. Magic makes everything chatty. Even the mushrooms. ESPECIALLY them."
+  duration: 4
+  speaker: planty
+  sound: "assets/sounds/dialogs/wolfboy-wolfboytest2.wav"
+  answers:
+    - line: "The mushrooms talk?!"
+      actionfuncs:
+        - ChangeDialog: ["planty", "mushrooms"]
+    - line: "What wisdom do plants have?"
+      actionfuncs:
+        - ChangeDialog: ["planty", "wisdom"]
+
+growing:
+  line: "Herbs for healing. Flowers for rituals. Vegetables for the cafeteria. Please don't eat the vegetables. For your safety."
+  duration: 4
+  speaker: planty
+  sound: "assets/sounds/dialogs/wolfboy-wolfboytest3.wav"
+  answers:
+    - line: "What's wrong with the vegetables?"
+      actionfuncs:
+        - ChangeDialog: ["planty", "vegetables"]
+    - line: "What rituals use your flowers?"
+      actionfuncs:
+        - ChangeDialog: ["planty", "rituals"]
+
+order_info:
+  line: "The Order? *leaves shudder* They take our moonflowers. For dark purposes. We plants know. We've been rooted here for centuries."
+  duration: 4
+  speaker: planty
+  sound: "assets/sounds/dialogs/wolfboy-wolfboytest2.wav"
+  answers:
+    - line: "What do they use moonflowers for?"
+      actionfuncs:
+        - ChangeDialog: ["planty", "moonflower_use"]
+    - line: "Can you help me stop them?"
+      actionfuncs:
+        - ChangeDialog: ["planty", "help"]
+
+mushrooms:
+  line: "Don't listen to the mushrooms. They're in a... different mental space. Very philosophical. Very paranoid. All fungi are."
+  duration: 4
+  speaker: planty
+  sound: "assets/sounds/dialogs/wolfboy-wolfboytest3.wav"
+  exit:
+    ExitDialog: start
+
+wisdom:
+  line: "Be patient. Grow slowly. Put down roots. And remember - even the mightiest oak started as a nut that stood its ground."
+  duration: 4
+  speaker: planty
+  sound: "assets/sounds/dialogs/wolfboy-wolfboytest2.wav"
+  exit:
+    ExitDialog: start
+
+vegetables:
+  line: "Gronk... experiments with them. Adds things. Removes things. The tomatoes have... evolved. They have opinions now."
+  duration: 4
+  speaker: planty
+  sound: "assets/sounds/dialogs/wolfboy-wolfboytest3.wav"
+  exit:
+    ExitDialog: start
+
+rituals:
+  line: "Moonflowers bloom only at midnight. Perfect for dark rituals. The Order harvests them monthly. Full moon. Very cliche."
+  duration: 4
+  speaker: planty
+  sound: "assets/sounds/dialogs/wolfboy-wolfboytest2.wav"
+  exit:
+    ExitDialog: start
+
+moonflower_use:
+  line: "Soul binding. The moonflower's nectar traps spiritual essence. The Dean has been using it for decades. We tried to stop growing them..."
+  duration: 4
+  speaker: planty
+  sound: "assets/sounds/dialogs/wolfboy-wolfboytest3.wav"
+  answers:
+    - line: "What happened?"
+      actionfuncs:
+        - ChangeDialog: ["planty", "tried_stopping"]
+    - line: "How do I counter the moonflower?"
+      actionfuncs:
+        - ChangeDialog: ["planty", "counter"]
+
+help:
+  line: "I cannot leave my pot. Roots, you know. But I can share botanical knowledge! And this Venus flytrap tooth - good for defense!"
+  duration: 4
+  speaker: planty
+  sound: "assets/sounds/dialogs/wolfboy-wolfboytest2.wav"
+  answers:
+    - line: "A tooth from a flytrap?"
+      actionfuncs:
+        - ChangeDialog: ["planty", "flytrap"]
+    - line: "What do you need?"
+      actionfuncs:
+        - ChangeDialog: ["planty", "trade"]
+
+tried_stopping:
+  line: "The Dean... pruned us. Aggressively. My predecessor, Planty Senior, was made into a salad. Horrifying. Delicious, apparently."
+  duration: 4
+  speaker: planty
+  sound: "assets/sounds/dialogs/wolfboy-wolfboytest3.wav"
+  exit:
+    ExitDialog: start
+
+counter:
+  line: "Sunflowers! They represent truth and light! Combine moonflower with sunflower essence and it REVEALS instead of TRAPS!"
+  duration: 4
+  speaker: planty
+  sound: "assets/sounds/dialogs/wolfboy-wolfboytest2.wav"
+  exit:
+    ExitDialog: start
+
+flytrap:
+  line: "Audrey III. Very aggressive. But she gave me this tooth after I helped her with a root problem. Plants help plants."
+  duration: 4
+  speaker: planty
+  sound: "assets/sounds/dialogs/wolfboy-wolfboytest3.wav"
+  exit:
+    ExitDialog: start
+
+trade:
+  line: "A rare seed! I've been trying to grow a Truthblossom for years! Bring me a Rare Seed and I'll share everything!"
+  duration: 4
+  speaker: planty
+  sound: "assets/sounds/dialogs/wolfboy-wolfboytest2.wav"
+  answers:
+    - line: "Here's a Rare Seed!"
+      actionfuncs:
+        - TakeItemString:
+          - RareSeed
+          - no_seed
+          - got_seed
+    - line: "I'll find one."
+      actionfuncs:
+        - ChangeDialog: ["planty", "bye"]
+
+no_seed:
+  line: "That's not the right seed! I need a RARE seed! The kind that glows slightly and smells like destiny!"
+  sound: "assets/sounds/dialogs/wolfboy-wolffailure.wav"
+  duration: 3
+  speaker: planty
+  exit:
+    ExitDialog: start
+
+got_seed:
+  line: "*excited rustling* FINALLY! Here - this Venus flytrap tooth! And a secret: the Trophy Room painting hides the Dean's study!"
+  sound: "assets/sounds/dialogs/wolfboy-wolfsuccess.wav"
+  duration: 4
+  speaker: planty
+  exit:
+    ExitDialog: bloomed
+  unlock: true
+
+bloomed:
+  line: "Go, hero! Uproot evil! Make the Dean... leaf! Ha! Plant humor! I've been saving that one for decades!"
+  duration: 3
+  speaker: planty
+  sound: "assets/sounds/dialogs/wolfboy-bye2.wav"
+  exit:
+    ExitDialog: bloomed

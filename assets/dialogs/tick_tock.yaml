@@ -1,0 +1,208 @@
+description:
+  locked:
+    line: "An ancient golem made of clock parts. Runs on time itself. Very punctual. Very loud."
+    sound: "assets/sounds/dialogs/wolfboy-description-locked.wav"
+    duration: 3
+  unlocked:
+    line: "Tick Tock and I are in sync now. Clock pun. I'm on a roll with these."
+    sound: "assets/sounds/dialogs/wolfboy-description-unlocked.wav"
+    duration: 3
+
+bye:
+  line: "TIME WAITS FOR NO ONE. EXCEPT WHEN IT DOES. PARADOXES ARE CONFUSING. GOODBYE."
+  duration: 3
+  speaker: tick_tock
+  sound: "assets/sounds/dialogs/wolfboy-bye.wav"
+  exit:
+    ExitDialog: start
+
+start:
+  line: "TICK. TOCK. VISITOR DETECTED. I AM TICK TOCK. GUARDIAN OF TIME. ALSO LOUD. CANNOT CONTROL VOLUME."
+  duration: 4
+  speaker: tick_tock
+  sound: "assets/sounds/dialogs/wolfboy-start.wav"
+  answers:
+    - line: "Why are you so loud?"
+      actionfuncs:
+        - ChangeDialog: ["tick_tock", "volume"]
+    - line: "You guard time?"
+      actionfuncs:
+        - ChangeDialog: ["tick_tock", "guardian"]
+    - line: "I need information about the Dean."
+      actionfuncs:
+        - ChangeDialog: ["tick_tock", "dean_info"]
+
+volume:
+  line: "INTERNAL MECHANISMS. VERY OLD. LIKE SPEAKING WITH CAPS LOCK. CANNOT FIX. ACCEPT IT."
+  duration: 4
+  speaker: tick_tock
+  sound: "assets/sounds/dialogs/wolfboy-wolfboytest2.wav"
+  answers:
+    - line: "That must be annoying."
+      actionfuncs:
+        - ChangeDialog: ["tick_tock", "annoying"]
+    - line: "How old are you?"
+      actionfuncs:
+        - ChangeDialog: ["tick_tock", "age"]
+
+guardian:
+  line: "THE TIME CRYSTAL POWERS THIS TOWER. I PROTECT IT. FROM THIEVES. FROM VILLAINS. FROM STUDENTS LATE TO CLASS."
+  duration: 4
+  speaker: tick_tock
+  sound: "assets/sounds/dialogs/wolfboy-wolfboytest3.wav"
+  answers:
+    - line: "What's the Time Crystal?"
+      actionfuncs:
+        - ChangeDialog: ["tick_tock", "crystal"]
+    - line: "Can I see it?"
+      actionfuncs:
+        - ChangeDialog: ["tick_tock", "see_crystal"]
+
+dean_info:
+  line: "THE DEAN. YES. HE VISITS. ALWAYS AT MIDNIGHT. VERY SUSPICIOUS TIMING. PUN INTENDED."
+  duration: 4
+  speaker: tick_tock
+  sound: "assets/sounds/dialogs/wolfboy-wolfboytest2.wav"
+  answers:
+    - line: "What does he do here?"
+      actionfuncs:
+        - ChangeDialog: ["tick_tock", "dean_activity"]
+    - line: "Can you help me stop him?"
+      actionfuncs:
+        - ChangeDialog: ["tick_tock", "help"]
+
+annoying:
+  line: "SOMETIMES. BUT ALSO USEFUL. NOBODY IGNORES ME. HARD TO SNEAK. VERY GOOD FOR SECURITY."
+  duration: 4
+  speaker: tick_tock
+  sound: "assets/sounds/dialogs/wolfboy-wolfboytest3.wav"
+  exit:
+    ExitDialog: start
+
+age:
+  line: "CONSTRUCTED 1342. REBUILT 1666. UPDATED 1984. STILL RUNNING ORIGINAL SOFTWARE. VERY STABLE. MOSTLY."
+  duration: 4
+  speaker: tick_tock
+  sound: "assets/sounds/dialogs/wolfboy-wolfboytest2.wav"
+  exit:
+    ExitDialog: start
+
+crystal:
+  line: "CONCENTRATED TIME ENERGY. CAN REVERSE. CAN ACCELERATE. CAN DO WEIRD WIBBLY-WOBBLY STUFF. VERY DOCTOR WHO."
+  duration: 4
+  speaker: tick_tock
+  sound: "assets/sounds/dialogs/wolfboy-wolfboytest3.wav"
+  exit:
+    ExitDialog: start
+
+see_crystal:
+  line: "NEGATIVE. MUST PROVE WORTHINESS. FIX THE CLOCK MECHANISM. MISSING GEAR. VERY ANNOYING. CANNOT TICK PROPERLY."
+  duration: 4
+  speaker: tick_tock
+  sound: "assets/sounds/dialogs/wolfboy-wolfboytest2.wav"
+  answers:
+    - line: "Where did the gear go?"
+      actionfuncs:
+        - ChangeDialog: ["tick_tock", "missing_gear"]
+    - line: "I'll help fix it!"
+      actionfuncs:
+        - ChangeDialog: ["tick_tock", "trade"]
+
+dean_activity:
+  line: "CHECKS THE CRYSTAL. MEASURES TIME DISTORTIONS. I THINK HE USES IT FOR... LONGEVITY PURPOSES. CHEATING DEATH."
+  duration: 4
+  speaker: tick_tock
+  sound: "assets/sounds/dialogs/wolfboy-wolfboytest3.wav"
+  answers:
+    - line: "He's using time magic to live longer?"
+      actionfuncs:
+        - ChangeDialog: ["tick_tock", "time_magic"]
+    - line: "Can the crystal help stop him?"
+      actionfuncs:
+        - ChangeDialog: ["tick_tock", "crystal_help"]
+
+help:
+  line: "I AM BOUND TO THIS TOWER. CANNOT LEAVE. BUT THE TIME CRYSTAL... COULD HELP. IF USED CORRECTLY."
+  duration: 4
+  speaker: tick_tock
+  sound: "assets/sounds/dialogs/wolfboy-wolfboytest2.wav"
+  answers:
+    - line: "How can I get the crystal?"
+      actionfuncs:
+        - ChangeDialog: ["tick_tock", "trade"]
+    - line: "What can it do against the Dean?"
+      actionfuncs:
+        - ChangeDialog: ["tick_tock", "crystal_power"]
+
+missing_gear:
+  line: "FELL OUT DURING EARTHQUAKE. 1989. SAN FRANCISCO SYMPATHETIC VIBRATIONS. STILL SOMEWHERE IN TOWER."
+  duration: 4
+  speaker: tick_tock
+  sound: "assets/sounds/dialogs/wolfboy-wolfboytest3.wav"
+  exit:
+    ExitDialog: start
+
+time_magic:
+  line: "AFFIRMATIVE. COMBINES WITH SOUL ENERGY. VERY DARK. VERY UNETHICAL. TIME PARADOXES ARE BAD."
+  duration: 4
+  speaker: tick_tock
+  sound: "assets/sounds/dialogs/wolfboy-wolfboytest2.wav"
+  exit:
+    ExitDialog: start
+
+crystal_help:
+  line: "CAN REVERSE SOUL BINDING. UNDO RITUALS. SHOW TRUTH. VERY POWERFUL. ALSO VERY SHINY. BONUS."
+  duration: 4
+  speaker: tick_tock
+  sound: "assets/sounds/dialogs/wolfboy-wolfboytest3.wav"
+  exit:
+    ExitDialog: start
+
+crystal_power:
+  line: "CAN SHOW TRUTH OF PAST. REVEAL HIDDEN DEEDS. PROVE CRIMES. MAKE DEAN VERY UNCOMFORTABLE."
+  duration: 4
+  speaker: tick_tock
+  sound: "assets/sounds/dialogs/wolfboy-wolfboytest2.wav"
+  exit:
+    ExitDialog: start
+
+trade:
+  line: "BRING CLOCK GEAR. FIX MECHANISM. PROVE WORTHY. THEN TIME CRYSTAL IS YOURS. FAIR TRADE. TICK TOCK."
+  duration: 4
+  speaker: tick_tock
+  sound: "assets/sounds/dialogs/wolfboy-wolfboytest3.wav"
+  answers:
+    - line: "Here's the Clock Gear!"
+      actionfuncs:
+        - TakeItemString:
+          - ClockGear
+          - no_gear
+          - got_gear
+    - line: "I'll find the gear."
+      actionfuncs:
+        - ChangeDialog: ["tick_tock", "bye"]
+
+no_gear:
+  line: "THAT IS NOT CLOCK GEAR. I NEED PROPER GEAR. SPECIFIC. TOOTHY. ROUND. YOU KNOW. GEAR-SHAPED."
+  sound: "assets/sounds/dialogs/wolfboy-wolffailure.wav"
+  duration: 3
+  speaker: tick_tock
+  exit:
+    ExitDialog: start
+
+got_gear:
+  line: "GEAR ACCEPTED! *MECHANICAL WHIRRING* CLOCK FIXED! TICK... TOCK... TICK... TOCK... BEAUTIFUL. TAKE CRYSTAL. BE HERO."
+  sound: "assets/sounds/dialogs/wolfboy-wolfsuccess.wav"
+  duration: 4
+  speaker: tick_tock
+  exit:
+    ExitDialog: ticking
+  unlock: true
+
+ticking:
+  line: "THE TIME IS NOW. LITERALLY. GO STOP THE DEAN. SAVE THE STUDENTS. RETURN BORROWED LIBRARY BOOKS. ALL IMPORTANT."
+  duration: 3
+  speaker: tick_tock
+  sound: "assets/sounds/dialogs/wolfboy-bye2.wav"
+  exit:
+    ExitDialog: ticking

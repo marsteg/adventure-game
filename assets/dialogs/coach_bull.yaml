@@ -1,0 +1,195 @@
+description:
+  locked:
+    line: "A minotaur gym teacher. Runs the Dungeon Gym. Believes pain builds character. Believes it a LOT."
+    sound: "assets/sounds/dialogs/wolfboy-description-locked.wav"
+    duration: 3
+  unlocked:
+    line: "Coach Bull respects me now. All it took was... proving something with chains. Don't ask."
+    sound: "assets/sounds/dialogs/wolfboy-description-unlocked.wav"
+    duration: 3
+
+bye:
+  line: "Remember: pain is just weakness leaving the body! Also sometimes it's actual pain! See a healer!"
+  duration: 3
+  speaker: coach_bull
+  sound: "assets/sounds/dialogs/wolfboy-bye.wav"
+  exit:
+    ExitDialog: start
+
+start:
+  line: "*SNORT* Fresh meat! I'm Coach Bull! Welcome to the DUNGEON GYM! Where we separate the weak from the WEAKER!"
+  duration: 4
+  speaker: coach_bull
+  sound: "assets/sounds/dialogs/wolfboy-start.wav"
+  answers:
+    - line: "A minotaur gym teacher?"
+      actionfuncs:
+        - ChangeDialog: ["coach_bull", "minotaur"]
+    - line: "Why is it called 'Dungeon' Gym?"
+      actionfuncs:
+        - ChangeDialog: ["coach_bull", "dungeon"]
+    - line: "I need to access the forbidden locker."
+      actionfuncs:
+        - ChangeDialog: ["coach_bull", "locker_direct"]
+
+minotaur:
+  line: "Best species for coaching! We have NATURAL intimidation! Also great navigation! Never get lost in mazes!"
+  duration: 4
+  speaker: coach_bull
+  sound: "assets/sounds/dialogs/wolfboy-wolfboytest2.wav"
+  answers:
+    - line: "What do you teach?"
+      actionfuncs:
+        - ChangeDialog: ["coach_bull", "teaching"]
+    - line: "Were you ever in a labyrinth?"
+      actionfuncs:
+        - ChangeDialog: ["coach_bull", "labyrinth"]
+
+dungeon:
+  line: "It WAS an actual dungeon! Torture chamber! Now it's a gym! Same equipment, different purpose! Progress!"
+  duration: 4
+  speaker: coach_bull
+  sound: "assets/sounds/dialogs/wolfboy-wolfboytest3.wav"
+  answers:
+    - line: "The equipment is the same?!"
+      actionfuncs:
+        - ChangeDialog: ["coach_bull", "equipment"]
+    - line: "That seems... concerning."
+      actionfuncs:
+        - ChangeDialog: ["coach_bull", "concerning"]
+
+locker_direct:
+  line: "THE FORBIDDEN LOCKER?! *eyes narrow* That's been sealed for DECADES! Why do you want in?!"
+  duration: 4
+  speaker: coach_bull
+  sound: "assets/sounds/dialogs/wolfboy-wolfboytest2.wav"
+  answers:
+    - line: "I'm investigating the Order."
+      actionfuncs:
+        - ChangeDialog: ["coach_bull", "order_mention"]
+    - line: "Historical research?"
+      actionfuncs:
+        - ChangeDialog: ["coach_bull", "research"]
+
+teaching:
+  line: "Combat! Endurance! Screaming motivationally! Also dodgeball! But with BOULDERS! Very character-building!"
+  duration: 4
+  speaker: coach_bull
+  sound: "assets/sounds/dialogs/wolfboy-wolfboytest3.wav"
+  exit:
+    ExitDialog: start
+
+labyrinth:
+  line: "ONCE. Family vacation in Crete. Got out in 10 minutes. Disappointed Daedalus. He cried. Architects are sensitive."
+  duration: 4
+  speaker: coach_bull
+  sound: "assets/sounds/dialogs/wolfboy-wolfboytest2.wav"
+  exit:
+    ExitDialog: start
+
+equipment:
+  line: "The rack makes an EXCELLENT stretching station! The Iron Maiden? Locker storage! Innovation!"
+  duration: 4
+  speaker: coach_bull
+  sound: "assets/sounds/dialogs/wolfboy-wolfboytest3.wav"
+  exit:
+    ExitDialog: start
+
+concerning:
+  line: "Builds RESILIENCE! Can't traumatize students if they're already tough! That's science! Bull science!"
+  duration: 4
+  speaker: coach_bull
+  sound: "assets/sounds/dialogs/wolfboy-wolfboytest2.wav"
+  exit:
+    ExitDialog: start
+
+order_mention:
+  line: "*lowers voice* The Order? You know about that? *looks around* I've seen things. In that locker. Records."
+  duration: 4
+  speaker: coach_bull
+  sound: "assets/sounds/dialogs/wolfboy-wolfboytest3.wav"
+  answers:
+    - line: "What kind of records?"
+      actionfuncs:
+        - ChangeDialog: ["coach_bull", "records"]
+    - line: "Will you help me get in?"
+      actionfuncs:
+        - ChangeDialog: ["coach_bull", "help"]
+
+research:
+  line: "WEAK EXCUSE! But I respect the attempt! The locker has OLD records! Student files! 'Graduation' lists!"
+  duration: 4
+  speaker: coach_bull
+  sound: "assets/sounds/dialogs/wolfboy-wolfboytest2.wav"
+  exit:
+    ExitDialog: start
+
+records:
+  line: "Students who 'transferred'! Except they DIDN'T! Their PE records just... END! Mid-semester! Suspicious!"
+  duration: 4
+  speaker: coach_bull
+  sound: "assets/sounds/dialogs/wolfboy-wolfboytest3.wav"
+  answers:
+    - line: "The Dean's victims?"
+      actionfuncs:
+        - ChangeDialog: ["coach_bull", "victims"]
+    - line: "I need to see those records!"
+      actionfuncs:
+        - ChangeDialog: ["coach_bull", "help"]
+
+help:
+  line: "I COULD give you the key. BUT! You must prove STRENGTH! Bring me the rusty chains from the training area!"
+  duration: 4
+  speaker: coach_bull
+  sound: "assets/sounds/dialogs/wolfboy-wolfboytest2.wav"
+  answers:
+    - line: "Why chains?"
+      actionfuncs:
+        - ChangeDialog: ["coach_bull", "chains"]
+    - line: "I have the Rusty Chains!"
+      actionfuncs:
+        - TakeItemString:
+          - RustyChain
+          - no_chains
+          - got_chains
+
+victims:
+  line: "I counted FIFTY students in my time here! All 'transferred'! Nobody transfers MID-DODGEBALL! That's suspicious!"
+  duration: 4
+  speaker: coach_bull
+  sound: "assets/sounds/dialogs/wolfboy-wolfboytest3.wav"
+  exit:
+    ExitDialog: start
+
+chains:
+  line: "They're HEAVY! Shows dedication! Also I need them for the chain-climbing class! Very practical!"
+  duration: 4
+  speaker: coach_bull
+  sound: "assets/sounds/dialogs/wolfboy-wolfboytest2.wav"
+  exit:
+    ExitDialog: start
+
+no_chains:
+  line: "THOSE AREN'T CHAINS! I need the RUSTY ones! From the old section! REAL metal! REAL weight! REAL tetanus risk!"
+  sound: "assets/sounds/dialogs/wolfboy-wolffailure.wav"
+  duration: 3
+  speaker: coach_bull
+  exit:
+    ExitDialog: start
+
+got_chains:
+  line: "EXCELLENT! REAL CHAINS! *impressed snort* Here's the locker key! You've earned it! STRENGTH RESPECTS STRENGTH!"
+  sound: "assets/sounds/dialogs/wolfboy-wolfsuccess.wav"
+  duration: 4
+  speaker: coach_bull
+  exit:
+    ExitDialog: impressed
+  unlock: true
+
+impressed:
+  line: "Go get those records! EXPOSE THE TRUTH! And remember - always stretch before investigating! Prevents injuries!"
+  duration: 3
+  speaker: coach_bull
+  sound: "assets/sounds/dialogs/wolfboy-bye2.wav"
+  exit:
+    ExitDialog: impressed

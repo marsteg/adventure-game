@@ -1,0 +1,226 @@
+description:
+  locked:
+    line: "A ghost student. He's transparent in more ways than one. Also very dead. Class of... whenever he died."
+    sound: "assets/sounds/dialogs/wolfboy-description-locked.wav"
+    duration: 3
+  unlocked:
+    line: "Timmy shared his story. The Dean's first victim. Now the Dean's biggest problem. Poetic justice."
+    sound: "assets/sounds/dialogs/wolfboy-description-unlocked.wav"
+    duration: 3
+
+bye:
+  line: "Wait... can you still see me? Most people can't. You're special. Don't let the Dean make you like me."
+  duration: 3
+  speaker: ghost_timmy
+  sound: "assets/sounds/dialogs/wolfboy-bye.wav"
+  exit:
+    ExitDialog: start
+
+start:
+  line: "...Hello? Can you... can you SEE me? Nobody's been able to see me in 40 years!"
+  duration: 4
+  speaker: ghost_timmy
+  sound: "assets/sounds/dialogs/wolfboy-start.wav"
+  answers:
+    - line: "I can see you clearly!"
+      actionfuncs:
+        - ChangeDialog: ["ghost_timmy", "visible"]
+    - line: "40 years?!"
+      actionfuncs:
+        - ChangeDialog: ["ghost_timmy", "years"]
+    - line: "Who are you?"
+      actionfuncs:
+        - ChangeDialog: ["ghost_timmy", "identity"]
+
+visible:
+  line: "You must have something special! Ghost glasses? Death powers? Either way, I've been WAITING to tell someone!"
+  duration: 4
+  speaker: ghost_timmy
+  sound: "assets/sounds/dialogs/wolfboy-wolfboytest2.wav"
+  answers:
+    - line: "Tell me what?"
+      actionfuncs:
+        - ChangeDialog: ["ghost_timmy", "story"]
+    - line: "Death powers - I'm his daughter."
+      actionfuncs:
+        - ChangeDialog: ["ghost_timmy", "death_daughter"]
+
+years:
+  line: "I was student number one. The Dean's FIRST victim. Class of 1984. We had cool hair. And no internet."
+  duration: 4
+  speaker: ghost_timmy
+  sound: "assets/sounds/dialogs/wolfboy-wolfboytest3.wav"
+  answers:
+    - line: "First victim?!"
+      actionfuncs:
+        - ChangeDialog: ["ghost_timmy", "first_victim"]
+    - line: "What happened to you?"
+      actionfuncs:
+        - ChangeDialog: ["ghost_timmy", "story"]
+
+identity:
+  line: "I'm Timmy. Timothy Roberts. Was supposed to graduate 1984. Instead I 'graduated early'. Very early."
+  duration: 4
+  speaker: ghost_timmy
+  sound: "assets/sounds/dialogs/wolfboy-wolfboytest2.wav"
+  answers:
+    - line: "What does 'graduated early' mean?"
+      actionfuncs:
+        - ChangeDialog: ["ghost_timmy", "graduation"]
+    - line: "How did you become a ghost?"
+      actionfuncs:
+        - ChangeDialog: ["ghost_timmy", "story"]
+
+story:
+  line: "I discovered the Dean's secret. The Order. The rituals. So he made me... quiet. Permanently. Mostly."
+  duration: 4
+  speaker: ghost_timmy
+  sound: "assets/sounds/dialogs/wolfboy-wolfboytest3.wav"
+  answers:
+    - line: "He killed you?!"
+      actionfuncs:
+        - ChangeDialog: ["ghost_timmy", "death"]
+    - line: "What secret?"
+      actionfuncs:
+        - ChangeDialog: ["ghost_timmy", "secret"]
+
+death_daughter:
+  line: "DEATH'S DAUGHTER?! Oh man, oh man! Your dad was supposed to collect me but couldn't! I'm stuck! Can you help?!"
+  duration: 4
+  speaker: ghost_timmy
+  sound: "assets/sounds/dialogs/wolfboy-wolfboytest2.wav"
+  answers:
+    - line: "Why couldn't he collect you?"
+      actionfuncs:
+        - ChangeDialog: ["ghost_timmy", "binding"]
+    - line: "I'll try to help."
+      actionfuncs:
+        - ChangeDialog: ["ghost_timmy", "help"]
+
+first_victim:
+  line: "The Dean needed power. Soul power. I was... convenient. Wrong place, wrong time, wrong knowledge."
+  duration: 4
+  speaker: ghost_timmy
+  sound: "assets/sounds/dialogs/wolfboy-wolfboytest3.wav"
+  exit:
+    ExitDialog: start
+
+graduation:
+  line: "It means soul extraction. They take your essence, leave behind... this. A ghost tethered to the school forever."
+  duration: 4
+  speaker: ghost_timmy
+  sound: "assets/sounds/dialogs/wolfboy-wolfboytest2.wav"
+  exit:
+    ExitDialog: start
+
+death:
+  line: "Not exactly killed. Worse. Soul harvested. My body disappeared. My essence... trapped. Powering HIM."
+  duration: 4
+  speaker: ghost_timmy
+  sound: "assets/sounds/dialogs/wolfboy-wolfboytest3.wav"
+  answers:
+    - line: "How do I stop him?"
+      actionfuncs:
+        - ChangeDialog: ["ghost_timmy", "how_to_stop"]
+    - line: "Is there any way to free you?"
+      actionfuncs:
+        - ChangeDialog: ["ghost_timmy", "freedom"]
+
+secret:
+  line: "The Order's ritual chamber beneath the Trophy Room. He binds student souls there. Powers his immortality."
+  duration: 4
+  speaker: ghost_timmy
+  sound: "assets/sounds/dialogs/wolfboy-wolfboytest2.wav"
+  exit:
+    ExitDialog: start
+
+binding:
+  line: "The Dean's magic. He trapped my soul before your dad could collect it. I'm in magical limbo. Very boring."
+  duration: 4
+  speaker: ghost_timmy
+  sound: "assets/sounds/dialogs/wolfboy-wolfboytest3.wav"
+  answers:
+    - line: "How do I break the binding?"
+      actionfuncs:
+        - ChangeDialog: ["ghost_timmy", "how_to_stop"]
+    - line: "I'll find a way!"
+      actionfuncs:
+        - ChangeDialog: ["ghost_timmy", "help"]
+
+help:
+  line: "You'd really help?! After 40 years?! I have information! Evidence! But I need someone who can SEE it!"
+  duration: 4
+  speaker: ghost_timmy
+  sound: "assets/sounds/dialogs/wolfboy-wolfboytest2.wav"
+  answers:
+    - line: "What kind of evidence?"
+      actionfuncs:
+        - ChangeDialog: ["ghost_timmy", "evidence"]
+    - line: "What do you need?"
+      actionfuncs:
+        - ChangeDialog: ["ghost_timmy", "trade"]
+
+how_to_stop:
+  line: "Break his soul contracts! They're hidden in his chamber. But you need special vision. Ghost glasses or... death powers."
+  duration: 4
+  speaker: ghost_timmy
+  sound: "assets/sounds/dialogs/wolfboy-wolfboytest3.wav"
+  exit:
+    ExitDialog: start
+
+freedom:
+  line: "Destroy his soul contracts! Free all the trapped students! We could finally... move on. Rest. Netflix in the afterlife."
+  duration: 4
+  speaker: ghost_timmy
+  sound: "assets/sounds/dialogs/wolfboy-wolfboytest2.wav"
+  exit:
+    ExitDialog: start
+
+evidence:
+  line: "I watched him for 40 years! I know his routines, his secrets, his Netflix password! Very valuable intel!"
+  duration: 4
+  speaker: ghost_timmy
+  sound: "assets/sounds/dialogs/wolfboy-wolfboytest3.wav"
+  exit:
+    ExitDialog: start
+
+trade:
+  line: "The Ghost Glasses! Give them to me and I can interact with the physical world! Write things down! Proper evidence!"
+  duration: 4
+  speaker: ghost_timmy
+  sound: "assets/sounds/dialogs/wolfboy-wolfboytest2.wav"
+  answers:
+    - line: "Here are the Ghost Glasses!"
+      actionfuncs:
+        - TakeItemString:
+          - GhostGlasses
+          - no_glasses
+          - got_glasses
+    - line: "I'll find them."
+      actionfuncs:
+        - ChangeDialog: ["ghost_timmy", "bye"]
+
+no_glasses:
+  line: "Those aren't ghost glasses! I need the spectral spectacles! Without them, I can't help properly!"
+  sound: "assets/sounds/dialogs/wolfboy-wolffailure.wav"
+  duration: 3
+  speaker: ghost_timmy
+  exit:
+    ExitDialog: start
+
+got_glasses:
+  line: "I CAN TOUCH THINGS! Here - a ritual candle from his chamber! It never goes out! Perfect for exposing darkness!"
+  sound: "assets/sounds/dialogs/wolfboy-wolfsuccess.wav"
+  duration: 4
+  speaker: ghost_timmy
+  exit:
+    ExitDialog: visible
+  unlock: true
+
+visible:
+  line: "You've given me hope for the first time in 40 years! Stop the Dean! Free us all! And... tell my mom I said hi."
+  duration: 3
+  speaker: ghost_timmy
+  sound: "assets/sounds/dialogs/wolfboy-bye2.wav"
+  exit:
+    ExitDialog: visible

@@ -1,0 +1,208 @@
+description:
+  locked:
+    line: "A transparent professor. He's been dead for 200 years but still assigns homework. Dedication or spite? Both."
+    sound: "assets/sounds/dialogs/wolfboy-description-locked.wav"
+    duration: 3
+  unlocked:
+    line: "Professor Wraith helped me. Even death can't stop a good teacher. Or a petty one with tenure."
+    sound: "assets/sounds/dialogs/wolfboy-description-unlocked.wav"
+    duration: 3
+
+bye:
+  line: "Remember: knowledge is power. Also, being dead gives you LOTS of time to study."
+  duration: 3
+  speaker: ghost_professor
+  sound: "assets/sounds/dialogs/wolfboy-bye.wav"
+  exit:
+    ExitDialog: start
+
+start:
+  line: "Ah, a living student! How... warm. I am Professor Wraith. I died here in 1823. Still on the payroll!"
+  duration: 4
+  speaker: ghost_professor
+  sound: "assets/sounds/dialogs/wolfboy-start.wav"
+  answers:
+    - line: "You're still getting PAID?!"
+      actionfuncs:
+        - ChangeDialog: ["ghost_professor", "payroll"]
+    - line: "How did you die?"
+      actionfuncs:
+        - ChangeDialog: ["ghost_professor", "death"]
+    - line: "I need information about the Order."
+      actionfuncs:
+        - ChangeDialog: ["ghost_professor", "order_info"]
+
+payroll:
+  line: "Union benefits. Very strong ghost union. We haunt HR until they comply. Collective bargaining."
+  duration: 4
+  speaker: ghost_professor
+  sound: "assets/sounds/dialogs/wolfboy-wolfboytest2.wav"
+  answers:
+    - line: "Ghosts have unions?!"
+      actionfuncs:
+        - ChangeDialog: ["ghost_professor", "union"]
+    - line: "What do you know about the Dean?"
+      actionfuncs:
+        - ChangeDialog: ["ghost_professor", "dean_history"]
+
+death:
+  line: "Tried to expose the Order of the Crimson Moon. They... disagreed. Violently. With magic fire."
+  duration: 4
+  speaker: ghost_professor
+  sound: "assets/sounds/dialogs/wolfboy-wolfboytest3.wav"
+  answers:
+    - line: "The Order killed you?!"
+      actionfuncs:
+        - ChangeDialog: ["ghost_professor", "order_history"]
+    - line: "Can you help me stop them?"
+      actionfuncs:
+        - ChangeDialog: ["ghost_professor", "help_offer"]
+
+union:
+  line: "UPAW - United Phantoms and Apparitions of the Workplace. Great dental. Ironic, since we don't eat."
+  duration: 4
+  speaker: ghost_professor
+  sound: "assets/sounds/dialogs/wolfboy-wolfboytest2.wav"
+  exit:
+    ExitDialog: start
+
+order_info:
+  line: "The Order? They've existed since the school's founding. The Dean is just the latest puppet master."
+  duration: 4
+  speaker: ghost_professor
+  sound: "assets/sounds/dialogs/wolfboy-wolfboytest3.wav"
+  answers:
+    - line: "What are they trying to do?"
+      actionfuncs:
+        - ChangeDialog: ["ghost_professor", "order_goal"]
+    - line: "How do I stop them?"
+      actionfuncs:
+        - ChangeDialog: ["ghost_professor", "help_offer"]
+
+dean_history:
+  line: "This Dean? He's been here for 40 years. Very suspicious longevity. Either good genes or dark magic."
+  duration: 4
+  speaker: ghost_professor
+  sound: "assets/sounds/dialogs/wolfboy-wolfboytest2.wav"
+  answers:
+    - line: "40 years without aging?"
+      actionfuncs:
+        - ChangeDialog: ["ghost_professor", "aging"]
+    - line: "Where does he get his power?"
+      actionfuncs:
+        - ChangeDialog: ["ghost_professor", "power_source"]
+
+order_history:
+  line: "I got too close to the truth. Found the detention records - students who 'transferred' were actually..."
+  duration: 4
+  speaker: ghost_professor
+  sound: "assets/sounds/dialogs/wolfboy-wolfboytest3.wav"
+  answers:
+    - line: "Actually what?!"
+      actionfuncs:
+        - ChangeDialog: ["ghost_professor", "dark_truth"]
+    - line: "Where are these records?"
+      actionfuncs:
+        - ChangeDialog: ["ghost_professor", "records"]
+
+help_offer:
+  line: "I've waited 200 years for someone with courage! Death's daughter... your father and I have... history."
+  duration: 4
+  speaker: ghost_professor
+  sound: "assets/sounds/dialogs/wolfboy-wolfboytest2.wav"
+  answers:
+    - line: "You know my dad?!"
+      actionfuncs:
+        - ChangeDialog: ["ghost_professor", "dad_knows"]
+    - line: "What do you need from me?"
+      actionfuncs:
+        - ChangeDialog: ["ghost_professor", "trade"]
+
+order_goal:
+  line: "They're collecting souls. Students who 'graduate early' - their essence feeds the Dean's immortality."
+  duration: 4
+  speaker: ghost_professor
+  sound: "assets/sounds/dialogs/wolfboy-wolfboytest3.wav"
+  exit:
+    ExitDialog: start
+
+aging:
+  line: "He looked 40 when I was alive. Still looks 40. Either amazing skincare or soul-harvesting. Probably both."
+  duration: 4
+  speaker: ghost_professor
+  sound: "assets/sounds/dialogs/wolfboy-wolfboytest2.wav"
+  exit:
+    ExitDialog: start
+
+power_source:
+  line: "The ritual chamber beneath the Trophy Room. That's where he performs the soul-binding ceremony."
+  duration: 4
+  speaker: ghost_professor
+  sound: "assets/sounds/dialogs/wolfboy-wolfboytest3.wav"
+  exit:
+    ExitDialog: start
+
+dark_truth:
+  line: "Sacrificed. Their souls bound to the school. I'm technically one of them - just better at haunting."
+  duration: 4
+  speaker: ghost_professor
+  sound: "assets/sounds/dialogs/wolfboy-wolfboytest2.wav"
+  exit:
+    ExitDialog: start
+
+records:
+  line: "I have copies! But I need proof you'll actually do something. Bring me a Faculty Badge - show commitment."
+  duration: 4
+  speaker: ghost_professor
+  sound: "assets/sounds/dialogs/wolfboy-wolfboytest3.wav"
+  answers:
+    - line: "Here's a Faculty Badge!"
+      actionfuncs:
+        - TakeItemString:
+          - FacultyBadge
+          - no_badge
+          - got_badge
+    - line: "I'll find one."
+      actionfuncs:
+        - ChangeDialog: ["ghost_professor", "bye"]
+
+dad_knows:
+  line: "He collected me personally. Professional, efficient. Said 'paperwork' a lot. Very corporate death."
+  duration: 4
+  speaker: ghost_professor
+  sound: "assets/sounds/dialogs/wolfboy-wolfboytest2.wav"
+  exit:
+    ExitDialog: start
+
+trade:
+  line: "The Faculty Badge from the Teachers' Lounge. Get it, and I'll give you everything - detention records, names, proof!"
+  duration: 4
+  speaker: ghost_professor
+  sound: "assets/sounds/dialogs/wolfboy-wolfboytest3.wav"
+  exit:
+    ExitDialog: start
+
+no_badge:
+  line: "That's not the Faculty Badge. I need official proof you can access restricted areas. Try again."
+  sound: "assets/sounds/dialogs/wolfboy-wolffailure.wav"
+  duration: 3
+  speaker: ghost_professor
+  exit:
+    ExitDialog: start
+
+got_badge:
+  line: "OFFICIAL CREDENTIALS! Here - 200 years of evidence! Names, dates, rituals. Expose them ALL!"
+  sound: "assets/sounds/dialogs/wolfboy-wolfsuccess.wav"
+  duration: 4
+  speaker: ghost_professor
+  exit:
+    ExitDialog: helped
+  unlock: true
+
+helped:
+  line: "You have everything now. The Dean's office, the Trophy Room - that's where the truth hides. Go, hero!"
+  duration: 3
+  speaker: ghost_professor
+  sound: "assets/sounds/dialogs/wolfboy-bye2.wav"
+  exit:
+    ExitDialog: helped
