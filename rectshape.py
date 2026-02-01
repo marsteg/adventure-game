@@ -6,7 +6,7 @@ class RectShape(pygame.sprite.Sprite):
 
     def __init__(self, left, top, width, height, image):
         if hasattr(self, "containers"):
-            super().__init__(self.containers)
+            super().__init__()
         else:
             super().__init__()
 
@@ -31,15 +31,17 @@ class RectShape(pygame.sprite.Sprite):
 
     def collides_with(self, other):
         """Check if this object collides with another."""
-        return self.rect.colliderect(other.rect)
+        #return self.rect.colliderect(other.rect)
+        pass
 
     def collidepoint(self, pos):
         """Check if a point is within this object's rect."""
-        return self.rect.collidepoint(pos)
+        #return self.rect.collidepoint(pos)
+        pass
 
     def shine(self, screen):
         """Draw a highlight overlay on the object."""
-        shiner = pygame.Surface((self.rect.width, self.rect.height))
+        shiner = pygame.Surface((self.width, self.height))
         shiner.fill((255, 255, 255))
         shiner.set_alpha(100)
-        screen.blit(shiner, self.rect.topleft)
+        screen.blit(shiner, (self.left, self.top))

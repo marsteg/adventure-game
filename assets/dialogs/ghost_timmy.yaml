@@ -214,10 +214,10 @@ got_glasses:
   duration: 4
   speaker: ghost_timmy
   exit:
-    ExitDialog: visible
+    ExitDialog: visible2
   unlock: true
 
-visible:
+visible2:
   line: "You've given me hope for the first time in 40 years! Stop the Dean! Free us all! And... tell my mom I said hi."
   duration: 3
   speaker: ghost_timmy

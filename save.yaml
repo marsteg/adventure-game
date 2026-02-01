@@ -6,25 +6,36 @@ rooms:
     actions: {}
     items: {}
     npcs: {}
-  room1:
+  DeansOffice:
     doors:
       Room1Door1:
         locked: true
       Room1Door2:
+        locked: true
+      StorageDoor:
         locked: false
     actions:
       button1:
         locked: false
         state: ''
         imagepath: assets/actions/button.png
-    items: {}
+    items:
+      AncientScroll:
+        stashed: false
+        allow_destroy: false
     npcs:
       wolfboy2:
-        active_dialog: bye
-        locked: false
-  room2:
+        active_dialog: start
+        locked: true
+  MainHall:
     doors:
       Room2Door2:
+        locked: false
+      LibraryEntrance:
+        locked: false
+      DormitoryDoor:
+        locked: false
+      CafeteriaDoor:
         locked: false
     actions:
       button2:
@@ -36,14 +47,263 @@ rooms:
       wolfboy:
         active_dialog: start
         locked: true
+  Courtyard:
+    doors:
+      BeachBarExit:
+        locked: false
+      GymDoor:
+        locked: false
+      ClockTowerDoor:
+        locked: true
+    actions:
+      GreenPlant:
+        locked: false
+        state: ''
+        imagepath: assets/actions/greenplant.png
+    items:
+      hay:
+        stashed: false
+        allow_destroy: false
+    npcs:
+      muckmuck:
+        active_dialog: start
+        locked: true
+  ForbiddenLibrary:
+    doors:
+      LibraryExit:
+        locked: false
+      SecretDoor:
+        locked: true
+    actions: {}
+    items:
+      MagicAmulet:
+        stashed: false
+        allow_destroy: false
+      BookofTruth:
+        stashed: false
+        allow_destroy: false
+      MysteriousNote:
+        stashed: false
+        allow_destroy: false
+    npcs:
+      librarian:
+        active_dialog: start
+        locked: true
+  SecretChamber:
+    doors:
+      ChamberExit:
+        locked: false
+    actions: {}
+    items:
+      DarkArtifact:
+        stashed: false
+        allow_destroy: false
+    npcs: {}
+  StorageRoom:
+    doors:
+      StorageExit:
+        locked: false
+    actions: {}
+    items: {}
+    npcs:
+      janitor:
+        active_dialog: start
+        locked: true
+  Dormitory:
+    doors:
+      DormToHall:
+        locked: false
+      RooftopDoor:
+        locked: true
+    actions:
+      BrokenMirror:
+        locked: true
+        state: ''
+        imagepath: assets/actions/button.png
+    items:
+      GhostGlasses:
+        stashed: false
+        allow_destroy: false
+    npcs:
+      vampire_victoria:
+        active_dialog: start
+        locked: true
+  Cafeteria:
+    doors:
+      CafeToHall:
+        locked: false
+      GreenhouseDoor:
+        locked: false
+    actions:
+      MysteryPot:
+        locked: true
+        state: ''
+        imagepath: assets/actions/greenplant.png
+    items:
+      EnchantedFork:
+        stashed: false
+        allow_destroy: false
+    npcs:
+      chef_gronk:
+        active_dialog: start
+        locked: true
+  DungeonGym:
+    doors:
+      GymToCourt:
+        locked: false
+      BasementDoor:
+        locked: true
+    actions:
+      ForbiddenLocker:
+        locked: true
+        state: ''
+        imagepath: assets/actions/button2.png
+    items:
+      RustyChain:
+        stashed: false
+        allow_destroy: false
+    npcs:
+      coach_bull:
+        active_dialog: start
+        locked: true
+  ClockTower:
+    doors:
+      TowerToCourt:
+        locked: false
+    actions:
+      ClockMechanism:
+        locked: true
+        state: ''
+        imagepath: assets/actions/button.png
+    items:
+      ClockGear:
+        stashed: false
+        allow_destroy: false
+    npcs:
+      tick_tock:
+        active_dialog: start
+        locked: true
+  Rooftop:
+    doors:
+      RoofToDorm:
+        locked: false
+    actions:
+      GargoyleStatue:
+        locked: true
+        state: ''
+        imagepath: assets/actions/button.png
+    items:
+      GargoyleEye:
+        stashed: false
+        allow_destroy: false
+      WeatherVane:
+        stashed: false
+        allow_destroy: false
+    npcs: {}
+  Basement:
+    doors:
+      BaseToGym:
+        locked: false
+      TeachersDoor:
+        locked: true
+    actions:
+      RitualCircle:
+        locked: true
+        state: ''
+        imagepath: assets/actions/button.png
+    items:
+      RitualCandle:
+        stashed: false
+        allow_destroy: false
+      BasementMap:
+        stashed: false
+        allow_destroy: false
+    npcs:
+      ghost_timmy:
+        active_dialog: start
+        locked: true
+  Greenhouse:
+    doors:
+      GreenToCafe:
+        locked: false
+    actions:
+      MoonflowerPot:
+        locked: true
+        state: ''
+        imagepath: assets/actions/greenplant.png
+    items:
+      RareSeed:
+        stashed: false
+        allow_destroy: false
+      VenusFlytrapTooth:
+        stashed: false
+        allow_destroy: false
+    npcs:
+      planty:
+        active_dialog: start
+        locked: true
+  TeachersLounge:
+    doors:
+      TeachToBase:
+        locked: false
+      TrophyDoor:
+        locked: false
+    actions:
+      CoffeeMachine:
+        locked: false
+        state: ''
+        imagepath: assets/actions/button2.png
+    items:
+      DetentionRecords:
+        stashed: false
+        allow_destroy: false
+    npcs:
+      ghost_professor:
+        active_dialog: start
+        locked: true
+  TrophyRoom:
+    doors:
+      TrophyToTeach:
+        locked: false
+      FinalDoor:
+        locked: true
+    actions:
+      SuspiciousPainting:
+        locked: true
+        state: ''
+        imagepath: assets/actions/button.png
+    items:
+      CursedTrophy:
+        stashed: false
+        allow_destroy: false
+    npcs:
+      sir_portrait:
+        active_dialog: start
+        locked: true
+  FinalConfrontation:
+    doors:
+      FinalToTrophy:
+        locked: false
+    actions: {}
+    items:
+      SoulContract:
+        stashed: false
+        allow_destroy: false
+    npcs:
+      dean_malvora:
+        active_dialog: start
+        locked: true
 inventory:
-  missile2:
+  OldKey:
     stashed: true
     allow_destroy: false
-    selfdestruct: true
-    left: 128
-    top: 617
-    width: 50
-    height: 50
-    imagepath: assets/items/missile2.png
-active_room: room2
+    self_destruct: true
+    left: 619
+    top: 672
+    width: 42
+    height: 42
+    imagepath: assets/items/missile.png
+active_room: StorageRoom
+player:
+  left: 328
+  top: 393

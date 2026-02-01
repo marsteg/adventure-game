@@ -4,10 +4,10 @@ import time
 
 from rectshape import RectShape
 from constants import (
-    SCREEN_WIDTH, SCREEN_HEIGHT, SPEECH_FONT, SPEECH_SIZE, BLUE,
+    SCREEN_WIDTH, SCREEN_HEIGHT,
     at_percentage_width, at_percentage_height
 )
-from dialogbox import DialogBox
+from dialogbox import DialogBox, VoiceManager
 from answer import Answer
 from dialogfuncs import ChangeDialog, ExitDialog, TakeItemString, UnlockNPC
 
@@ -97,8 +97,7 @@ class NPC(RectShape):
         if isinstance(sound, list):
             sound = sound[self.dialogline]
         print("Speaking: ", self.name, "dialog:", sound)
-        voiceline = pygame.mixer.Sound(sound)
-        pygame.mixer.Sound.play(voiceline)
+        VoiceManager.play_voice(sound)
 
     def speak_description(self):
         if self.locked:
@@ -106,11 +105,9 @@ class NPC(RectShape):
         else:
             line = self.dialog["description"]["unlocked"]["sound"]
         print(line)
-        sound = pygame.mixer.Sound(line)
-        pygame.mixer.Sound.play(sound)
+        VoiceManager.play_voice(line)
 
     def talk_description(self, room):
-        speech_font = pygame.font.Font(SPEECH_FONT, SPEECH_SIZE)
         dialbox = DialogBox(room, time.time())
         dialbox.state = "describe"
         dialbox.room = room
@@ -121,9 +118,6 @@ class NPC(RectShape):
             line = self.dialog["description"]["unlocked"]["line"]
 
         print("Describe Talking: ", self.name, "dialog:", line)
-        text = speech_font.render(line, True, BLUE)
-        dialbox.rect = pygame.Rect(SCREEN_WIDTH // 3, SCREEN_HEIGHT // 2, SCREEN_WIDTH // 2, 0)
-        dialbox.surface = text
         # Store text for new renderer
         dialbox.dialog_text = line
         dialbox.speaker_name = ""
@@ -136,7 +130,6 @@ class NPC(RectShape):
     def talk(self, room, inventory, answerbox):
         """Main dialog interaction method."""
         self.timer = time.time()
-        speech_font = pygame.font.Font(SPEECH_FONT, SPEECH_SIZE)
         print("NPC Talking: ", self.name)
 
         dialbox = DialogBox(room, time.time())
@@ -152,25 +145,11 @@ class NPC(RectShape):
             line = line[self.dialogline]
 
         print("NPC Talking: ", speaker.name, "dialog:", line)
-        text = speech_font.render(line, True, speaker.speechcolor)
 
-        # Position dialog box relative to speaker
-        if SCREEN_WIDTH / 2 < speaker.rect.left:
-            dialbox.rect = pygame.Rect(
-                speaker.rect.left - at_percentage_width(5),
-                speaker.rect.top - at_percentage_height(5),
-                SCREEN_WIDTH // 2, 0
-            )
-        else:
-            dialbox.rect = pygame.Rect(
-                speaker.rect.left + at_percentage_width(5),
-                speaker.rect.top - at_percentage_height(5),
-                SCREEN_WIDTH // 2, 0
-            )
-        dialbox.surface = text
-        # Store text for new renderer
+        # Store text and speaker info for new renderer
         dialbox.dialog_text = line
         dialbox.speaker_name = speaker.name
+        dialbox.speaker_color = speaker.speechcolor
 
         # Check if the dialog unlocks something
         if self.dialog[self.active_dialog].get("unlock") is True:

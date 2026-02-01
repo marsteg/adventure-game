@@ -17,10 +17,7 @@ class AnswerBox(pygame.sprite.Sprite):
         self.room = None
         self.answers = {}
 
-    def draw(self, screen):
-        pygame.draw.rect(screen, "blue", self.rect)
-        for answer in self.answers.values():
-            screen.blit(answer.surface, answer.rect)
+    # draw() method removed - rendering now handled by AnswerRenderer in ui.py
 
     def add_answer(self, answer):
         """Add an answer option to this box."""

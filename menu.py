@@ -14,11 +14,8 @@ class MenuButton:
         self.text = text
         self.action = action
         self.hover = False
-        self.font = None
+        self.font = pygame.font.Font(None, 26)
 
-    def _ensure_font(self):
-        if self.font is None:
-            self.font = pygame.font.Font(None, 26)
 
     def update(self, mouse_pos, clicked=False):
         self.hover = self.rect.collidepoint(mouse_pos)
@@ -27,8 +24,6 @@ class MenuButton:
         return None
 
     def draw(self, surface):
-        self._ensure_font()
-
         # Simple underline style for hover
         text_color = (255, 255, 255) if self.hover else (180, 180, 190)
         text_surface = self.font.render(self.text, True, text_color)
@@ -46,9 +41,10 @@ class MenuButton:
 class MainMenu:
     """Minimal main menu."""
 
-    def __init__(self):
-        self.font_title = None
-        self.font_small = None
+    def __init__(self, title_text):
+        self.font_title = pygame.font.Font(None, 52)
+        self.font_small = pygame.font.Font(None, 18)
+        self.title_text = title_text
 
         # Button setup
         btn_width = 200
@@ -62,10 +58,6 @@ class MainMenu:
             MenuButton(btn_x, start_y + spacing, btn_width, btn_height, "Quit", "quit"),
         ]
 
-    def _ensure_fonts(self):
-        if self.font_title is None:
-            self.font_title = pygame.font.Font(None, 52)
-            self.font_small = pygame.font.Font(None, 18)
 
     def update(self, mouse_pos, clicked):
         for button in self.buttons:
@@ -78,14 +70,11 @@ class MainMenu:
         return None
 
     def draw(self, surface):
-        self._ensure_fonts()
-
         # Solid dark background
         surface.fill((18, 18, 24))
 
         # Title
-        title_text = "Adventure Game"
-        title = self.font_title.render(title_text, True, (255, 255, 255))
+        title = self.font_title.render(self.title_text, True, (255, 255, 255))
         title_rect = title.get_rect(center=(SCREEN_WIDTH // 2, SCREEN_HEIGHT // 2 - 60))
         surface.blit(title, title_rect)
 

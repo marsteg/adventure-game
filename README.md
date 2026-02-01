@@ -20,6 +20,7 @@ You will need the pygame library. Then just run:
 	- Rooms now have background music!
 	- NPCs can have voice, when talking!
 	- actions can play sounds on Activation (when unlocked)
+	- clicking should skip to the next line
 - NPCs	
 	- can give items, when unlockd
 	- can open doors, when unlocked
@@ -47,6 +48,8 @@ You will need the pygame library. Then just run:
 - Introduced a Player. At the moment it simply spawns and can be send to a destination
 	- The Player has now a left and right walking animation
 - There is now a small Text Area that displays the objectname of whatever you are pointing at
+- The Inventory is now centered
+- Cutscenes! There is now the possibility to have Text-based Cutscenes for intros or short explanations of story
 		
 
 
@@ -58,14 +61,9 @@ You will need the pygame library. Then just run:
 		- All NPCs in a Yaml
 		- all Doors in a Yaml
 ## Conversations
-	- text currently stays X seconds - clicking should skip to the next line
 	- how to manage it when picking up an item should change dialog choices?
 		- should Items have actions, that get executed on pickup? could change active_dialogs or locked dialogs?
 	- how to have multiple NPCs talk at the same time?
-		- every NPC has now their own dialogbox. The position is still hard-coded.
-			- what is a smart way to find a position?
-				- i want to have it relative to the object but closer to the center of the screen
-			- text should be positioned relative to the character speaking
 	- i partly implemented multiline text and auto-detection of speech length. Needs further thorough testing and improvement though
 ## Saving/Loading:
 	- how to save and load the game?
@@ -74,6 +72,7 @@ You will need the pygame library. Then just run:
 			- support multiple savefiles
 		- load from yaml
 			- select savefile
+	- needs further debugging - currently items are not correctly restored
 ## Player Character
 	- doubleclick on actions, doors, items for faster walking speed
 	- Improve Walking
@@ -81,21 +80,10 @@ You will need the pygame library. Then just run:
 		- how to define that area?
 		- improve player walking animation
 
-## inventory
-- items should get ordered / aligned in the inventory
-	- slot system size (currently 20) - what if i have more items? scrolling?
-	- slots currently do not get re-used (probably never properly released)
-
 ## Items
 - I would like to implement an "endless" item, from which the player always pick up one
 	- there is now a test case but somehow the item is only given once.
-- how to manage it when picking up an item should change dialog choices?
-		- should Items have actions, that get executed on pickup? could change active_dialogs or locked dialogs?
-		--> is implemented, requires testing (no test case implemented, yet)
 
-### useful dialog box positions?
-dialbox.rect = pygame.Rect(SCREEN_WIDTH // 5, SCREEN_HEIGHT // 5, SCREEN_WIDTH // 2, 0)
---> perfect "narrator" position on the top center
 
 # Thanks and Grateful links to external helping tools:
 Background Music from: https://www.musicfox.com/info/kostenlose-gemafreie-musik/

@@ -1,11 +1,14 @@
+import player
+import pygame
 import yaml
 
 from room import Room
 from inventory import Inventory
 from item import Item
+from player import Player
 
 
-def SaveState(active_room, inventory, filename):
+def SaveState(active_room, inventory, player, filename):
     """Save the current game state to a YAML file."""
     savedata = {
         "rooms": {},
@@ -58,6 +61,12 @@ def SaveState(active_room, inventory, filename):
             "height": item.rect.height,
             "imagepath": item.imagepath
         }
+    
+    # Save player location
+    savedata["player"] = {
+        "left": player.sprites()[0].rect.left,
+        "top": player.sprites()[0].rect.top
+    }
 
     try:
         yaml_output = yaml.dump(savedata, sort_keys=False)
@@ -162,4 +171,7 @@ def LoadState(filename):
     else:
         print(f"Warning: Active room '{active_room_name}' not found")
 
-    return active_room, inventory
+    # Restore player position
+    player_data = data.get("player", {})
+
+    return active_room, inventory, player_data

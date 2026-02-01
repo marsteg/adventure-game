@@ -2,8 +2,8 @@ import pygame
 import time
 
 from rectshape import RectShape
-from constants import SCREEN_WIDTH, SCREEN_HEIGHT, SPEECH_FONT, SPEECH_SIZE, BLUE
-from dialogbox import DialogBox
+from constants import SCREEN_WIDTH, SCREEN_HEIGHT
+from dialogbox import DialogBox, VoiceManager
 
 
 class Action(RectShape):
@@ -90,11 +90,9 @@ class Action(RectShape):
         else:
             line = self.description_sound_unlocked
         print(line)
-        sound = pygame.mixer.Sound(line)
-        pygame.mixer.Sound.play(sound)
+        VoiceManager.play_voice(line)
 
     def talk_description(self, room):
-        speech_font = pygame.font.Font(SPEECH_FONT, SPEECH_SIZE)
         dialbox = DialogBox(room, time.time())
         dialbox.state = self
         dialbox.room = room
@@ -105,9 +103,6 @@ class Action(RectShape):
             line = self.description_text_unlocked
 
         print("Action Describe Talking: ", self.name, "dialog:", line)
-        text = speech_font.render(line, True, BLUE)
-        dialbox.rect = pygame.Rect(SCREEN_WIDTH // 4, SCREEN_HEIGHT // 4, SCREEN_WIDTH // 2, 0)
-        dialbox.surface = text
         # Store text for new renderer
         dialbox.dialog_text = line
         dialbox.speaker_name = ""

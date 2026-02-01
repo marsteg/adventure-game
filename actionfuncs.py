@@ -20,6 +20,15 @@ def ChangePicture(action, new_image, old_image, _unused=None):
         action.state = new_image
     print(f"Action '{action.name}' changed picture to: {action.imagepath}")
 
+def ChangeRoomPicture(room, new_image):
+    """Toggle a room's background image between two states."""
+    if room.imagepath is new_image:
+        return  # No change needed
+    else:
+        room.imagepath = new_image
+        room.state = new_image
+    print(f"Room '{room.name}' changed picture to: {room.imagepath}")
+
 
 def PlaySound(soundfile):
     """Play a sound effect."""

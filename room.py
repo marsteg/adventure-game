@@ -9,14 +9,13 @@ class Room(pygame.sprite.Sprite):
     _id_counter = 1
     containers = []
     rooms = {}
+    _image_cache = {}  # Cache for loaded images
 
     def __init__(self, player, image, name, music):
-        pygame.sprite.Sprite.__init__(self, self.containers)
+        pygame.sprite.Sprite.__init__(self)
         self.rect = pygame.Rect(0, 0, SCREEN_WIDTH, SCREEN_HEIGHT - INVENTORY_HEIGHT)
         self.id = Room._id_counter
         Room._id_counter += 1
-        self.image = pygame.image.load(image).convert()
-        self.image = pygame.transform.scale(self.image, (SCREEN_WIDTH, SCREEN_HEIGHT - INVENTORY_HEIGHT))
         self.doors = {}
         self.items = {}
         self.actions = {}
@@ -25,9 +24,26 @@ class Room(pygame.sprite.Sprite):
         self.music = music
         self.player = player
         Room.rooms[self.name] = self
+        self._cached_image = None
+        self._cached_imagepath = None
+        self.imagepath = image
+        self.image = pygame.image.load(self.imagepath).convert()
+        self.image = pygame.transform.scale(self.image, (SCREEN_WIDTH, SCREEN_HEIGHT - INVENTORY_HEIGHT))
+
+    def _load_image(self):
+        """Load and cache the image. Only reload if path changed."""
+        if self._cached_imagepath != self.imagepath:
+            cache_key = (self.imagepath, self.rect.width, self.rect.height)
+            if cache_key not in Room._image_cache:
+                img = pygame.image.load(self.imagepath).convert_alpha()
+                img = pygame.transform.scale(img, (self.rect.width, self.rect.height))
+                Room._image_cache[cache_key] = img
+            self._cached_image = Room._image_cache[cache_key]
+            self._cached_imagepath = self.imagepath
 
     def draw(self, screen, inventory, answerbox):
-        screen.blit(self.image, self.rect)
+        self._load_image()
+        screen.blit(self._cached_image, self.rect)
 
         for door in self.doors.values():
             door.draw(screen)
@@ -41,14 +57,11 @@ class Room(pygame.sprite.Sprite):
 
         # Draw dialogs with new renderer
         for dialogbox in DialogBox.dialogboxes:
-            if dialogbox.room == self and dialogbox.surface:
-                # Extract text from the rendered surface or use stored text
-                if hasattr(dialogbox, 'dialog_text') and dialogbox.dialog_text:
-                    speaker = getattr(dialogbox, 'speaker_name', "")
-                    dialog_renderer.render_dialog_box(screen, dialogbox.dialog_text, speaker_name=speaker)
-                else:
-                    # Fallback: draw old style if no text stored
-                    dialogbox.draw(screen)
+            if dialogbox.room == self and dialogbox.dialog_text:
+                speaker = getattr(dialogbox, 'speaker_name', "")
+                speaker_color = getattr(dialogbox, 'speaker_color', None)
+                dialog_renderer.render_dialog_box(screen, dialogbox.dialog_text,
+                                                speaker_name=speaker, speaker_color=speaker_color)
 
         # Inventory/answerbox drawn by main.py with new renderers
 

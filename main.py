@@ -1,3 +1,4 @@
+from narwhals import Unknown
 import pygame
 import time
 
@@ -11,17 +12,18 @@ from room import Room
 from door import Door
 from action import Action
 from actionfuncs import (
-    ChangePicture, LogText, UnlockDoor, AllowDestroy, GiveItem, TakeItem,
+    ChangePicture, ChangeRoomPicture, LogText, UnlockDoor, AllowDestroy, GiveItem, TakeItem,
     DestroyItem, ActionChangeDialog, PlaySound
 )
 from npc import NPC
-from dialogbox import DialogBox, get_sound_duration
+from dialogbox import DialogBox, VoiceManager, get_sound_duration
 from answerbox import AnswerBox
 from answer import Answer
 from save import SaveState, LoadState
 from player import Player
 from queueing import QueuedInteraction
 from menu import MainMenu
+from textcutscene import TextCutscene
 from ui import (
     Colors, dialog_renderer, answer_renderer, inventory_renderer,
     tooltip_renderer, transition, draw_rounded_rect
@@ -33,161 +35,7 @@ class GameState:
     MENU = "menu"
     PLAYING = "playing"
     PAUSED = "paused"
-    INTRO = "intro"
-
-
-class IntroSequence:
-    """Displays the game's story intro with typewriter effect."""
-
-    def __init__(self):
-        self.slides = [
-            {
-                "title": "Grimwood Academy",
-                "text": [
-                    "Welcome to Grimwood Academy for the Magically Gifted...",
-                    "...and their emotionally unavailable parents.",
-                    "Where werewolf kids learn next to zombie toddlers. Health & Safety gave up years ago."
-                ]
-            },
-            {
-                "title": "You Are Morticia",
-                "text": [
-                    "You are Morticia - yes, THAT Morticia. Daughter of Death himself.",
-                    "Dad wanted you to follow the family business. You wanted a gap year.",
-                    "Compromise: Magic school. At least the cafeteria serves souls on Tuesdays."
-                ]
-            },
-            {
-                "title": "Something Is Wrong",
-                "text": [
-                    "But something dark lurks beneath the school's cheerful facade...",
-                    "(Besides the literal dungeon. That's just the gym.)",
-                    "Students whisper about the Order of the Crimson Moon. Teachers change the subject.",
-                    "The Dean smiles too much. Nobody smiles that much without hiding something."
-                ]
-            },
-            {
-                "title": "Your Mission",
-                "text": [
-                    "Uncover the school's dark secret before it's too late.",
-                    "Make friends. Make enemies. Make questionable life choices.",
-                    "And maybe, just maybe, earn the right to leave this place...",
-                    "",
-                    "...for a trip to Wonderland. (Dad owes you big time.)"
-                ]
-            }
-        ]
-        self.current_slide = 0
-        self.char_index = 0
-        self.line_index = 0
-        self.timer = 0
-        self.char_delay = 35  # ms between characters
-        self.line_delay = 800  # ms between lines
-        self.waiting_for_line = False
-        self.done = False
-        self.font_title = None
-        self.font_text = None
-        self.skip_requested = False
-
-    def _ensure_fonts(self):
-        if self.font_title is None:
-            self.font_title = pygame.font.Font(None, 52)
-            self.font_text = pygame.font.Font(None, 32)
-
-    def update(self, dt):
-        if self.done:
-            return
-
-        self.timer += dt
-
-        if self.waiting_for_line:
-            if self.timer >= self.line_delay:
-                self.timer = 0
-                self.waiting_for_line = False
-                self.line_index += 1
-                self.char_index = 0
-
-                slide = self.slides[self.current_slide]
-                if self.line_index >= len(slide["text"]):
-                    # Slide complete, wait for click
-                    pass
-        else:
-            if self.timer >= self.char_delay:
-                self.timer = 0
-                slide = self.slides[self.current_slide]
-                if self.line_index < len(slide["text"]):
-                    current_line = slide["text"][self.line_index]
-                    if self.char_index < len(current_line):
-                        self.char_index += 1
-                    else:
-                        self.waiting_for_line = True
-
-    def next_slide(self):
-        """Move to next slide or mark as done."""
-        self.current_slide += 1
-        self.line_index = 0
-        self.char_index = 0
-        self.timer = 0
-        self.waiting_for_line = False
-
-        if self.current_slide >= len(self.slides):
-            self.done = True
-
-    def skip_to_end(self):
-        """Skip current slide's text animation."""
-        slide = self.slides[self.current_slide]
-        self.line_index = len(slide["text"]) - 1
-        self.char_index = len(slide["text"][self.line_index])
-
-    def draw(self, surface):
-        self._ensure_fonts()
-
-        # Dark background
-        surface.fill((8, 8, 12))
-
-        if self.current_slide >= len(self.slides):
-            return
-
-        slide = self.slides[self.current_slide]
-
-        # Title with accent color
-        title_surf = self.font_title.render(slide["title"], True, (210, 175, 110))
-        title_x = (SCREEN_WIDTH - title_surf.get_width()) // 2
-        surface.blit(title_surf, (title_x, 120))
-
-        # Decorative line under title
-        line_width = min(title_surf.get_width() + 100, SCREEN_WIDTH - 200)
-        pygame.draw.line(surface, (60, 55, 50), (SCREEN_WIDTH // 2 - line_width // 2, 180),
-                         (SCREEN_WIDTH // 2 + line_width // 2, 180), 1)
-
-        # Text lines
-        y = 240
-        for i, line in enumerate(slide["text"]):
-            if i < self.line_index:
-                # Fully displayed line
-                text_surf = self.font_text.render(line, True, (200, 195, 190))
-            elif i == self.line_index:
-                # Currently typing line
-                displayed = line[:self.char_index]
-                text_surf = self.font_text.render(displayed, True, (235, 230, 225))
-            else:
-                # Not yet displayed
-                continue
-
-            text_x = (SCREEN_WIDTH - text_surf.get_width()) // 2
-            surface.blit(text_surf, (text_x, y))
-            y += 45
-
-        # "Click to continue" prompt (only when slide text is complete)
-        if self.line_index >= len(slide["text"]) - 1 and self.char_index >= len(slide["text"][-1]):
-            prompt = "Click to continue..." if self.current_slide < len(self.slides) - 1 else "Click to begin your adventure..."
-            prompt_surf = self.font_text.render(prompt, True, (120, 115, 110))
-            prompt_x = (SCREEN_WIDTH - prompt_surf.get_width()) // 2
-            surface.blit(prompt_surf, (prompt_x, SCREEN_HEIGHT - 100))
-
-        # Skip hint
-        skip_surf = pygame.font.Font(None, 22).render("Press SPACE to skip", True, (80, 75, 70))
-        surface.blit(skip_surf, (SCREEN_WIDTH - skip_surf.get_width() - 20, SCREEN_HEIGHT - 30))
+    CUTSCENE = "intro"
 
 
 def main():
@@ -201,15 +49,17 @@ def main():
 
     # Game state
     game_state = GameState.MENU
-    menu = MainMenu()
-    intro = IntroSequence()
+    menu = MainMenu("Death's Daughter: The Academy Mystery")
+    intro = TextCutscene("assets/textcutscenes/intro.yaml")
 
     # These will be initialized when game starts
     inventory = None
     answerbox = None
-    player = None
+    #player = None
     active_room = None
     rooms = {}
+    daisy = Player(100, 100, 50, 75, "assets/player/daisy_waiting.png", "player")
+    player = pygame.sprite.Group(daisy)
 
     def init_game():
         """Initialize or reset the game."""
@@ -225,28 +75,23 @@ def main():
         items_group = pygame.sprite.Group()
         clickables = pygame.sprite.Group()
 
-        Door.containers = (updatable, clickables)
-        Item.containers = (updatable, items_group)
-        Action.containers = (updatable, clickables)
-        Inventory.containers = (updatable)
-        Room.containers = (updatable)
 
         inventory = Inventory()
         answerbox = AnswerBox()
 
-        daisy = Player(100, 100, 50, 75, "assets/player/daisy_waiting.png", "player")
-        player = pygame.sprite.Group(daisy)
+        #daisy = Player(100, 100, 50, 75, "assets/player/daisy_waiting.png", "player")
+        #player = pygame.sprite.Group(daisy)
 
         # ============================================================
         # ROOMS - The Academy and its many secrets
         # ============================================================
         title = Room(player, "assets/rooms/TitleScreen.png", "title", "assets/sounds/background/Talkline7.wav")
         room1 = Room(player, "assets/rooms/RektorOffice.png", "DeansOffice", "assets/sounds/background/Albatros.wav")
-        room2 = Room(player, "assets/rooms/LivingRoom.png", "MainHall", "assets/sounds/background/PrettyOrgan.wav")
-        beach_bar = Room(player, "assets/rooms/BeachBar.png", "Courtyard", "assets/sounds/background/dancing_street.wav")
+        room2 = Room(player, "assets/rooms/MainHall.png", "MainHall", "assets/sounds/background/PrettyOrgan.wav")
+        beach_bar = Room(player, "assets/rooms/Courtyard.png", "Courtyard", "assets/sounds/background/dancing_street.wav")
         library = Room(player, "assets/rooms/Library.png", "ForbiddenLibrary", "assets/sounds/background/PrettyOrgan.wav")
         secret_chamber = Room(player, "assets/rooms/SecretChamber.png", "SecretChamber", "assets/sounds/background/Talkline7.wav")
-        storage = Room(player, "assets/rooms/LivingRoom.png", "StorageRoom", "assets/sounds/background/Albatros.wav")
+        storage = Room(player, "assets/rooms/StorageRoom.png", "StorageRoom", "assets/sounds/background/Albatros.wav")
 
         # NEW ROOMS - The Expanded Academy
         dormitory = Room(player, "assets/rooms/LivingRoom.png", "Dormitory", "assets/sounds/background/PrettyOrgan.wav")
@@ -293,10 +138,10 @@ def main():
         dark_artifact.add_description("THE DARK ARTIFACT! Proof of the Dean's corruption! Netflix documentary incoming!", "assets/sounds/items/missile_locked.wav")
 
         # Additional items for expanded story
-        old_key = Item(at_percentage_width(20), at_percentage_height(65), 45, 45, "assets/items/missile.png", "OldKey", True)
+        old_key = Item(at_percentage_width(20), at_percentage_height(65), 45, 45, "assets/items/old_key.png", "OldKey", True)
         old_key.add_description("A dusty old key. The janitor says it opens a shortcut. Janitors know everything.", "assets/sounds/items/missile_locked.wav")
 
-        mysterious_note = Item(at_percentage_width(80), at_percentage_height(60), 40, 50, "assets/items/paper.png", "MysteriousNote", True)
+        mysterious_note = Item(at_percentage_width(80), at_percentage_height(60), 40, 50, "assets/items/mysterious_note.png", "MysteriousNote", True)
         mysterious_note.add_description("A cryptic note: 'The Order watches.' Very dramatic. Very villain energy.", "assets/sounds/items/paper_locked.wav")
 
         # ============================================================
@@ -405,15 +250,15 @@ def main():
         green_plant.add_description("A suspicious green plant. Muckmuck says to combine it with hay. I don't ask questions anymore.", "The plant looks slightly less suspicious now. Still wouldn't eat it.", "assets/sounds/items/greenplant_locked.wav", "assets/sounds/items/greenplant_locked.wav")
 
         # NPCs - larger hitboxes for easier clicking
-        wolfboy = NPC(at_percentage_width(65), at_percentage_height(55), 150, 160, "assets/npcs/werewolfboy.png", "wolfboy", True, missile2, YELLOW, "assets/dialogs/wolfboy.yaml")
-        wolfboy2 = NPC(at_percentage_width(35), at_percentage_height(55), 150, 160, "assets/npcs/werewolfboy.png", "wolfboy2", True, comb, WHITE, "assets/dialogs/wolfboy2.yaml")
+        wolfboy = NPC(at_percentage_width(65), at_percentage_height(55), 150, 160, "assets/npcs/werewolfboyWolf.png", "wolfboy", True, missile2, YELLOW, "assets/dialogs/wolfboy.yaml")
+        wolfboy2 = NPC(at_percentage_width(35), at_percentage_height(55), 150, 160, "assets/npcs/lupin.png", "wolfboy2", True, comb, WHITE, "assets/dialogs/wolfboy2.yaml")
         muckmuck = NPC(at_percentage_width(55), at_percentage_height(50), 100, 110, "assets/npcs/muckmuck_cool.png", "muckmuck", True, herb, GREEN, "assets/dialogs/muckmuck.yaml")
 
         # The mysterious Librarian - positioned on the left side of library
         librarian = NPC(at_percentage_width(25), at_percentage_height(50), 120, 160, "assets/npcs/librarian.png", "librarian", True, ancient_scroll, PURPLE, "assets/dialogs/librarian.yaml")
 
         # The nervous Janitor - knows secrets about the Order (in storage room)
-        janitor = NPC(at_percentage_width(65), at_percentage_height(55), 100, 140, "assets/npcs/werewolfboy.png", "janitor", True, mysterious_note, WHITE, "assets/dialogs/janitor.yaml")
+        janitor = NPC(at_percentage_width(65), at_percentage_height(55), 100, 140, "assets/npcs/janitor.png", "janitor", True, mysterious_note, WHITE, "assets/dialogs/janitor.yaml")
 
         # ============================================================
         # NEW NPCs - Expanded Cast
@@ -456,9 +301,9 @@ def main():
         # Library entrance door (in room2/living room) - on LEFT side
         room2_to_library = Door(at_percentage_width(5), at_percentage_height(45), 100, 180, "assets/doors/door1.png", "LibraryEntrance", library, False, None)
 
-        # Library doors - exit on RIGHT, secret door in CENTER-RIGHT
+        # Library doors - exit on RIGHT, secret door in CENTER
         library_exit = Door(at_percentage_width(88), at_percentage_height(50), 100, 180, "assets/doors/door1.png", "LibraryExit", room2, False, None)
-        secret_door = Door(at_percentage_width(60), at_percentage_height(45), 120, 180, "assets/doors/door1.png", "SecretDoor", secret_chamber, True, crystal_key)
+        secret_door = Door(at_percentage_width(45), at_percentage_height(45), 120, 180, None, "SecretDoor", secret_chamber, True, crystal_key)
 
         # Secret chamber - exit on left
         chamber_exit = Door(at_percentage_width(5), at_percentage_height(50), 100, 160, "assets/doors/door1.png", "ChamberExit", library, False, None)
@@ -481,7 +326,7 @@ def main():
         storage_exit.add_description("", "Back to the Dean's boring office.", "assets/sounds/doors/room2door2_unlocked.wav", "assets/sounds/doors/room2door2_unlocked.wav")
 
         # Secret door descriptions
-        secret_door.add_description("A HIDDEN DOOR behind a bookshelf?! How cliche. How villainous. How... expected.", "It opens! Classic villain lair incoming. I bet there's torches.", "assets/sounds/doors/room1door1_locked.wav", "assets/sounds/doors/room1door1_unlocked.wav")
+        secret_door.add_description("A HIDDEN DOOR in an old Library?! How cliche. How villainous. How... expected.", "It opens! Classic villain lair incoming. I bet there's torches.", "assets/sounds/doors/room1door1_locked.wav", "assets/sounds/doors/room1door1_unlocked.wav")
         chamber_exit.add_description("", "Back to the library. Less creepy, more books.", "assets/sounds/doors/room2door2_unlocked.wav", "assets/sounds/doors/room2door2_unlocked.wav")
 
         # ============================================================
@@ -571,6 +416,9 @@ def main():
 
         green_plant.add_function(GiveItem, herb, inventory)
         green_plant.add_function(LogText, "You took the herb from the plant")
+
+        # Library Functions - open secret door
+        secret_door.add_function(ChangeRoomPicture, library, "assets/rooms/Library_opened.png")
 
         # ============================================================
         # NEW ACTIONS - Interactive objects in new rooms
@@ -910,6 +758,7 @@ def main():
         pending_interaction = obj_or_qi
         target_obj = obj_or_qi.target if isinstance(obj_or_qi, QueuedInteraction) else obj_or_qi
         interaction_target = pygame.Vector2(target_obj.rect.centerx, target_obj.rect.centery)
+        assert player is not None
         for char in player.sprites():
             char.set_target(interaction_target)
         name = getattr(target_obj, "name", repr(target_obj))
@@ -1032,31 +881,31 @@ def main():
 
             if action == "start_game":
                 # Start intro sequence first
-                intro = IntroSequence()
-                game_state = GameState.INTRO
+                cutscene = TextCutscene()
+                game_state = GameState.CUTSCENE
             elif action == "quit":
                 run = False
 
-        elif game_state == GameState.INTRO:
+        elif game_state == GameState.CUTSCENE:
             # Intro sequence handling
-            intro.update(dt)
-            intro.draw(screen)
+            cutscene.update(dt)
+            cutscene.draw(screen)
 
             # Check for skip or continue
             keys = pygame.key.get_pressed()
             if keys[pygame.K_SPACE]:
-                intro.done = True
+                cutscene.done = True
 
             if clicked:
-                slide = intro.slides[intro.current_slide] if intro.current_slide < len(intro.slides) else None
+                slide = cutscene.slides[cutscene.current_slide] if cutscene.current_slide < len(cutscene.slides) else None
                 if slide:
                     # Check if current slide is fully displayed
-                    if intro.line_index >= len(slide["text"]) - 1 and intro.char_index >= len(slide["text"][-1]):
-                        intro.next_slide()
+                    if cutscene.line_index >= len(slide["text"]) - 1 and cutscene.char_index >= len(slide["text"][-1]):
+                        cutscene.next_slide()
                     else:
-                        intro.skip_to_end()
+                        cutscene.skip_to_end()
 
-            if intro.done:
+            if cutscene.done:
                 updatable, active_room = init_game()
                 game_state = GameState.PLAYING
                 transition.start_fade(fade_in=True)
@@ -1068,7 +917,8 @@ def main():
             # Dialog box cleanup
             for dialbox in DialogBox.dialogboxes[:]:
                 if dialbox.room != active_room:
-                    # Changed room - close dialog
+                    # Changed room - close dialog and stop voice
+                    VoiceManager.stop_current_voice()
                     speaker = dialbox.state
                     if speaker is not None and hasattr(speaker, 'dialogline'):
                         speaker.dialogline = 0
@@ -1076,9 +926,14 @@ def main():
                     active_talker = None
                     dialbox.kill()
                 elif time.time() - dialbox.timer > active_timer:
-                    # Timer expired - but DON'T close if answers are available!
+                    # Timer expired - but DON'T close if answers are available or voice is still playing!
                     if answerbox.state is not None:
                         # Answers are showing - keep dialog open, just reset timer
+                        dialbox.timer = time.time()
+                        continue
+
+                    # Keep dialog open if voice is still playing
+                    if VoiceManager.is_voice_playing():
                         dialbox.timer = time.time()
                         continue
 
@@ -1092,6 +947,8 @@ def main():
                             elif speaker.dialogline < len(line):
                                 speaker.talk(active_room, inventory, answerbox)
                                 continue  # Don't kill dialog, continue with next line
+                    # Stop voice when dialog ends naturally
+                    VoiceManager.stop_current_voice()
                     dialbox.state = None
                     active_talker = None
                     dialbox.kill()
@@ -1101,9 +958,11 @@ def main():
                 updatable_object.update(dt)
 
             # Draw room
+            assert active_room is not None
             active_room.draw(screen, inventory, answerbox)
 
             # Draw styled inventory or answer box
+            assert answerbox is not None
             if answerbox.state is not None:
                 answer_rects = draw_styled_answerbox(screen, answerbox, mouse_pos)
                 # Update answer rects to match rendered positions
@@ -1122,6 +981,7 @@ def main():
 
             # Draw hover tooltip
             hover_text = ""
+            assert inventory is not None
             for box in list(active_room.items.values()) + list(inventory.items.values()) + list(active_room.doors.values()) + list(active_room.actions.values()) + list(active_room.npcs.values()):
                 if box.rect.collidepoint(mouse_pos):
                     hover_text = box.name
@@ -1137,19 +997,34 @@ def main():
                     if drawable_room == active_room:
                         drawable_room.shine(screen)
             if keys[pygame.K_s]:
-                SaveState(active_room, inventory, "save.yaml")
+                SaveState(active_room, inventory, player, "save.yaml")
             if keys[pygame.K_l]:
-                loaded_room, new_inventory = LoadState("save.yaml")
+                loaded_room, new_inventory, player_pos = LoadState("save.yaml")
                 if loaded_room and new_inventory:
                     inventory.items = {}
                     inventory.items = new_inventory.items
                     active_room = loaded_room
+                    player.sprites()[0].rect.left = player_pos.get("left", 100)
+                    player.sprites()[0].rect.top = player_pos.get("top", 100)
+                    
             if keys[pygame.K_ESCAPE]:
                 game_state = GameState.MENU
 
             # Mouse event handling
             for event in events:
                 if event.type == pygame.MOUSEBUTTONDOWN:
+                    if event.button == 1:  # Left mouse button
+                        # Check if we should skip current voice line
+                        dialog_active = len(DialogBox.dialogboxes) > 0
+                        if dialog_active and VoiceManager.is_voice_playing():
+                            # Skip current voice and advance dialog
+                            VoiceManager.stop_current_voice()
+                            # Force timer expiration to advance to next dialog/line
+                            for dialbox in DialogBox.dialogboxes:
+                                if dialbox.room == active_room:
+                                    dialbox.timer = time.time() - active_timer - 1
+                            continue  # Skip normal click processing when skipping voice
+
                     if event.button in (1, 3):
                         active_click = None  # Reset click tracking
 

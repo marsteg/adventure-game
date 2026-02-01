@@ -1,7 +1,7 @@
 import pygame
 
 from rectshape import RectShape
-from constants import SCREEN_HEIGHT, INVENTORY_HEIGHT, SPEECH_FONT, SPEECH_SIZE, WHITE
+from constants import SCREEN_HEIGHT, INVENTORY_HEIGHT
 
 
 class Answer(RectShape):
@@ -10,13 +10,11 @@ class Answer(RectShape):
     containers = []
 
     def __init__(self, answer, index):
-        speech_font = pygame.font.Font(SPEECH_FONT, SPEECH_SIZE)
-        self.surface = speech_font.render(answer, True, WHITE)
-
+        # Position and size now handled by AnswerRenderer
         self.left = 10
-        self.height = SPEECH_SIZE
+        self.height = 30  # Standard height for answer options
         self.top = (SCREEN_HEIGHT - INVENTORY_HEIGHT + 5) + (index * 25)
-        self.width = self.surface.get_width()
+        self.width = 200  # Default width, will be set by renderer
 
         super().__init__(self.left, self.top, self.width, self.height, "image")
 

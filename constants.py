@@ -18,9 +18,8 @@ GREEN = (0, 255, 0)
 BLUE = (0, 0, 255)
 PURPLE = (160, 32, 240)
 
-# Font settings
-SPEECH_SIZE = 25
-SPEECH_FONT = 'freesansbold.ttf'
+# Font settings (now handled by ui.py renderers)
+# SPEECH_SIZE and SPEECH_FONT removed - no longer needed
 
 # Audio settings
 BACKGROUND_VOLUME = 0.1

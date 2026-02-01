@@ -36,16 +36,11 @@ class DialogRenderer:
     """Renders dialog boxes - positioned in upper area of screen."""
 
     def __init__(self):
-        self.font = None
-        self.font_name = None
+        self.font = pygame.font.Font(None, 32)
+        self.font_name = pygame.font.Font(None, 20)
 
-    def _ensure_fonts(self):
-        if self.font is None:
-            self.font = pygame.font.Font(None, 24)
-            self.font_name = pygame.font.Font(None, 18)
 
     def _wrap_text(self, text, max_width):
-        self._ensure_fonts()
         words = text.split(' ')
         lines = []
         current = ""
@@ -63,7 +58,6 @@ class DialogRenderer:
 
     def render_dialog_box(self, surface, text, speaker_name="", speaker_color=None,
                           position=None, width=520, portrait=None):
-        self._ensure_fonts()
 
         padding = 18
         wrapped = self._wrap_text(text, width - padding * 2)
@@ -72,10 +66,12 @@ class DialogRenderer:
         name_h = 22 if speaker_name else 0
         box_h = text_h + name_h + padding * 2
 
-        # Position in middle-upper area - away from inventory
+        # Position in center of screen - Broken Sword style
         if position is None:
             x = (SCREEN_WIDTH - width) // 2
-            y = 80  # Fixed position near top
+            # Center vertically in the available space above inventory
+            available_height = SCREEN_HEIGHT - INVENTORY_HEIGHT
+            y = (available_height - box_h) // 2
         else:
             x, y = position
 
@@ -104,14 +100,10 @@ class AnswerRenderer:
     """Renders dialog choices - positioned below dialog box."""
 
     def __init__(self):
-        self.font = None
+        self.font = pygame.font.Font(None, 24)
 
-    def _ensure_font(self):
-        if self.font is None:
-            self.font = pygame.font.Font(None, 21)
 
     def render_answers(self, surface, answers, rect, hover_pos=None):
-        self._ensure_font()
 
         if not answers:
             return []
@@ -122,9 +114,10 @@ class AnswerRenderer:
         total_h = len(answers) * (option_h + spacing) + padding * 2 - spacing
         width = 520
 
-        # Position below dialog (around y=200)
+        # Position above inventory - Broken Sword style
         x = (SCREEN_WIDTH - width) // 2
-        y = 200
+        margin_from_inventory = 10  # Small gap above inventory
+        y = SCREEN_HEIGHT - INVENTORY_HEIGHT - total_h - margin_from_inventory
 
         # Background
         draw_rounded_rect(surface, Colors.DIALOG_BG, (x, y, width, total_h), radius=6)
@@ -200,14 +193,10 @@ class TooltipRenderer:
     """Renders item name tooltips."""
 
     def __init__(self):
-        self.font = None
+        self.font = pygame.font.Font(None, 19)
 
-    def _ensure_font(self):
-        if self.font is None:
-            self.font = pygame.font.Font(None, 19)
 
     def render(self, surface, text, position):
-        self._ensure_font()
 
         padding = 7
         text_surf = self.font.render(text, True, Colors.TEXT)

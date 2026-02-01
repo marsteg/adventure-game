@@ -10,7 +10,7 @@ STYLE GUIDE FOR ALL ASSETS:
 - Resolution: 1280x720 for rooms, appropriate sizes for items/NPCs
 
 ================================================================================
-ROOMS - 1280x720 pixels, transparent or full background
+ROOMS - 1280x720 pixels, full background
 ================================================================================
 
 1. FORBIDDEN LIBRARY (assets/rooms/Library.png) - EXISTS but may need update
@@ -27,7 +27,7 @@ ROOMS - 1280x720 pixels, transparent or full background
    symbol on floor, mysterious fog, ominous purple and red lighting, cartoon style
    like classic LucasArts adventure games, 1280x720 pixels, no characters"
 
-3. STORAGE ROOM (uses LivingRoom.png - NEEDS NEW ASSET)
+3. STORAGE ROOM 
    FILE: assets/rooms/StorageRoom.png
    PROMPT: "Point-and-click adventure game background, dusty magic school storage
    room, old brooms and mops, mysterious crates and boxes, cobwebs, dim single
@@ -128,13 +128,13 @@ ITEMS - Small icons, TRANSPARENT BACKGROUND required, ~40-60 pixels
    artifact, floating dark orb with crimson core, swirling dark energy,
    evil aura, transparent background, 60x70 pixels, cartoon style"
 
-4. MYSTERIOUS NOTE (uses paper.png - could be unique)
+4. MYSTERIOUS NOTE 
    FILE: assets/items/mysterious_note.png
    PROMPT: "Point-and-click adventure game item, crumpled paper note with
    cryptic symbols, 'Order of Crimson Moon' seal visible, suspicious
    handwriting, old and worn, transparent background, 40x50 pixels"
 
-5. OLD KEY (uses missile.png - NEEDS UNIQUE ASSET)
+5. OLD KEY 
    FILE: assets/items/old_key.png
    PROMPT: "Point-and-click adventure game item, rusty old skeleton key,
    tarnished bronze, ornate handle with school crest, dusty, clearly

@@ -7,7 +7,7 @@ class Inventory(pygame.sprite.Sprite):
     containers = []
 
     def __init__(self):
-        pygame.sprite.Sprite.__init__(self, self.containers)
+        pygame.sprite.Sprite.__init__(self)
         self.rect = pygame.Rect(0, SCREEN_HEIGHT - INVENTORY_HEIGHT, SCREEN_WIDTH, INVENTORY_HEIGHT)
         self.items = {}  # Instance variable, not class variable
         self.slots = {}  # Instance variable, not class variable

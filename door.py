@@ -2,8 +2,8 @@ import pygame
 import time
 
 from rectshape import RectShape
-from constants import SCREEN_WIDTH, SCREEN_HEIGHT, SPEECH_FONT, SPEECH_SIZE, BLUE
-from dialogbox import DialogBox
+from constants import SCREEN_WIDTH, SCREEN_HEIGHT
+from dialogbox import DialogBox, VoiceManager
 
 
 class Door(RectShape):
@@ -17,12 +17,24 @@ class Door(RectShape):
         Door._id_counter += 1
         self.position = pygame.Vector2(left, top)
         self.rect = pygame.Rect(left, top, width, height)
-        self.image = pygame.image.load(image).convert_alpha()
-        self.image = pygame.transform.scale(self.image, (width, height))
+        if image == None:
+            self.image = pygame.Surface((width, height), pygame.SRCALPHA)
+        else:    
+            self.image = pygame.image.load(image).convert_alpha()
+            self.image = pygame.transform.scale(self.image, (width, height))
         self.target_room = target_room
         self.name = name
         self.locked = locked
         self.key = key
+        self.functions = []
+
+    def add_function(self, func, *args, **kwargs):
+        self.functions.append((func, args, kwargs))
+
+    def action(self):
+        for func, args, kwargs in self.functions:
+            func(*args, **kwargs)
+            print("Action Function triggered in position: ", self.position)
 
     def draw(self, screen):
         screen.blit(self.image, self.rect)
@@ -40,6 +52,7 @@ class Door(RectShape):
         print("Door unlocked: ", self.locked)
         self.locked = False
         key.allow_destroy = True
+        self.action()
         sound = pygame.mixer.Sound("assets/sounds/actions/door_unlock.wav")
         pygame.mixer.Sound.play(sound)
 
@@ -56,25 +69,19 @@ class Door(RectShape):
         else:
             line = self.description_sound_unlocked
         print(line)
-        sound = pygame.mixer.Sound(line)
-        pygame.mixer.Sound.play(sound)
+        VoiceManager.play_voice(line)
 
     def talk_description(self, room):
-        speech_font = pygame.font.Font(SPEECH_FONT, SPEECH_SIZE)
         dialbox = DialogBox(room, time.time())
-        dialbox.state = self
+        #dialbox.state = self
         dialbox.room = room
 
         if self.locked:
             line = self.description_text_locked
-            dialbox.rect = pygame.Rect(SCREEN_WIDTH // 5, SCREEN_HEIGHT // 5, SCREEN_WIDTH // 2, 0)
         else:
             line = self.description_text_unlocked
-            dialbox.rect = pygame.Rect(SCREEN_WIDTH // 4, SCREEN_HEIGHT // 4, SCREEN_WIDTH // 2, 0)
 
         print("Door Describe Talking: ", self.name, "dialog:", line)
-        text = speech_font.render(line, True, BLUE)
-        dialbox.surface = text
         # Store text for new renderer
         dialbox.dialog_text = line
         dialbox.speaker_name = ""

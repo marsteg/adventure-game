@@ -142,11 +142,11 @@ def generate_scroll_item(width=50, height=50):
 
     # Top roll
     pygame.draw.ellipse(surface, roll, (5, 5, width - 10, 16))
-    pygame.draw.ellipse(surface, (roll[0] * 0.8, roll[1] * 0.8, roll[2] * 0.8), (8, 8, width - 16, 10))
+    pygame.draw.ellipse(surface, (int(roll[0] * 0.8), int(roll[1] * 0.8), int(roll[2] * 0.8)), (8, 8, width - 16, 10))
 
     # Bottom roll
     pygame.draw.ellipse(surface, roll, (5, height - 21, width - 10, 16))
-    pygame.draw.ellipse(surface, (roll[0] * 0.8, roll[1] * 0.8, roll[2] * 0.8), (8, height - 18, width - 16, 10))
+    pygame.draw.ellipse(surface, (int(roll[0] * 0.8), int(roll[1] * 0.8), int(roll[2] * 0.8)), (8, height - 18, width - 16, 10))
 
     # Text lines
     for i in range(3):
