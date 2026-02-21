@@ -58,7 +58,7 @@ def main():
     #player = None
     active_room = None
     rooms = {}
-    daisy = Player(100, 100, 50, 75, "assets/player/daisy_waiting.png", "player")
+    daisy = Player(at_percentage_width(20), at_percentage_height(80), 50, 75, "assets/player/daisy_waiting.png", "player")
     player = pygame.sprite.Group(daisy)
 
     def init_game():
@@ -115,7 +115,7 @@ def main():
         paper = Item(at_percentage_width(85), at_percentage_height(30), 35, 45, "assets/items/paper.png", "paper", True)
 
         # New items for library quest - well spaced positions
-        ancient_scroll = Item(at_percentage_width(55), at_percentage_height(72), 45, 55, "assets/items/ancient_scroll.png", "AncientScroll", True)
+        ancient_scroll = Item(at_percentage_width(42), at_percentage_height(32), 45, 55, "assets/items/ancient_scroll.png", "AncientScroll", True)
         crystal_key = Item(200, 200, 50, 50, "assets/items/crystal_key.png", "CrystalKey", True)
         magic_amulet = Item(at_percentage_width(85), at_percentage_height(55), 50, 55, "assets/items/magic_amulet.png", "MagicAmulet", True)
 
@@ -251,7 +251,7 @@ def main():
 
         # NPCs - larger hitboxes for easier clicking
         wolfboy = NPC(at_percentage_width(65), at_percentage_height(55), 150, 160, "assets/npcs/werewolfboyWolf.png", "wolfboy", True, missile2, YELLOW, "assets/dialogs/wolfboy.yaml")
-        wolfboy2 = NPC(at_percentage_width(35), at_percentage_height(55), 150, 160, "assets/npcs/lupin.png", "wolfboy2", True, comb, WHITE, "assets/dialogs/wolfboy2.yaml")
+        wolfboy2 = NPC(at_percentage_width(35), at_percentage_height(55), 150, 160, "assets/npcs/werewolfboy.png", "wolfboy2", True, comb, WHITE, "assets/dialogs/wolfboy2.yaml")
         muckmuck = NPC(at_percentage_width(55), at_percentage_height(50), 100, 110, "assets/npcs/muckmuck_cool.png", "muckmuck", True, herb, GREEN, "assets/dialogs/muckmuck.yaml")
 
         # The mysterious Librarian - positioned on the left side of library
@@ -292,25 +292,23 @@ def main():
         dean_malvora = NPC(at_percentage_width(50), at_percentage_height(40), 140, 180, "assets/npcs/librarian.png", "dean_malvora", True, proof_of_corruption, PURPLE, "assets/dialogs/dean_malvora.yaml")
 
         # Doors - well positioned for each room
-        room1_door1 = Door(at_percentage_width(5), at_percentage_height(45), 100, 200, "assets/doors/door1.png", "Room1Door1", beach_bar, True, missile)
-        room1_door2 = Door(at_percentage_width(88), at_percentage_height(45), 100, 200, "assets/doors/door1.png", "Room1Door2", room2, True, button1)
-        room2_door2 = Door(at_percentage_width(85), at_percentage_height(45), 100, 200, "assets/doors/door1.png", "Room2Door2", room1, False, None)
-        title_door = Door(at_percentage_width(45), at_percentage_height(40), 120, 220, "assets/doors/door1.png", "Titledoor", room1, False, None)
-        beach_bar_exit = Door(at_percentage_width(2), at_percentage_height(55), 100, 200, "assets/doors/door1.png", "BeachBarExit", title, False, None)
-
+        room1_door1 = Door(at_percentage_width(5), at_percentage_height(45), 100, 200, "assets/doors/door1.png", "Room1Door1", beach_bar, (100, 200), True, missile)
+        room1_door2 = Door(at_percentage_width(88), at_percentage_height(45), 100, 200, "assets/doors/door1.png", "Room1Door2", room2, (100, 200), True, button1)
+        room2_door2 = Door(at_percentage_width(85), at_percentage_height(45), 100, 200, "assets/doors/door1.png", "Room2Door2", room1, (100, 200), False, None)
+        title_door = Door(at_percentage_width(35), at_percentage_height(30), 620, 450, None, "Grimwood Academy", room1, (100, 200), False, None)
+        beach_bar_exit = Door(at_percentage_width(2), at_percentage_height(55), 100, 200, "assets/doors/door1.png", "BeachBarExit", title, (100, 200), False, None)
         # Library entrance door (in room2/living room) - on LEFT side
-        room2_to_library = Door(at_percentage_width(5), at_percentage_height(45), 100, 180, "assets/doors/door1.png", "LibraryEntrance", library, False, None)
+        room2_to_library = Door(at_percentage_width(15), at_percentage_height(90), 100, 180, "assets/doors/door1.png", "LibraryEntrance", library, (100, 200), False, None)
 
         # Library doors - exit on RIGHT, secret door in CENTER
-        library_exit = Door(at_percentage_width(88), at_percentage_height(50), 100, 180, "assets/doors/door1.png", "LibraryExit", room2, False, None)
-        secret_door = Door(at_percentage_width(45), at_percentage_height(45), 120, 180, None, "SecretDoor", secret_chamber, True, crystal_key)
+        library_exit = Door(at_percentage_width(88), at_percentage_height(50), 100, 180, "assets/doors/door1.png", "LibraryExit", room2, (100, 200), False, None)
+        secret_door = Door(at_percentage_width(45), at_percentage_height(45), 120, 180, None, "SecretDoor", secret_chamber, (100, 200), True, crystal_key)
 
         # Secret chamber - exit on left
-        chamber_exit = Door(at_percentage_width(5), at_percentage_height(50), 100, 160, "assets/doors/door1.png", "ChamberExit", library, False, None)
-
+        chamber_exit = Door(at_percentage_width(5), at_percentage_height(50), 100, 160, "assets/doors/door1.png", "ChamberExit", library, (100, 200), False, None)
         # Storage room door (from Dean's Office)
-        storage_door = Door(at_percentage_width(50), at_percentage_height(70), 90, 150, "assets/doors/door1.png", "StorageDoor", storage, False, None)
-        storage_exit = Door(at_percentage_width(50), at_percentage_height(45), 90, 150, "assets/doors/door1.png", "StorageExit", room1, False, None)
+        storage_door = Door(at_percentage_width(50), at_percentage_height(70), 90, 150, "assets/doors/door1.png", "StorageDoor", storage, (100, 200), False, None)
+        storage_exit = Door(at_percentage_width(50), at_percentage_height(45), 90, 150, "assets/doors/door1.png", "StorageExit", room1, (100, 200), False, None)
 
         # Door descriptions - Morticia's sarcastic commentary
         title_door.add_description("", "Grimwood Academy awaits. Dad said this would be 'character building'. Ugh.", "assets/sounds/doors/titledoor_unlocked.wav", "assets/sounds/doors/titledoor_unlocked.wav")
@@ -334,75 +332,75 @@ def main():
         # ============================================================
 
         # From Main Hall to new areas
-        hall_to_dormitory = Door(at_percentage_width(50), at_percentage_height(25), 100, 160, "assets/doors/door1.png", "DormitoryDoor", dormitory, False, None)
+        hall_to_dormitory = Door(at_percentage_width(50), at_percentage_height(25), 100, 160, "assets/doors/door1.png", "DormitoryDoor", dormitory,(100, 200), False, None)
         hall_to_dormitory.add_description("", "To the Dormitory. Where students sleep and secrets lurk.", "assets/sounds/doors/room2door2_unlocked.wav", "assets/sounds/doors/room2door2_unlocked.wav")
 
-        hall_to_cafeteria = Door(at_percentage_width(30), at_percentage_height(70), 100, 160, "assets/doors/door1.png", "CafeteriaDoor", cafeteria, False, None)
+        hall_to_cafeteria = Door(at_percentage_width(30), at_percentage_height(70), 100, 160, "assets/doors/door1.png", "CafeteriaDoor", cafeteria, (100, 200), False, None)
         hall_to_cafeteria.add_description("", "The Cafeteria. Abandon dietary expectations, all ye who enter.", "assets/sounds/doors/room2door2_unlocked.wav", "assets/sounds/doors/room2door2_unlocked.wav")
 
         # Dormitory connections
-        dorm_to_hall = Door(at_percentage_width(5), at_percentage_height(50), 100, 160, "assets/doors/door1.png", "DormToHall", room2, False, None)
+        dorm_to_hall = Door(at_percentage_width(5), at_percentage_height(50), 100, 160, "assets/doors/door1.png", "DormToHall", room2, (100, 200), False, None)
         dorm_to_hall.add_description("", "Back to the Main Hall. Adulting awaits.", "assets/sounds/doors/room2door2_unlocked.wav", "assets/sounds/doors/room2door2_unlocked.wav")
 
-        dorm_to_rooftop = Door(at_percentage_width(88), at_percentage_height(30), 90, 140, "assets/doors/door1.png", "RooftopDoor", rooftop, True, tower_key)
+        dorm_to_rooftop = Door(at_percentage_width(88), at_percentage_height(30), 90, 140, "assets/doors/door1.png", "RooftopDoor", rooftop, (100, 200), True, tower_key)
         dorm_to_rooftop.add_description("Locked. I need a key. Probably leads somewhere dramatic.", "To the Rooftop! Where all dramatic things happen.", "assets/sounds/doors/room1door1_locked.wav", "assets/sounds/doors/room1door1_unlocked.wav")
 
         # Cafeteria connections
-        cafe_to_hall = Door(at_percentage_width(5), at_percentage_height(50), 100, 160, "assets/doors/door1.png", "CafeToHall", room2, False, None)
+        cafe_to_hall = Door(at_percentage_width(5), at_percentage_height(50), 100, 160, "assets/doors/door1.png", "CafeToHall", room2, (100, 200), False, None)
         cafe_to_hall.add_description("", "Back to the Main Hall. Escaping the mystery meat.", "assets/sounds/doors/room2door2_unlocked.wav", "assets/sounds/doors/room2door2_unlocked.wav")
 
-        cafe_to_greenhouse = Door(at_percentage_width(88), at_percentage_height(45), 100, 160, "assets/doors/door1.png", "GreenhouseDoor", greenhouse, False, None)
+        cafe_to_greenhouse = Door(at_percentage_width(88), at_percentage_height(45), 100, 160, "assets/doors/door1.png", "GreenhouseDoor", greenhouse, (100, 200), False, None)
         cafe_to_greenhouse.add_description("", "The Greenhouse. Where 'organic' gets scary.", "assets/sounds/doors/room2door2_unlocked.wav", "assets/sounds/doors/room2door2_unlocked.wav")
 
         # Greenhouse connections
-        green_to_cafe = Door(at_percentage_width(5), at_percentage_height(50), 100, 160, "assets/doors/door1.png", "GreenToCafe", cafeteria, False, None)
+        green_to_cafe = Door(at_percentage_width(5), at_percentage_height(50), 100, 160, "assets/doors/door1.png", "GreenToCafe", cafeteria, (100, 200), False, None)
         green_to_cafe.add_description("", "Back to the Cafeteria. Where plants become food.", "assets/sounds/doors/room2door2_unlocked.wav", "assets/sounds/doors/room2door2_unlocked.wav")
 
         # Courtyard connections to new areas
-        court_to_gym = Door(at_percentage_width(88), at_percentage_height(45), 100, 160, "assets/doors/door1.png", "GymDoor", dungeon_gym, False, None)
+        court_to_gym = Door(at_percentage_width(88), at_percentage_height(45), 100, 160, "assets/doors/door1.png", "GymDoor", dungeon_gym, (100, 200), False, None)
         court_to_gym.add_description("", "The Dungeon Gym. PE stands for Pain Experience.", "assets/sounds/doors/room2door2_unlocked.wav", "assets/sounds/doors/room2door2_unlocked.wav")
 
-        court_to_tower = Door(at_percentage_width(50), at_percentage_height(20), 90, 180, "assets/doors/door1.png", "ClockTowerDoor", clock_tower, True, gym_locker_key)
+        court_to_tower = Door(at_percentage_width(50), at_percentage_height(20), 90, 180, "assets/doors/door1.png", "ClockTowerDoor", clock_tower, (100, 200), True, gym_locker_key)
         court_to_tower.add_description("Strange lock. Need a special key.", "The Clock Tower! Time to discover some truths. Get it? Time? I'll stop.", "assets/sounds/doors/room1door1_locked.wav", "assets/sounds/doors/room1door1_unlocked.wav")
 
         # Gym connections
-        gym_to_court = Door(at_percentage_width(5), at_percentage_height(50), 100, 160, "assets/doors/door1.png", "GymToCourt", beach_bar, False, None)
+        gym_to_court = Door(at_percentage_width(5), at_percentage_height(50), 100, 160, "assets/doors/door1.png", "GymToCourt", beach_bar, (100, 200), False, None)
         gym_to_court.add_description("", "Back to the Courtyard. Away from the gains.", "assets/sounds/doors/room2door2_unlocked.wav", "assets/sounds/doors/room2door2_unlocked.wav")
 
-        gym_to_basement = Door(at_percentage_width(50), at_percentage_height(75), 100, 140, "assets/doors/door1.png", "BasementDoor", basement, True, ancient_tome)
+        gym_to_basement = Door(at_percentage_width(50), at_percentage_height(75), 100, 140, "assets/doors/door1.png", "BasementDoor", basement, (100, 200), True, ancient_tome)
         gym_to_basement.add_description("Sealed with ancient magic. Need something powerful.", "The Basement. Definitely not creepy at all.", "assets/sounds/doors/room1door1_locked.wav", "assets/sounds/doors/room1door1_unlocked.wav")
 
         # Clock Tower connections
-        tower_to_court = Door(at_percentage_width(5), at_percentage_height(50), 100, 160, "assets/doors/door1.png", "TowerToCourt", beach_bar, False, None)
+        tower_to_court = Door(at_percentage_width(5), at_percentage_height(50), 100, 160, "assets/doors/door1.png", "TowerToCourt", beach_bar, (100, 200), False, None)
         tower_to_court.add_description("", "Back to the Courtyard. My ears are ringing.", "assets/sounds/doors/room2door2_unlocked.wav", "assets/sounds/doors/room2door2_unlocked.wav")
 
         # Rooftop connections
-        roof_to_dorm = Door(at_percentage_width(5), at_percentage_height(50), 100, 160, "assets/doors/door1.png", "RoofToDorm", dormitory, False, None)
+        roof_to_dorm = Door(at_percentage_width(5), at_percentage_height(50), 100, 160, "assets/doors/door1.png", "RoofToDorm", dormitory, (100, 200), False, None)
         roof_to_dorm.add_description("", "Back to the Dormitory. Away from the vertigo.", "assets/sounds/doors/room2door2_unlocked.wav", "assets/sounds/doors/room2door2_unlocked.wav")
 
         # Basement connections
-        base_to_gym = Door(at_percentage_width(5), at_percentage_height(50), 100, 160, "assets/doors/door1.png", "BaseToGym", dungeon_gym, False, None)
+        base_to_gym = Door(at_percentage_width(5), at_percentage_height(50), 100, 160, "assets/doors/door1.png", "BaseToGym", dungeon_gym, (100, 200), False, None)
         base_to_gym.add_description("", "Back up to the Gym. Escaping the darkness.", "assets/sounds/doors/room2door2_unlocked.wav", "assets/sounds/doors/room2door2_unlocked.wav")
 
-        base_to_teachers = Door(at_percentage_width(88), at_percentage_height(45), 100, 160, "assets/doors/door1.png", "TeachersDoor", teachers_lounge, True, faculty_badge)
+        base_to_teachers = Door(at_percentage_width(88), at_percentage_height(45), 100, 160, "assets/doors/door1.png", "TeachersDoor", teachers_lounge, (100, 200), True, faculty_badge)
         base_to_teachers.add_description("Faculty Only. Need proper credentials.", "The Teachers Lounge! Where adults hide from students.", "assets/sounds/doors/room1door1_locked.wav", "assets/sounds/doors/room1door1_unlocked.wav")
 
         # Teachers Lounge connections
-        teach_to_base = Door(at_percentage_width(5), at_percentage_height(50), 100, 160, "assets/doors/door1.png", "TeachToBase", basement, False, None)
+        teach_to_base = Door(at_percentage_width(5), at_percentage_height(50), 100, 160, "assets/doors/door1.png", "TeachToBase", basement, (100, 200), False, None)
         teach_to_base.add_description("", "Back to the creepy Basement.", "assets/sounds/doors/room2door2_unlocked.wav", "assets/sounds/doors/room2door2_unlocked.wav")
 
-        teach_to_trophy = Door(at_percentage_width(88), at_percentage_height(45), 100, 160, "assets/doors/door1.png", "TrophyDoor", trophy_room, False, None)
+        teach_to_trophy = Door(at_percentage_width(88), at_percentage_height(45), 100, 160, "assets/doors/door1.png", "TrophyDoor", trophy_room, (100, 200), False, None)
         teach_to_trophy.add_description("", "The Trophy Room. Past glory and past horrors.", "assets/sounds/doors/room2door2_unlocked.wav", "assets/sounds/doors/room2door2_unlocked.wav")
 
         # Trophy Room connections
-        trophy_to_teach = Door(at_percentage_width(5), at_percentage_height(50), 100, 160, "assets/doors/door1.png", "TrophyToTeach", teachers_lounge, False, None)
+        trophy_to_teach = Door(at_percentage_width(5), at_percentage_height(50), 100, 160, "assets/doors/door1.png", "TrophyToTeach", teachers_lounge, (100, 200), False, None)
         trophy_to_teach.add_description("", "Back to the Teachers Lounge.", "assets/sounds/doors/room2door2_unlocked.wav", "assets/sounds/doors/room2door2_unlocked.wav")
 
-        trophy_to_final = Door(at_percentage_width(50), at_percentage_height(25), 120, 180, "assets/doors/door1.png", "FinalDoor", final_confrontation, True, deans_journal)
+        trophy_to_final = Door(at_percentage_width(50), at_percentage_height(25), 120, 180, "assets/doors/door1.png", "FinalDoor", final_confrontation, (100, 200), True, deans_journal)
         trophy_to_final.add_description("The Dean's secret entrance. Need undeniable proof.", "This is it. The final confrontation awaits.", "assets/sounds/doors/room1door1_locked.wav", "assets/sounds/doors/room1door1_unlocked.wav")
 
         # Final room exit (back to trophy room after confrontation)
-        final_to_trophy = Door(at_percentage_width(5), at_percentage_height(50), 100, 160, "assets/doors/door1.png", "FinalToTrophy", trophy_room, False, None)
+        final_to_trophy = Door(at_percentage_width(5), at_percentage_height(50), 100, 160, "assets/doors/door1.png", "FinalToTrophy", trophy_room, (100, 200), False, None)
         final_to_trophy.add_description("", "Retreat! Strategic retreat!", "assets/sounds/doors/room2door2_unlocked.wav", "assets/sounds/doors/room2door2_unlocked.wav")
 
         # Action functions
@@ -780,6 +778,8 @@ def main():
                 transition.start_fade(fade_in=False)
                 active_room = obj.target_room
                 active_room.play()
+                daisy.pos = pygame.Vector2(obj.player_target_position)
+                daisy.clear_target()
                 transition.start_fade(fade_in=True)
         elif isinstance(obj, Action):
             if obj.locked:

@@ -11,14 +11,14 @@ rooms:
       Room1Door1:
         locked: true
       Room1Door2:
-        locked: true
+        locked: false
       StorageDoor:
         locked: false
     actions:
       button1:
         locked: false
-        state: ''
-        imagepath: assets/actions/button.png
+        state: assets/actions/button2.png
+        imagepath: assets/actions/button2.png
     items:
       AncientScroll:
         stashed: false
@@ -104,7 +104,10 @@ rooms:
       StorageExit:
         locked: false
     actions: {}
-    items: {}
+    items:
+      OldKey:
+        stashed: false
+        allow_destroy: false
     npcs:
       janitor:
         active_dialog: start
@@ -294,16 +297,25 @@ rooms:
         active_dialog: start
         locked: true
 inventory:
-  OldKey:
+  missile2:
     stashed: true
     allow_destroy: false
     self_destruct: true
-    left: 619
+    left: 595
     top: 672
     width: 42
     height: 42
-    imagepath: assets/items/missile.png
-active_room: StorageRoom
+    imagepath: assets/items/missile2.png
+  comb:
+    stashed: true
+    allow_destroy: false
+    self_destruct: true
+    left: 643
+    top: 672
+    width: 42
+    height: 42
+    imagepath: assets/items/comb.png
+active_room: MainHall
 player:
-  left: 328
-  top: 393
+  left: 1151
+  top: 324
