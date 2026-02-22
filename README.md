@@ -6,6 +6,9 @@ You will need the python installed with the pygame library. To see the example g
 	 python3 main.py
 ````
 
+To create your own game, create update game.py with your game specifications.
+
+The Project is also prepared to work with AI Agents. Try letting your AI Agent generate a Game for you ;)
 
 
 ## Features Implemented
@@ -57,18 +60,13 @@ You will need the python installed with the pygame library. To see the example g
 		
 
 
-# Todo List: 
-- need to find a clean way to assign and create doors and rooms and assign items (currently in main func)
+## Todo List: 
+- It would be nice to find a clean way to assign and create doors and rooms and assign items (currently in main func)
 	- it would be nice to have the "Game Definition" in a yaml file.
 		- All Items in a Yaml
 		- All Rooms in a Yaml
 		- All NPCs in a Yaml
 		- all Doors in a Yaml
-## Conversations
-	- how to manage it when picking up an item should change dialog choices?
-		- should Items have actions, that get executed on pickup? could change active_dialogs or locked dialogs?
-	- how to have multiple NPCs talk at the same time?
-	- i partly implemented multiline text and auto-detection of speech length. Needs further thorough testing and improvement though
 ## Saving/Loading:
 	- how to save and load the game?
 		- save to yaml
@@ -86,7 +84,6 @@ You will need the python installed with the pygame library. To see the example g
 
 ## Items
 - I would like to implement an "endless" item, from which the player always pick up one
-	- there is now a test case but somehow the item is only given once.
 
 
 # Thanks and Grateful links to external helping tools:
