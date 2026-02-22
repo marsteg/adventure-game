@@ -46,6 +46,14 @@ def UnlockDoor(action, door):
     door.unlock(door.key)
     print(f"Door position: {door.position}")
 
+def UnlockAction(key_action, unlocked_action):
+    """Unlock an action using another action as the key."""
+    if unlocked_action.key != key_action:
+        print("Wrong key for this action")
+        return
+    print(f"Action unlocking (was locked: {unlocked_action.locked})")
+    unlocked_action.unlock(key_action)
+    print(f"Action position: {unlocked_action.position}")
 
 def AllowDestroy(item):
     """Mark an item as destroyable."""

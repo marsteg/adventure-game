@@ -66,7 +66,7 @@ class Action(RectShape):
             func(*args, **kwargs)
             print("Action Function triggered in position: ", self.position)
 
-    def unlock(self, key, inventory):
+    def unlock(self, key):
         if self.key is None:
             print("No key required")
             return

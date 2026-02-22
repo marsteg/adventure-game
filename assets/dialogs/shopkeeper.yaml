@@ -1,0 +1,144 @@
+# Dimitri the Shopkeeper Dialog - Funny Greek shop owner
+start:
+  line: "Welcome to Dimitri's Authentic Greek Trinkets! Everything is definitely, maybe authentic!"
+  speaker: "Dimitri"
+  sound: "assets/sounds/dialogs/dimitri_welcome.wav"
+  duration: 4
+  answers:
+    - line: "Nice shop! What's that beautiful vase?"
+      actionfuncs:
+        - ChangeDialog:
+          - Dimitri
+          - about_vase
+    - line: "Do you have anything actually ancient?"
+      actionfuncs:
+        - ChangeDialog:
+          - Dimitri
+          - ancient_stuff
+    - line: "I'll just look around."
+      actionfuncs:
+        - ChangeDialog:
+          - Dimitri
+          - bye
+
+about_vase:
+  line: "Ah! That vase is from 500 BC! Or maybe 2005 AD, I forget. Very fragile, very expensive!"
+  speaker: "Dimitri"
+  sound: "assets/sounds/dialogs/dimitri_vase.wav"
+  duration: 4
+  answers:
+    - line: "I'll be very careful around it."
+      actionfuncs:
+        - ChangeDialog:
+          - Dimitri
+          - careful_warning
+    - line: "How much does it cost?"
+      actionfuncs:
+        - ChangeDialog:
+          - Dimitri
+          - price_joke
+    - line: "I need to go."
+      actionfuncs:
+        - ChangeDialog:
+          - Dimitri
+          - bye
+
+careful_warning:
+  line: "Good! My insurance doesn't cover 'Acts of Clumsy Tourists'!"
+  speaker: "Dimitri"
+  sound: "assets/sounds/dialogs/dimitri_insurance.wav"
+  duration: 3
+  exit:
+    ExitDialog: start
+
+price_joke:
+  line: "For you? Only three million drachmas! Or your soul. Whichever is easier to carry."
+  speaker: "Dimitri"
+  sound: "assets/sounds/dialogs/dimitri_price.wav"
+  duration: 4
+  exit:
+    ExitDialog: start
+
+ancient_stuff:
+  line: "Ancient? Everything in Greece is ancient! This counter is from last Tuesday - practically prehistoric!"
+  speaker: "Dimitri"
+  sound: "assets/sounds/dialogs/dimitri_ancient.wav"
+  duration: 4
+  answers:
+    - line: "That doesn't sound very ancient..."
+      actionfuncs:
+        - ChangeDialog:
+          - Dimitri
+          - time_joke
+    - line: "What about real archaeological sites?"
+      actionfuncs:
+        - ChangeDialog:
+          - Dimitri
+          - temple_hint
+    - line: "I need to go."
+      actionfuncs:
+        - ChangeDialog:
+          - Dimitri
+          - bye
+
+time_joke:
+  line: "In cosmic terms, Tuesday was eons ago! Also, I give student discounts for philosophy majors."
+  speaker: "Dimitri"
+  sound: "assets/sounds/dialogs/dimitri_cosmic.wav"
+  duration: 4
+  exit:
+    ExitDialog: start
+
+temple_hint:
+  line: "There's an old temple up the hill. Very impressive! Definitely cursed, probably haunted, absolutely overpriced parking."
+  speaker: "Dimitri"
+  sound: "assets/sounds/dialogs/dimitri_temple.wav"
+  duration: 5
+  exit:
+    ExitDialog: start
+
+vase_broken:
+  line: "NOOOO! My beautiful, definitely authentic, possibly ancient vase! You owe me... let's see... your immortal soul should cover it."
+  speaker: "Dimitri"
+  sound: "assets/sounds/dialogs/dimitri_broken_vase.wav"
+  duration: 6
+  answers:
+    - line: "It was an accident! I'll pay you back!"
+      actionfuncs:
+        - ChangeDialog:
+          - Dimitri
+          - payment_plan
+    - line: "Maybe Zeus will help me fix this?"
+      actionfuncs:
+        - ChangeDialog:
+          - Dimitri
+          - zeus_suggestion
+    - line: "I need to go."
+      actionfuncs:
+        - ChangeDialog:
+          - Dimitri
+          - bye
+
+payment_plan:
+  line: "How? You look like you couldn't afford a souvenir postcard! Unless... the old gods might accept proper tribute. Check the temple."
+  speaker: "Dimitri"
+  sound: "assets/sounds/dialogs/dimitri_payment.wav"
+  duration: 5
+  exit:
+    ExitDialog: vase_broken
+
+zeus_suggestion:
+  line: "Zeus? HA! Good luck with that! He's probably still mad about that whole 'stealing fire' incident. But the temple might have answers..."
+  speaker: "Dimitri"
+  sound: "assets/sounds/dialogs/dimitri_zeus.wav"
+  duration: 5
+  exit:
+    ExitDialog: vase_broken
+
+bye:
+  line: "Come back anytime! My insurance rates depend on it!"
+  speaker: "Dimitri"
+  sound: "assets/sounds/dialogs/dimitri_farewell.wav"
+  duration: 2
+  exit:
+    ExitDialog: start

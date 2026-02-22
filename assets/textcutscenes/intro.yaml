@@ -1,37 +1,36 @@
 [
             {
-                "title": "Grimwood Academy",
+                "title": "Lucky Luke's Olympic Blunders",
                 "text": [
-                    "Welcome to Grimwood Academy for the Magically Gifted...",
-                    "...and their emotionally unavailable parents.",
-                    "Where werewolf kids learn next to zombie toddlers. Health & Safety gave up years ago."
+                    "Meet Lucky Luke - the most accidentally successful adventurer in Greece.",
+                    "Not particularly skilled. Not especially brave. Not even remotely coordinated.",
+                    "But blessed with the kind of luck that defies all probability and logic."
                 ]
             },
             {
-                "title": "You Are Morticia",
+                "title": "The Tourist Trap",
                 "text": [
-                    "You are Morticia - yes, THAT Morticia. Daughter of Death himself.",
-                    "Dad wanted you to follow the family business. You wanted a gap year.",
-                    "Compromise: Magic school. At least the cafeteria serves souls on Tuesdays."
+                    "Today Luke visits Dimitri's Authentic Greek Trinkets shop.",
+                    "Where 'authentic' means 'maybe from this century' and 'Greek' means 'assembled nearby.'",
+                    "What could possibly go wrong in a shop full of priceless artifacts?"
                 ]
             },
             {
-                "title": "Something Is Wrong",
+                "title": "Divine Intervention",
                 "text": [
-                    "But something dark lurks beneath the school's cheerful facade...",
-                    "(Besides the literal dungeon. That's just the gym.)",
-                    "Students whisper about the Order of the Crimson Moon. Teachers change the subject.",
-                    "The Dean smiles too much. Nobody smiles that much without hiding something."
+                    "Little does Luke know that the gods themselves are watching...",
+                    "Zeus has divine Netflix, and mortal mishaps are his favorite genre.",
+                    "Today's episode: 'What happens when luck meets ancient curses?'"
                 ]
             },
             {
-                "title": "Your Mission",
+                "title": "Your Journey Begins",
                 "text": [
-                    "Uncover the school's dark secret before it's too late.",
-                    "Make friends. Make enemies. Make questionable life choices.",
-                    "And maybe, just maybe, earn the right to leave this place...",
+                    "Guide Luke through his most absurd adventure yet.",
+                    "Break priceless artifacts! Solve ancient puzzles by accident!",
+                    "Meet gods who appreciate good comedy timing!",
                     "",
-                    "...for a trip to Wonderland. (Dad owes you big time.)"
+                    "Remember: In this story, failure is just success taking the scenic route."
                 ]
             }
-        ]
+]

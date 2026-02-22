@@ -7,49 +7,13 @@ class TextCutscene:
     """Displays a story text with typewriter effect for intros or cutscenes."""
 
     def __init__(self, yaml_path=None):
+        self.slides = []
         if yaml_path:
-            self.load_from_yaml(yaml_path)
+            self.slides = self.load_from_yaml(yaml_path)
+            self.yaml_path = yaml_path
+            print(self.slides)
         else:
             self._setup_default_intro()
-
-
-        self.slides = [
-            {
-                "title": "Grimwood Academy",
-                "text": [
-                    "Welcome to Grimwood Academy for the Magically Gifted...",
-                    "...and their emotionally unavailable parents.",
-                    "Where werewolf kids learn next to zombie toddlers. Health & Safety gave up years ago."
-                ]
-            },
-            {
-                "title": "You Are Morticia",
-                "text": [
-                    "You are Morticia - yes, THAT Morticia. Daughter of Death himself.",
-                    "Dad wanted you to follow the family business. You wanted a gap year.",
-                    "Compromise: Magic school. At least the cafeteria serves souls on Tuesdays."
-                ]
-            },
-            {
-                "title": "Something Is Wrong",
-                "text": [
-                    "But something dark lurks beneath the school's cheerful facade...",
-                    "(Besides the literal dungeon. That's just the gym.)",
-                    "Students whisper about the Order of the Crimson Moon. Teachers change the subject.",
-                    "The Dean smiles too much. Nobody smiles that much without hiding something."
-                ]
-            },
-            {
-                "title": "Your Mission",
-                "text": [
-                    "Uncover the school's dark secret before it's too late.",
-                    "Make friends. Make enemies. Make questionable life choices.",
-                    "And maybe, just maybe, earn the right to leave this place...",
-                    "",
-                    "...for a trip to Wonderland. (Dad owes you big time.)"
-                ]
-            }
-        ]
         self.current_slide = 0
         self.char_index = 0
         self.line_index = 0
@@ -88,6 +52,7 @@ class TextCutscene:
     def update(self, dt):
         if self.done:
             return
+        print(self.slides)
 
         self.timer += dt
 
@@ -184,13 +149,13 @@ class TextCutscene:
         try:
             with open(yaml_path, 'r') as file:
                 dialog = yaml.safe_load(file)
-                print("Dialog loaded: ", dialog)
+                print("Text Cutscene loaded: ", dialog)
                 return dialog
         except FileNotFoundError:
-            print(f"Dialog file not found: {yaml_path}")
+            print(f"Text Cutscene file not found: {yaml_path}")
             return {}
         except yaml.YAMLError as e:
-            print(f"Error parsing dialog file {yaml_path}: {e}")
+            print(f"Error parsing Text Cutscene file {yaml_path}: {e}")
             return {}
  
 

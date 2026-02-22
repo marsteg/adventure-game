@@ -1,0 +1,254 @@
+# Zeus Dialog - Powerful but surprisingly understanding king of gods
+start:
+  line:
+    - "So! The mortal who destroyed Dimitri's 'priceless' vase arrives at last!"
+    - "*thunder rumbles with amusement*"
+    - "I've been watching your journey with great entertainment!"
+  speaker: "Zeus"
+  sound: "assets/sounds/dialogs/zeus_amused_intro.wav"
+  duration: 7
+  answers:
+    - line: "Please don't smite me! It was an accident!"
+      actionfuncs:
+        - ChangeDialog:
+          - Zeus
+          - accident_response
+    - line: "You were watching? That's... unsettling."
+      actionfuncs:
+        - ChangeDialog:
+          - Zeus
+          - watching_explanation
+    - line: "I brought the items the Oracle mentioned!"
+      actionfuncs:
+        - ChangeDialog:
+          - Zeus
+          - items_check
+    - line: "I need to go."
+      actionfuncs:
+        - ChangeDialog:
+          - Zeus
+          - bye
+
+accident_response:
+  line: "Smite you? My dear mortal, you've provided me with the best entertainment in centuries! Your accidental success is absolutely delightful!"
+  speaker: "Zeus"
+  sound: "assets/sounds/dialogs/zeus_entertainment.wav"
+  duration: 5
+  answers:
+    - line: "So... I'm not in trouble?"
+      actionfuncs:
+        - ChangeDialog:
+          - Zeus
+          - no_trouble
+    - line: "Accidental success?"
+      actionfuncs:
+        - ChangeDialog:
+          - Zeus
+          - success_explanation
+    - line: "I should probably go..."
+      actionfuncs:
+        - ChangeDialog:
+          - Zeus
+          - bye
+
+watching_explanation:
+  line: "Divine Reality TV! Much more interesting than those cooking shows Hera watches. Plus, your luck defies all probability - it's fascinatingly impossible!"
+  speaker: "Zeus"
+  sound: "assets/sounds/dialogs/zeus_reality_tv.wav"
+  duration: 5
+  answers:
+    - line: "My luck is that obvious?"
+      actionfuncs:
+        - ChangeDialog:
+          - Zeus
+          - luck_obvious
+    - line: "What about Dimitri's vase?"
+      actionfuncs:
+        - ChangeDialog:
+          - Zeus
+          - vase_resolution
+    - line: "This is overwhelming."
+      actionfuncs:
+        - ChangeDialog:
+          - Zeus
+          - bye
+
+items_check:
+  line: "Ah yes, let's see... Golden olive branch from Athena's tree - check! Pomegranate of Persephone - check! And you paid Hermes properly. Excellent!"
+  speaker: "Zeus"
+  sound: "assets/sounds/dialogs/zeus_items_approved.wav"
+  duration: 6
+  answers:
+    - line: "So the curse is broken?"
+      actionfuncs:
+        - ChangeDialog:
+          - Zeus
+          - curse_discussion
+    - line: "What happens now?"
+      actionfuncs:
+        - ChangeDialog:
+          - Zeus
+          - resolution
+    - line: "I need to go."
+      actionfuncs:
+        - ChangeDialog:
+          - Zeus
+          - bye
+
+no_trouble:
+  line: "Trouble? You've accidentally solved a 3,000-year-old curse on that vase! Dimitri never told customers it was cursed - bad for business, you understand."
+  speaker: "Zeus"
+  sound: "assets/sounds/dialogs/zeus_curse_reveal.wav"
+  duration: 6
+  answers:
+    - line: "It was CURSED?!"
+      actionfuncs:
+        - ChangeDialog:
+          - Zeus
+          - curse_explanation
+    - line: "That explains a lot actually..."
+      actionfuncs:
+        - ChangeDialog:
+          - Zeus
+          - explains_everything
+    - line: "I need to process this."
+      actionfuncs:
+        - ChangeDialog:
+          - Zeus
+          - bye
+
+success_explanation:
+  line: "You bumped into the exact right spot to break the curse seal! Then stumbled through the perfect quest to appease the old magic. Magnificent!"
+  speaker: "Zeus"
+  sound: "assets/sounds/dialogs/zeus_magnificent_luck.wav"
+  duration: 5
+  exit:
+    ExitDialog: resolution
+
+luck_obvious:
+  line: "My dear mortal, you have luck that borders on divine intervention! Either you're blessed by Fortuna, or the universe has a sense of humor."
+  speaker: "Zeus"
+  sound: "assets/sounds/dialogs/zeus_fortuna.wav"
+  duration: 5
+  answers:
+    - line: "Maybe both?"
+      actionfuncs:
+        - ChangeDialog:
+          - Zeus
+          - both_possible
+    - line: "I should probably go."
+      actionfuncs:
+        - ChangeDialog:
+          - Zeus
+          - bye
+
+both_possible:
+  line: "Ha! I like your attitude! Perhaps we should make this official..."
+  speaker: "Zeus"
+  sound: "assets/sounds/dialogs/zeus_official_laugh.wav"
+  duration: 3
+  exit:
+    ExitDialog: resolution
+
+vase_resolution:
+  line: "Dimitri's vase? That old thing was cursed by a minor sea nymph 3,000 years ago! You've actually done him a favor by breaking it. The curse is gone!"
+  speaker: "Zeus"
+  sound: "assets/sounds/dialogs/zeus_favor_explanation.wav"
+  duration: 6
+  exit:
+    ExitDialog: resolution
+
+curse_discussion:
+  line: "The curse was never about the vase itself - it was about finding someone pure of heart and blessed with impossible luck to break it properly!"
+  speaker: "Zeus"
+  sound: "assets/sounds/dialogs/zeus_pure_heart.wav"
+  duration: 5
+  exit:
+    ExitDialog: resolution
+
+curse_explanation:
+  line: "Oh yes! Minor maritime curse - something about ancient shipping disputes. Very boring stuff. The important thing is you've fixed it with style!"
+  speaker: "Zeus"
+  sound: "assets/sounds/dialogs/zeus_boring_curse.wav"
+  duration: 5
+  exit:
+    ExitDialog: resolution
+
+explains_everything:
+  line: "Exactly! All those 'lucky accidents' were the universe guiding you to fulfill an ancient prophecy! Rather poetic, don't you think?"
+  speaker: "Zeus"
+  sound: "assets/sounds/dialogs/zeus_poetic.wav"
+  duration: 5
+  exit:
+    ExitDialog: resolution
+
+resolution:
+  line: "As reward for your... unique heroism, I grant you divine protection! May your luck never fail you, and may your accidents always work out perfectly!"
+  speaker: "Zeus"
+  sound: "assets/sounds/dialogs/zeus_blessing.wav"
+  duration: 6
+  answers:
+    - line: "Thank you, mighty Zeus!"
+      actionfuncs:
+        - ChangeDialog:
+          - Zeus
+          - grateful_ending
+    - line: "Does this make me officially lucky now?"
+      actionfuncs:
+        - ChangeDialog:
+          - Zeus
+          - official_luck
+    - line: "I should leave you in peace."
+      actionfuncs:
+        - ChangeDialog:
+          - Zeus
+          - bye
+
+grateful_ending:
+  line: "You're most welcome! Now go forth and have wonderfully absurd adventures! And tell Dimitri his insurance premium just went down significantly."
+  speaker: "Zeus"
+  sound: "assets/sounds/dialogs/zeus_farewell.wav"
+  duration: 5
+  exit:
+    ExitDialog: resolution
+
+official_luck:
+  line: "Officially? You always were! I'm just making sure the universe knows to keep up the good work. Enjoy your charmed life, Lucky Luke!"
+  speaker: "Zeus"
+  sound: "assets/sounds/dialogs/zeus_charmed_life.wav"
+  duration: 5
+  exit:
+    ExitDialog: resolution
+
+throne_ending:
+  line: "HAHA! Most mortals would be terrified to touch my throne! Your fearless curiosity is refreshing. Consider yourself a friend of Olympus!"
+  speaker: "Zeus"
+  sound: "assets/sounds/dialogs/zeus_throne_friend.wav"
+  duration: 6
+  answers:
+    - line: "Friends with Zeus? This day keeps getting better!"
+      actionfuncs:
+        - ChangeDialog:
+          - Zeus
+          - friendship_benefits
+    - line: "I'm honored, mighty Zeus."
+      actionfuncs:
+        - ChangeDialog:
+          - Zeus
+          - bye
+
+friendship_benefits:
+  line: "Indeed! Divine friendship comes with excellent benefits: immortal luck, premium cloud coverage, and first-class seating at all cosmic events!"
+  speaker: "Zeus"
+  sound: "assets/sounds/dialogs/zeus_benefits.wav"
+  duration: 6
+  exit:
+    ExitDialog: resolution
+
+bye:
+  line: "Farewell, Lucky Luke! May your adventures be legendarily absurd!"
+  speaker: "Zeus"
+  sound: "assets/sounds/dialogs/zeus_farewell.wav"
+  duration: 2
+  exit:
+    ExitDialog: start

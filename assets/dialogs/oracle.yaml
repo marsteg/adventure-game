@@ -1,0 +1,148 @@
+# Oracle of Delphi Dialog - Cryptic but accidentally helpful
+start:
+  line: "Ah, a seeker of knowledge! Welcome to the Oracle of Delphi. I see... a lot of things. Some of them make sense. Most of them don't. But hey, that's prophecy for you!"
+  speaker: "Oracle of Delphi"
+  sound: "assets/sounds/dialogs/oracle_vision.wav"
+  duration: 6
+  answers:
+    - line: "Can you help me fix what I broke?"
+      actionfuncs:
+        - ChangeDialog:
+          - Oracle of Delphi
+          - broken_prophecy
+    - line: "What do you see in my future?"
+      actionfuncs:
+        - ChangeDialog:
+          - Oracle of Delphi
+          - future_vision
+    - line: "How do I get to Zeus?"
+      actionfuncs:
+        - ChangeDialog:
+          - Oracle of Delphi
+          - zeus_path
+    - line: "I need to go."
+      actionfuncs:
+        - ChangeDialog:
+          - Oracle of Delphi
+          - bye
+
+broken_prophecy:
+  line: "Ah yes, the shattering! Three gifts you must gather: Gold from Athena's tree, fruit from Hades' queen, and... um... pocket change for divine taxi fare."
+  speaker: "Oracle of Delphi"
+  sound: "assets/sounds/dialogs/oracle_three_gifts.wav"
+  duration: 6
+  answers:
+    - line: "That's oddly specific advice."
+      actionfuncs:
+        - ChangeDialog:
+          - Oracle of Delphi
+          - specific_joke
+    - line: "Where do I find these things?"
+      actionfuncs:
+        - ChangeDialog:
+          - Oracle of Delphi
+          - location_hints
+    - line: "I need to go."
+      actionfuncs:
+        - ChangeDialog:
+          - Oracle of Delphi
+          - bye
+
+specific_joke:
+  line: "The gods appreciate precision! Also, I've been doing this for 3,000 years. You pick up patterns."
+  speaker: "Oracle of Delphi"
+  sound: "assets/sounds/dialogs/oracle_experience.wav"
+  duration: 4
+  exit:
+    ExitDialog: start
+
+location_hints:
+  line: "The golden branch rests here, blessed by Athena's wisdom. The fruit... follow the path that opens when wisdom solves ancient riddles."
+  speaker: "Oracle of Delphi"
+  sound: "assets/sounds/dialogs/oracle_locations.wav"
+  duration: 5
+  exit:
+    ExitDialog: start
+
+future_vision:
+  line: "I see great fortune! Not skill, mind you - just absurd, impossible luck. You will stumble into victory like a drunk finding his way home."
+  speaker: "Oracle of Delphi"
+  sound: "assets/sounds/dialogs/oracle_luck.wav"
+  duration: 5
+  answers:
+    - line: "That's... not very reassuring."
+      actionfuncs:
+        - ChangeDialog:
+          - Oracle of Delphi
+          - reassurance
+    - line: "Lucky sounds good to me!"
+      actionfuncs:
+        - ChangeDialog:
+          - Oracle of Delphi
+          - embrace_luck
+    - line: "I need to go."
+      actionfuncs:
+        - ChangeDialog:
+          - Oracle of Delphi
+          - bye
+
+reassurance:
+  line: "Oh, it should be! The luckiest people are often the most successful. Just... maybe invest in good insurance."
+  speaker: "Oracle of Delphi"
+  sound: "assets/sounds/dialogs/oracle_insurance.wav"
+  duration: 4
+  exit:
+    ExitDialog: start
+
+embrace_luck:
+  line: "Excellent attitude! The gods favor those who accept their gifts, even if those gifts are cosmic coincidences."
+  speaker: "Oracle of Delphi"
+  sound: "assets/sounds/dialogs/oracle_favor.wav"
+  duration: 4
+  exit:
+    ExitDialog: start
+
+zeus_path:
+  line: "To reach the Thunder Lord, you must first pass his messenger, who guards the river passage. He values... *squints at vision* ...old money?"
+  speaker: "Oracle of Delphi"
+  sound: "assets/sounds/dialogs/oracle_hermes_hint.wav"
+  duration: 5
+  answers:
+    - line: "Old money? Like ancient coins?"
+      actionfuncs:
+        - ChangeDialog:
+          - Oracle of Delphi
+          - coin_confirmation
+    - line: "This is all very confusing."
+      actionfuncs:
+        - ChangeDialog:
+          - Oracle of Delphi
+          - confusion_help
+    - line: "I need to go."
+      actionfuncs:
+        - ChangeDialog:
+          - Oracle of Delphi
+          - bye
+
+coin_confirmation:
+  line: "Yes! The winged one appreciates classical currency. Look for puzzles that reward the prepared mind... and tourist brochures."
+  speaker: "Oracle of Delphi"
+  sound: "assets/sounds/dialogs/oracle_coin_hint.wav"
+  duration: 4
+  exit:
+    ExitDialog: start
+
+confusion_help:
+  line: "Prophecy often is! Just remember: sometimes the most important answers are found in the most tourist-y places."
+  speaker: "Oracle of Delphi"
+  sound: "assets/sounds/dialogs/oracle_tourist_wisdom.wav"
+  duration: 4
+  exit:
+    ExitDialog: start
+bye:
+  line: "May the fates guide your path, mortal. Farewell."
+  speaker: "Oracle of Delphi"
+  sound: "assets/sounds/dialogs/oracle_farewell.wav"
+  duration: 2
+  exit:
+    ExitDialog: start

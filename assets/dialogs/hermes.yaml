@@ -1,0 +1,206 @@
+# Hermes Dialog - Fast-talking messenger god with modern attitude
+start:
+  line: "Well, well! A mortal at the crossroads of destiny! I'm Hermes - messenger, guide, and part-time travel agent for divine journeys."
+  speaker: "Hermes"
+  sound: "assets/sounds/dialogs/hermes_intro.wav"
+  duration: 5
+  answers:
+    - line: "I need to get to Zeus on Mount Olympus."
+      actionfuncs:
+        - ChangeDialog:
+          - Hermes
+          - olympus_request
+    - line: "Travel agent? Do you take credit cards?"
+      actionfuncs:
+        - ChangeDialog:
+          - Hermes
+          - payment_joke
+    - line: "Are you really a god?"
+      actionfuncs:
+        - ChangeDialog:
+          - Hermes
+          - god_proof
+    - line: "I need to go."
+      actionfuncs:
+        - ChangeDialog:
+          - Hermes
+          - bye
+
+olympus_request:
+  line: "Olympus Express, eh? That's a premium route! Charon's boat service, very exclusive. But divine transport requires... proper compensation."
+  speaker: "Hermes"
+  sound: "assets/sounds/dialogs/hermes_transport.wav"
+  duration: 5
+  answers:
+    - line: "What kind of compensation?"
+      actionfuncs:
+        - ChangeDialog:
+          - Hermes
+          - payment_required
+    - line: "I have this silver coin..."
+      actionfuncs:
+        - ChangeDialog:
+          - Hermes
+          - coin_offer
+    - line: "Maybe later."
+      actionfuncs:
+        - ChangeDialog:
+          - Hermes
+          - bye
+
+payment_joke:
+  line: "Credit cards? Please! I only accept classical currency - drachmas, talents, or the occasional burnt offering. Very retro payment system."
+  speaker: "Hermes"
+  sound: "assets/sounds/dialogs/hermes_payment_methods.wav"
+  duration: 5
+  exit:
+    ExitDialog: start
+
+god_proof:
+  line: "Watch this! *vanishes briefly* Tada! Also, I invented the first GPS system - it's called 'divine guidance.' Patent pending since 800 BC."
+  speaker: "Hermes"
+  sound: "assets/sounds/dialogs/hermes_proof.wav"
+  duration: 5
+  answers:
+    - line: "That's pretty convincing!"
+      actionfuncs:
+        - ChangeDialog:
+          - Hermes
+          - convinced_mortal
+    - line: "Could be really good special effects..."
+      actionfuncs:
+        - ChangeDialog:
+          - Hermes
+          - skeptical_mortal
+    - line: "I need to go."
+      actionfuncs:
+        - ChangeDialog:
+          - Hermes
+          - bye
+
+convinced_mortal:
+  line: "I like you already! Mortals who appreciate divine talent get the premium service package. Now, about that journey..."
+  speaker: "Hermes"
+  sound: "assets/sounds/dialogs/hermes_premium.wav"
+  duration: 4
+  exit:
+    ExitDialog: olympus_request
+
+skeptical_mortal:
+  line: "Special effects? I literally just teleported! Do you want me to part the Red Sea too? Oh wait, that's Moses. Different department."
+  speaker: "Hermes"
+  sound: "assets/sounds/dialogs/hermes_skeptical.wav"
+  duration: 5
+  exit:
+    ExitDialog: start
+
+payment_required:
+  line: "Something with historical value! Ancient coins work best - they have that authentic divine resonance. Plus, Charon's old-fashioned about payment."
+  speaker: "Hermes"
+  sound: "assets/sounds/dialogs/hermes_historical_value.wav"
+  duration: 5
+  answers:
+    - line: "Where would I find an ancient coin?"
+      actionfuncs:
+        - ChangeDialog:
+          - Hermes
+          - coin_location
+    - line: "This seems overly complicated."
+      actionfuncs:
+        - ChangeDialog:
+          - Hermes
+          - bureaucracy_joke
+    - line: "I need to go."
+      actionfuncs:
+        - ChangeDialog:
+          - Hermes
+          - bye
+
+coin_offer:
+  line: "Perfect! A genuine ancient drachma! *examines coin* Excellent craftsmanship, authentic patina, divine approval rating: 4.8 out of 5 stars!"
+  speaker: "Hermes"
+  sound: "assets/sounds/dialogs/hermes_coin_approved.wav"
+  duration: 5
+  answers:
+    - line: "So you'll help me get to Zeus?"
+      actionfuncs:
+        - TakeItemString:
+          - Silver Coin
+          - no_coin_failure
+          - transport_arranged
+    - line: "Maybe I'll keep it."
+      actionfuncs:
+        - ChangeDialog:
+          - Hermes
+          - bye
+
+transport_arranged:
+  line: "Absolutely! Charon's boat is now at your service. Just remember - Zeus likes mortals with good stories. Your tale of accidental vase-breaking should amuse him!"
+  speaker: "Hermes"
+  sound: "assets/sounds/dialogs/hermes_boat_ready.wav"
+  duration: 6
+  answers:
+    - line: "How did you know about the vase?"
+      actionfuncs:
+        - ChangeDialog:
+          - Hermes
+          - divine_knowledge
+    - line: "Any advice for meeting Zeus?"
+      actionfuncs:
+        - ChangeDialog:
+          - Hermes
+          - zeus_advice
+    - line: "Thanks for the help."
+      actionfuncs:
+        - ChangeDialog:
+          - Hermes
+          - bye
+  unlock: true
+
+divine_knowledge:
+  line: "Messenger god, remember? Divine gossip network is faster than Twitter. Also, Dimitri's insurance claim already crossed my desk."
+  speaker: "Hermes"
+  sound: "assets/sounds/dialogs/hermes_gossip.wav"
+  duration: 5
+  exit:
+    ExitDialog: zeus_advice
+
+zeus_advice:
+  line: "Be honest, be humble, and try not to sit on his throne. He's got a great sense of humor, but divine furniture has strict user agreements."
+  speaker: "Hermes"
+  sound: "assets/sounds/dialogs/hermes_throne_warning.wav"
+  duration: 5
+  exit:
+    ExitDialog: transport_arranged
+
+coin_location:
+  line: "Try solving ancient puzzles! The old temples often reward clever mortals with classical currency. Bring a guidebook - those symbols can be tricky!"
+  speaker: "Hermes"
+  sound: "assets/sounds/dialogs/hermes_puzzle_hint.wav"
+  duration: 5
+  exit:
+    ExitDialog: start
+
+bureaucracy_joke:
+  line: "Welcome to divine bureaucracy! At least our forms are written in stone instead of endless digital submissions. Very environmentally friendly!"
+  speaker: "Hermes"
+  sound: "assets/sounds/dialogs/hermes_bureaucracy.wav"
+  duration: 5
+  exit:
+    ExitDialog: start
+
+no_coin_failure:
+  line: "Wait... you don't actually have the coin? That's unfortunate. Divine transport requires proper payment. Come back when you have genuine ancient currency!"
+  speaker: "Hermes"
+  sound: "assets/sounds/dialogs/hermes_no_coin.wav"
+  duration: 5
+  exit:
+    ExitDialog: start
+
+bye:
+  line: "Safe travels, mortal! Don't break anything else on your way out."
+  speaker: "Hermes"
+  sound: "assets/sounds/dialogs/hermes_farewell.wav"
+  duration: 2
+  exit:
+    ExitDialog: start

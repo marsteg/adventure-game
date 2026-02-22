@@ -1,8 +1,12 @@
-# Adventure Game
+# Point&Click Adventure Game Engine
 
-an attempt to create a point and click adventure game in python  with pygame
-You will need the pygame library. Then just run:
+This is an attempt to create a Point&Click Adventure Game Engine in python with [pygame](https://www.pygame.org/)
+You will need the python installed with the pygame library. To see the example game, just run:
+````
 	 python3 main.py
+````
+
+
 
 ## Features Implemented
 - creation of items, doors, actions and rooms.
