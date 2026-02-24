@@ -23,6 +23,7 @@ from player import Player
 from queueing import QueuedInteraction
 from menu import MainMenu
 from textcutscene import TextCutscene
+from gamestate_manager import GameStateManager
 from ui import (
     Colors, dialog_renderer, answer_renderer, inventory_renderer,
     tooltip_renderer, transition, draw_rounded_rect
@@ -53,6 +54,9 @@ def main():
     game_state = GameState.MENU
     menu = MainMenu(title)
     #intro = TextCutscene("assets/textcutscenes/intro.yaml")
+
+    # Initialize GameStateManager
+    state_manager = GameStateManager.get_instance()
 
     # These will be initialized when game starts
     inventory = None
@@ -236,10 +240,13 @@ def main():
             menu.draw(screen)
 
             if action == "start_game":
-                # Start intro sequence first
-                game_state = GameState.CUTSCENE
+                # Initialize game content first
                 updatable, active_room, intro = init_game()
+
+                # Start intro sequence first
+                # For intro, we don't push a previous state since we go to PLAYING afterwards
                 cutscene = intro
+                game_state = GameState.CUTSCENE
             elif action == "quit":
                 run = False
 
@@ -263,11 +270,21 @@ def main():
                         cutscene.skip_to_end()
 
             if cutscene.done:
-                #updatable, active_room, intro = init_game()
-                game_state = GameState.PLAYING
+                # Return to previous state (PLAYING for dynamic cutscenes, or PLAYING for intro)
+                previous_state = state_manager.pop_state()
+                game_state = previous_state if previous_state is not None else GameState.PLAYING
                 transition.start_fade(fade_in=True)
 
         elif game_state == GameState.PLAYING:
+            # Check for pending cutscenes first
+            pending_cutscene = state_manager.get_pending_cutscene()
+            if pending_cutscene is not None:
+                # Save current state and transition to cutscene
+                state_manager.push_state(GameState.PLAYING)
+                cutscene = pending_cutscene
+                game_state = GameState.CUTSCENE
+                continue  # Skip normal PLAYING logic and handle cutscene
+
             # Update transition
             transition.update()
 
@@ -365,6 +382,8 @@ def main():
                     player.sprites()[0].rect.top = player_pos.get("top", 100)
                     
             if keys[pygame.K_ESCAPE]:
+                # Reset state manager when returning to menu
+                state_manager.reset()
                 game_state = GameState.MENU
 
             # Mouse event handling

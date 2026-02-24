@@ -3,6 +3,7 @@
 import pygame
 
 from room import Room
+from textcutscene import TextCutscene
 
 
 def LogText(text):
@@ -87,3 +88,26 @@ def ActionChangeDialog(npc, dialog):
     """Change an NPC's active dialog state."""
     npc.active_dialog = dialog
     print(f"NPC '{npc.name}' (ID: {npc.id}) dialog changed to: {dialog}")
+
+def PlayTextCutScene(yaml_path):
+    """Play a Text based slide-show cutscene during gameplay"""
+    import os
+    from gamestate_manager import GameStateManager
+
+    try:
+        # Validate file exists
+        if not os.path.exists(yaml_path):
+            print(f"Cutscene file not found: {yaml_path}")
+            return
+
+        # Get GameStateManager instance and enqueue cutscene
+        manager = GameStateManager.get_instance()
+        success = manager.enqueue_cutscene(yaml_path)
+
+        if success:
+            print(f"Cutscene queued successfully: {yaml_path}")
+        else:
+            print(f"Failed to queue cutscene: {yaml_path}")
+
+    except Exception as e:
+        print(f"Error queueing cutscene {yaml_path}: {e}")

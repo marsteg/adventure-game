@@ -147,6 +147,7 @@ def create_game_content(player, inventory):
     puzzle_box.add_function(actionfuncs.PlaySound, "assets/sounds/actions/grunz.wav")
     puzzle_box.add_function(actionfuncs.UnlockDoor, puzzle_box, underworld_door)
     puzzle_box.add_function(actionfuncs.GiveItem, silver_coin, inventory)
+    puzzle_box.add_function(actionfuncs.PlayTextCutScene, "assets/textcutscenes/puzzle_solved.yaml")
 
     # Boat functions
     boat.add_function(actionfuncs.LogText, "Luke trips getting in but somehow lands perfectly!")
