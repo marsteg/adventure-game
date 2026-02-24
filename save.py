@@ -6,15 +6,24 @@ from room import Room
 from inventory import Inventory
 from item import Item
 from player import Player
+from debug import debug_inventory_state, debug_save_data, debug_load_process, debug_room_items, debug
 
 
 def SaveState(active_room, inventory, player, filename):
-    """Save the current game state to a YAML file."""
+    """Save the current game state to a YAML file with improved format."""
+    debug.log(f"Starting save operation to {filename}")
+    debug_inventory_state(inventory, "Before Save")
+
+    # Create save data with versioning and metadata
     savedata = {
+        "save_version": "2.0",
+        "game_content_hash": "lucky_luke_olympic_blunders",
         "rooms": {},
         "inventory": {},
         "active_room": active_room.name
     }
+
+    debug.log(f"Active room for save: {active_room.name}")
 
     # Save room states
     for room in Room.rooms.values():
@@ -49,18 +58,26 @@ def SaveState(active_room, inventory, player, filename):
 
         savedata["rooms"][room.name] = room_data
 
-    # Save inventory
-    for item in inventory.items.values():
-        savedata["inventory"][item.name] = {
-            "stashed": item.stashed,
-            "allow_destroy": item.allow_destroy,
-            "self_destruct": item.self_destruct,
-            "left": item.rect.left,
-            "top": item.rect.top,
-            "width": item.rect.width,
-            "height": item.rect.height,
-            "imagepath": item.imagepath
-        }
+    # Save inventory using slot-based format (IMPROVED)
+    if hasattr(inventory, 'get_slot_data_for_save'):
+        # Use new slot-based format
+        savedata["inventory"] = inventory.get_slot_data_for_save()
+        print(f"Saved inventory with slot-based format: {len(inventory.items)} items")
+    else:
+        # Fallback to old format for compatibility
+        savedata["inventory"] = {}
+        for item in inventory.items.values():
+            savedata["inventory"][item.name] = {
+                "stashed": item.stashed,
+                "allow_destroy": item.allow_destroy,
+                "self_destruct": item.self_destruct,
+                "left": item.rect.left,
+                "top": item.rect.top,
+                "width": item.rect.width,
+                "height": item.rect.height,
+                "imagepath": item.imagepath
+            }
+        print(f"Saved inventory with legacy format: {len(inventory.items)} items")
     
     # Save player location
     savedata["player"] = {
@@ -69,34 +86,86 @@ def SaveState(active_room, inventory, player, filename):
     }
 
     try:
+        # Debug the save data before writing
+        debug_save_data(savedata, "Before Write")
+
         yaml_output = yaml.dump(savedata, sort_keys=False)
         with open(filename, 'w') as f:
             f.write(yaml_output)
+
+        debug.log(f"Save completed successfully: {len(yaml_output)} bytes written")
         print(f"Game saved to {filename} successfully")
+
     except IOError as e:
+        debug.log(f"IO Error during save: {e}", "ERROR")
         print(f"Error saving game: {e}")
     except yaml.YAMLError as e:
+        debug.log(f"YAML Error during save: {e}", "ERROR")
         print(f"Error serializing game state: {e}")
 
 
+def validate_save_compatibility(data):
+    """Validate save file compatibility with current game"""
+    # Check save version
+    save_version = data.get("save_version", "1.0")
+    print(f"Save file version: {save_version}")
+
+    # Check active room exists in current game
+    active_room_name = data.get("active_room")
+    if not active_room_name:
+        return False, "No active room specified in save file"
+
+    if active_room_name not in Room.rooms:
+        return False, f"Room '{active_room_name}' not found in current game"
+
+    # Check game content compatibility
+    game_hash = data.get("game_content_hash", "unknown")
+    current_hash = "lucky_luke_olympic_blunders"
+
+    if save_version == "2.0" and game_hash != current_hash:
+        print(f"Warning: Save content hash '{game_hash}' differs from current '{current_hash}'")
+
+    return True, "Compatible"
+
+
 def LoadState(filename):
-    """Load a game state from a YAML file."""
+    """Load a game state from a YAML file with validation."""
+    debug.log(f"Starting load operation from {filename}")
+
     try:
         with open(filename, 'r') as f:
             data = yaml.safe_load(f)
+        debug.log(f"Successfully parsed YAML data: {len(str(data))} characters")
     except FileNotFoundError:
+        debug.log(f"Save file not found: {filename}", "ERROR")
         print(f"Save file not found: {filename}")
-        return None, None
+        return None, None, None
     except yaml.YAMLError as e:
+        debug.log(f"YAML parsing error: {e}", "ERROR")
         print(f"Error parsing save file: {e}")
-        return None, None
+        return None, None, None
     except IOError as e:
+        debug.log(f"File reading error: {e}", "ERROR")
         print(f"Error reading save file: {e}")
-        return None, None
+        return None, None, None
 
     if not data:
+        debug.log("Save file contains no data", "ERROR")
         print("Save file is empty or invalid")
-        return None, None
+        return None, None, None
+
+    # Debug the loaded data
+    debug_save_data(data, "Loaded from File")
+
+    # Validate compatibility
+    is_compatible, message = validate_save_compatibility(data)
+    if not is_compatible:
+        debug.log(f"Compatibility validation failed: {message}", "ERROR")
+        print(f"Save file incompatible: {message}")
+        return None, None, None
+
+    debug.log(f"Save validation: {message}")
+    print(f"Save validation: {message}")
 
     # Restore room states
     for room_name, room_data in data.get("rooms", {}).items():
@@ -110,13 +179,39 @@ def LoadState(filename):
             if door_name in room.doors:
                 room.doors[door_name].locked = door_data["locked"]
 
-        # Remove items that aren't in the save
+        # FIXED: Properly restore room items to saved state
+        saved_items = room_data.get("items", {})
+
+        # Remove items that weren't in the room when saved
         items_to_delete = [
             item_name for item_name in room.items
-            if item_name not in room_data.get("items", {})
+            if item_name not in saved_items
         ]
         for item_name in items_to_delete:
+            debug.log(f"Removing '{item_name}' from room '{room_name}' (not in save)")
             del room.items[item_name]
+
+        # Add back items that should be in the room but aren't currently there
+        for item_name, item_data in saved_items.items():
+            if item_name not in room.items:
+                # Item needs to be restored to this room
+                # Check if it exists in Item.items (global registry)
+                if item_name in Item.items:
+                    item = Item.items[item_name]
+                    # Remove from any current room or inventory
+                    for other_room in Room.rooms.values():
+                        if item_name in other_room.items and other_room != room:
+                            del other_room.items[item_name]
+
+                    # Restore item properties from save
+                    item.allow_destroy = item_data.get("allow_destroy", False)
+                    item.stashed = False  # Item is back in room, not stashed
+
+                    # Add to room
+                    room.items[item_name] = item
+                    debug.log(f"Restored '{item_name}' to room '{room_name}'")
+                else:
+                    debug.log(f"Warning: Item '{item_name}' not found in global registry", "WARNING")
 
         # Restore action states
         for action_name, action_data in room_data.get("actions", {}).items():
@@ -133,32 +228,69 @@ def LoadState(filename):
                 npc.active_dialog = npc_data["active_dialog"]
                 npc.locked = npc_data["locked"]
 
-    # Restore inventory
+    # Before restoring inventory, collect items that were restored to rooms
+    items_in_rooms = set()
+    for room_name, room_data in data.get("rooms", {}).items():
+        for item_name in room_data.get("items", {}):
+            items_in_rooms.add(item_name)
+
+    debug.log(f"Items restored to rooms: {items_in_rooms}")
+
+    # Restore inventory with support for both old and new formats
     inventory = Inventory()
-    inventory.items = {}
+    inventory_data = data.get("inventory", {})
 
-    for item_name, item_data in data.get("inventory", {}).items():
-        # Support both old 'selfdestruct' and new 'self_destruct' keys
-        self_destruct = item_data.get("self_destruct", item_data.get("selfdestruct", False))
+    # Detect save format
+    if "slots" in inventory_data:
+        # New slot-based format (v2.0+)
+        print("Loading inventory using new slot-based format")
+        errors = inventory.restore_inventory_from_slots(inventory_data, debug=True, skip_items=items_in_rooms)
+        if errors:
+            print("Inventory restoration warnings:")
+            for error in errors:
+                print(f"  - {error}")
+    else:
+        # Legacy format (v1.0) - convert to slot-based
+        print("Loading inventory using legacy format")
+        inventory.items = {}
 
-        item = Item(
-            item_data["left"],
-            item_data["top"],
-            item_data["width"],
-            item_data["height"],
-            item_data["imagepath"],
-            item_name,
-            self_destruct
-        )
-        inventory.items[item_name] = item
+        for item_name, item_data in inventory_data.items():
+            # FIXED: Skip items that were restored to rooms
+            if item_name in items_in_rooms:
+                debug.log(f"Skipping '{item_name}' in inventory - restored to room")
+                continue
 
-        # Remove from any rooms
-        for room in Room.rooms.values():
-            if item_name in room.items:
-                del room.items[item_name]
+            # Support both old 'selfdestruct' and new 'self_destruct' keys
+            self_destruct = item_data.get("self_destruct", item_data.get("selfdestruct", False))
 
-        item.stash(inventory, None)
-        item.allow_destroy = item_data["allow_destroy"]
+            # Create item at (0,0) to avoid position conflicts
+            item = Item(
+                0, 0,  # Position will be set by inventory system
+                item_data["width"],
+                item_data["height"],
+                item_data["imagepath"],
+                item_name,
+                self_destruct
+            )
+
+            # Set properties BEFORE positioning
+            item.allow_destroy = item_data["allow_destroy"]
+            item.stashed = True
+
+            # Remove from any rooms first
+            for room in Room.rooms.values():
+                if item_name in room.items:
+                    del room.items[item_name]
+
+            # Add to inventory and assign slot position
+            inventory.items[item_name] = item
+            pos = inventory.get_available_slots(item)
+            if pos:
+                item.rect.topleft = pos
+                item.position = pygame.Vector2(pos)
+                print(f"Restored item '{item_name}' to inventory slot at {pos}")
+            else:
+                print(f"Warning: No slot available for item '{item_name}'")
 
     # Restore active room
     active_room_name = data.get("active_room")
@@ -174,4 +306,10 @@ def LoadState(filename):
     # Restore player position
     player_data = data.get("player", {})
 
+    # Final debugging
+    debug_inventory_state(inventory, "Final Load Result")
+    debug_room_items(Room.rooms, "After Room Restoration")
+    debug_load_process(filename, active_room, inventory, player_data)
+
+    debug.log("Load operation completed successfully")
     return active_room, inventory, player_data

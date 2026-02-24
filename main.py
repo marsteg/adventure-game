@@ -19,6 +19,7 @@ from dialogbox import DialogBox, VoiceManager, get_sound_duration
 from answerbox import AnswerBox
 from answer import Answer
 from save import SaveState, LoadState
+from debug import debug_inventory_state, toggle_debug
 from player import Player
 from queueing import QueuedInteraction
 from menu import MainMenu
@@ -381,15 +382,70 @@ def main():
                     if drawable_room == active_room:
                         drawable_room.shine(screen)
             if keys[pygame.K_s]:
+                debug_inventory_state(inventory, "Before Save (Main)")
                 SaveState(active_room, inventory, player, "save.yaml")
+                print("Save operation completed - press L to test loading")
             if keys[pygame.K_l]:
-                loaded_room, new_inventory, player_pos = LoadState("save.yaml")
-                if loaded_room and new_inventory:
-                    inventory.items = {}
-                    inventory.items = new_inventory.items
-                    active_room = loaded_room
-                    player.sprites()[0].rect.left = player_pos.get("left", 100)
-                    player.sprites()[0].rect.top = player_pos.get("top", 100)
+                try:
+                    loaded_room, new_inventory, player_pos = LoadState("save.yaml")
+                    if loaded_room and new_inventory:
+                        # FIXED: Use safe inventory restoration method
+                        # The LoadState already restored room items correctly,
+                        # so we just need to restore the inventory contents safely
+
+                        # Clear current inventory state
+                        inventory.clear_all_slots()
+                        inventory.items.clear()
+
+                        # Copy items from loaded inventory with proper slot management
+                        for item_name, item_obj in new_inventory.items.items():
+                            # Ensure item is marked as stashed
+                            if hasattr(item_obj, 'stashed'):
+                                item_obj.stashed = True
+
+                            # Add to current inventory
+                            inventory.items[item_name] = item_obj
+
+                            # Use proper slot assignment
+                            pos = inventory.get_available_slots(item_obj)
+                            if pos:
+                                item_obj.rect.topleft = pos
+                                item_obj.position = pygame.Vector2(pos)
+                                print(f"Restored '{item_name}' to inventory")
+                            else:
+                                print(f"Warning: No inventory slot available for '{item_name}'")
+
+                        # Safe room transition with music handling
+                        if loaded_room != active_room:
+                            pygame.mixer.music.stop()
+                            active_room = loaded_room
+                            pygame.mixer.music.load(active_room.music)
+                            pygame.mixer.music.set_volume(BACKGROUND_VOLUME)
+                            pygame.mixer.music.play(-1, 0.0)
+
+                        # Safe player positioning with bounds checking
+                        player_x = max(0, min(player_pos.get("left", 100), SCREEN_WIDTH - 50))
+                        player_y = max(0, min(player_pos.get("top", 100), SCREEN_HEIGHT - INVENTORY_HEIGHT - 50))
+                        player.sprites()[0].rect.left = player_x
+                        player.sprites()[0].rect.top = player_y
+
+                        debug_inventory_state(inventory, "After Load Integration (Main)")
+                        print("Game loaded successfully!")
+                    else:
+                        print("Failed to load save file - incompatible or missing data")
+
+                except Exception as e:
+                    print(f"Load failed: {e} - continuing with current game")
+                    # Game continues normally instead of crashing
+
+            # Debug toggle (press D for debug info)
+            if keys[pygame.K_d]:
+                debug_inventory_state(inventory, "Manual Debug Check")
+                print("Press T to toggle debug logging on/off")
+
+            if keys[pygame.K_t]:
+                debug_enabled = toggle_debug()
+                print(f"Debug logging {'ON' if debug_enabled else 'OFF'}")
                     
             if keys[pygame.K_ESCAPE]:
                 # Reset state manager when returning to menu

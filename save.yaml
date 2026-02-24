@@ -1,321 +1,94 @@
+save_version: '2.0'
+game_content_hash: lucky_luke_olympic_blunders
 rooms:
-  title:
+  Tourist Shop:
     doors:
-      Titledoor:
-        locked: false
-    actions: {}
-    items: {}
-    npcs: {}
-  DeansOffice:
-    doors:
-      Room1Door1:
-        locked: true
-      Room1Door2:
-        locked: false
-      StorageDoor:
+      Temple Entrance:
         locked: false
     actions:
-      button1:
+      Ancient Vase:
         locked: false
         state: assets/actions/button2.png
         imagepath: assets/actions/button2.png
-    items:
-      AncientScroll:
-        stashed: false
-        allow_destroy: false
+    items: {}
     npcs:
-      wolfboy2:
+      Dimitri:
         active_dialog: start
-        locked: true
-  MainHall:
+        locked: false
+  Ancient Temple:
     doors:
-      Room2Door2:
+      Shop Return:
         locked: false
-      LibraryEntrance:
-        locked: false
-      DormitoryDoor:
-        locked: false
-      CafeteriaDoor:
+      Underworld Passage:
         locked: false
     actions:
-      button2:
-        locked: true
+      Ancient Puzzle Box:
+        locked: false
         state: ''
         imagepath: assets/actions/button2.png
     items: {}
     npcs:
-      wolfboy:
+      Oracle of Delphi:
         active_dialog: start
-        locked: true
-  Courtyard:
+        locked: false
+  Underworld Entrance:
     doors:
-      BeachBarExit:
+      Temple Return:
         locked: false
-      GymDoor:
-        locked: false
-      ClockTowerDoor:
+      Olympus Gateway:
         locked: true
     actions:
-      GreenPlant:
-        locked: false
-        state: ''
-        imagepath: assets/actions/greenplant.png
-    items:
-      hay:
-        stashed: false
-        allow_destroy: false
-    npcs:
-      muckmuck:
-        active_dialog: start
-        locked: true
-  ForbiddenLibrary:
-    doors:
-      LibraryExit:
-        locked: false
-      SecretDoor:
-        locked: true
-    actions: {}
-    items:
-      MagicAmulet:
-        stashed: false
-        allow_destroy: false
-      BookofTruth:
-        stashed: false
-        allow_destroy: false
-      MysteriousNote:
-        stashed: false
-        allow_destroy: false
-    npcs:
-      librarian:
-        active_dialog: start
-        locked: true
-  SecretChamber:
-    doors:
-      ChamberExit:
-        locked: false
-    actions: {}
-    items:
-      DarkArtifact:
-        stashed: false
-        allow_destroy: false
-    npcs: {}
-  StorageRoom:
-    doors:
-      StorageExit:
-        locked: false
-    actions: {}
-    items:
-      OldKey:
-        stashed: false
-        allow_destroy: false
-    npcs:
-      janitor:
-        active_dialog: start
-        locked: true
-  Dormitory:
-    doors:
-      DormToHall:
-        locked: false
-      RooftopDoor:
-        locked: true
-    actions:
-      BrokenMirror:
-        locked: true
-        state: ''
-        imagepath: assets/actions/button.png
-    items:
-      GhostGlasses:
-        stashed: false
-        allow_destroy: false
-    npcs:
-      vampire_victoria:
-        active_dialog: start
-        locked: true
-  Cafeteria:
-    doors:
-      CafeToHall:
-        locked: false
-      GreenhouseDoor:
-        locked: false
-    actions:
-      MysteryPot:
+      Charon's Boat:
         locked: true
         state: ''
         imagepath: assets/actions/greenplant.png
     items:
-      EnchantedFork:
+      Pomegranate of Persephone:
         stashed: false
         allow_destroy: false
     npcs:
-      chef_gronk:
+      Hermes:
         active_dialog: start
         locked: true
-  DungeonGym:
-    doors:
-      GymToCourt:
-        locked: false
-      BasementDoor:
-        locked: true
+  Mount Olympus:
+    doors: {}
     actions:
-      ForbiddenLocker:
-        locked: true
-        state: ''
-        imagepath: assets/actions/button2.png
-    items:
-      RustyChain:
-        stashed: false
-        allow_destroy: false
-    npcs:
-      coach_bull:
-        active_dialog: start
-        locked: true
-  ClockTower:
-    doors:
-      TowerToCourt:
+      Zeus's Throne:
         locked: false
-    actions:
-      ClockMechanism:
-        locked: true
         state: ''
         imagepath: assets/actions/button.png
     items:
-      ClockGear:
+      Divine Ambrosia:
         stashed: false
         allow_destroy: false
     npcs:
-      tick_tock:
+      Zeus:
         active_dialog: start
-        locked: true
-  Rooftop:
-    doors:
-      RoofToDorm:
         locked: false
-    actions:
-      GargoyleStatue:
-        locked: true
-        state: ''
-        imagepath: assets/actions/button.png
-    items:
-      GargoyleEye:
-        stashed: false
-        allow_destroy: false
-      WeatherVane:
-        stashed: false
-        allow_destroy: false
-    npcs: {}
-  Basement:
-    doors:
-      BaseToGym:
-        locked: false
-      TeachersDoor:
-        locked: true
-    actions:
-      RitualCircle:
-        locked: true
-        state: ''
-        imagepath: assets/actions/button.png
-    items:
-      RitualCandle:
-        stashed: false
-        allow_destroy: false
-      BasementMap:
-        stashed: false
-        allow_destroy: false
-    npcs:
-      ghost_timmy:
-        active_dialog: start
-        locked: true
-  Greenhouse:
-    doors:
-      GreenToCafe:
-        locked: false
-    actions:
-      MoonflowerPot:
-        locked: true
-        state: ''
-        imagepath: assets/actions/greenplant.png
-    items:
-      RareSeed:
-        stashed: false
-        allow_destroy: false
-      VenusFlytrapTooth:
-        stashed: false
-        allow_destroy: false
-    npcs:
-      planty:
-        active_dialog: start
-        locked: true
-  TeachersLounge:
-    doors:
-      TeachToBase:
-        locked: false
-      TrophyDoor:
-        locked: false
-    actions:
-      CoffeeMachine:
-        locked: false
-        state: ''
-        imagepath: assets/actions/button2.png
-    items:
-      DetentionRecords:
-        stashed: false
-        allow_destroy: false
-    npcs:
-      ghost_professor:
-        active_dialog: start
-        locked: true
-  TrophyRoom:
-    doors:
-      TrophyToTeach:
-        locked: false
-      FinalDoor:
-        locked: true
-    actions:
-      SuspiciousPainting:
-        locked: true
-        state: ''
-        imagepath: assets/actions/button.png
-    items:
-      CursedTrophy:
-        stashed: false
-        allow_destroy: false
-    npcs:
-      sir_portrait:
-        active_dialog: start
-        locked: true
-  FinalConfrontation:
-    doors:
-      FinalToTrophy:
-        locked: false
-    actions: {}
-    items:
-      SoulContract:
-        stashed: false
-        allow_destroy: false
-    npcs:
-      dean_malvora:
-        active_dialog: start
-        locked: true
 inventory:
-  missile2:
-    stashed: true
-    allow_destroy: false
-    self_destruct: true
-    left: 595
-    top: 672
-    width: 42
-    height: 42
-    imagepath: assets/items/missile2.png
-  comb:
-    stashed: true
-    allow_destroy: false
-    self_destruct: true
-    left: 643
-    top: 672
-    width: 42
-    height: 42
-    imagepath: assets/items/comb.png
-active_room: MainHall
+  slots:
+    '0':
+      item_name: Tourist Brochure
+      allow_destroy: false
+      self_destruct: true
+      imagepath: assets/items/paper.png
+      width: 42
+      height: 42
+    '1':
+      item_name: Silver Coin
+      allow_destroy: false
+      self_destruct: true
+      imagepath: assets/items/crystal_key.png
+      width: 42
+      height: 42
+    '2':
+      item_name: Golden Olive Branch
+      allow_destroy: false
+      self_destruct: true
+      imagepath: assets/items/ancient_scroll.png
+      width: 42
+      height: 42
+active_room: Underworld Entrance
 player:
-  left: 1151
-  top: 324
+  left: 843
+  top: 446
