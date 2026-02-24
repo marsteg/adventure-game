@@ -35,7 +35,8 @@ The Project is also prepared to work with AI Agents. Try letting your AI Agent g
 	- There are now different ways to take and give items from NPCs
 			- by unlocking them (possible via item, action or dialog)
 - Conversations!
-	- each line of speech should have a configurable talking time 
+	- each block of speech has a configurable talking time 
+	- speech can be a single line or an array of lines
 	- active dialog (dialog state of NPC) answers could change based on:
 			- specific replies chosen (should execute actionfunc)
 			- actions executed (actionfunc to change actve dialog of npc)
@@ -56,7 +57,8 @@ The Project is also prepared to work with AI Agents. Try letting your AI Agent g
 	- The Player has now a left and right walking animation
 - There is now a small Text Area that displays the objectname of whatever you are pointing at
 - The Inventory is now centered
-- Cutscenes! There is now the possibility to have Text-based Cutscenes for intros or short explanations of story
+- Cutscenes! There is now the possibility to have Text-based Cutscenes for intros or short explanations of story.
+	- They can be triggered via Actionfuncs
 		
 
 

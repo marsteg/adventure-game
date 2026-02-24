@@ -55,13 +55,25 @@ class Room(pygame.sprite.Sprite):
             item.draw(screen)
         self.player.draw(screen)
 
-        # Draw dialogs with new renderer
+        # Clear previous speech tracking and draw dialogs with new direct text renderer
+        dialog_renderer.clear_all_speeches()
+
+        # Only show the most recent dialog per speaking NPC to prevent overlapping sentences
+        npc_to_latest_dialog = {}
         for dialogbox in DialogBox.dialogboxes:
             if dialogbox.room == self and dialogbox.dialog_text:
-                speaker = getattr(dialogbox, 'speaker_name', "")
-                speaker_color = getattr(dialogbox, 'speaker_color', None)
-                dialog_renderer.render_dialog_box(screen, dialogbox.dialog_text,
-                                                speaker_name=speaker, speaker_color=speaker_color)
+                speaking_npc = getattr(dialogbox, 'speaking_npc', None)
+                if speaking_npc:
+                    # Keep only the most recent dialog per NPC (highest timer = most recent)
+                    if speaking_npc not in npc_to_latest_dialog or dialogbox.timer > npc_to_latest_dialog[speaking_npc].timer:
+                        npc_to_latest_dialog[speaking_npc] = dialogbox
+
+        # Render only the latest dialog for each NPC
+        for speaking_npc, dialogbox in npc_to_latest_dialog.items():
+            speaker_name = getattr(dialogbox, 'speaker_name', "")
+            speaker_color = getattr(dialogbox, 'speaker_color', None)
+            dialog_renderer.render_dialog_text(screen, dialogbox.dialog_text, speaking_npc,
+                                             speaker_name=speaker_name, speaker_color=speaker_color)
 
         # Inventory/answerbox drawn by main.py with new renderers
 

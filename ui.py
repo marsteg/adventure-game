@@ -4,8 +4,7 @@ Inspired by classics like Edna bricht aus, Deponia, Monkey Island
 """
 
 import pygame
-from constants import SCREEN_WIDTH, SCREEN_HEIGHT, INVENTORY_HEIGHT
-
+from constants import SCREEN_WIDTH, SCREEN_HEIGHT, INVENTORY_HEIGHT, at_percentage_width
 
 class Colors:
     """Muted, cinematic color palette."""
@@ -32,15 +31,15 @@ def draw_rounded_rect(surface, color, rect, radius=8):
         pygame.draw.rect(surface, color, (x, y, w, h), border_radius=min(radius, h//2, w//2))
 
 
-class DialogRenderer:
-    """Renders dialog boxes - positioned in upper area of screen."""
+class DirectTextRenderer:
+    """Renders dialog text directly on screen near speaking NPCs."""
 
     def __init__(self):
-        self.font = pygame.font.Font(None, 32)
-        self.font_name = pygame.font.Font(None, 20)
-
+        self.font = pygame.font.Font(None, 28)
+        self.active_speeches = []  # Track positioned text to avoid overlaps
 
     def _wrap_text(self, text, max_width):
+        """Wrap text to fit within specified width."""
         words = text.split(' ')
         lines = []
         current = ""
@@ -56,44 +55,112 @@ class DialogRenderer:
             lines.append(current)
         return lines
 
-    def render_dialog_box(self, surface, text, speaker_name="", speaker_color=None,
-                          position=None, width=520, portrait=None):
+    def _calculate_text_position(self, npc, text_lines):
+        """Smart positioning algorithm with collision detection."""
+        # Get NPC center position
+        npc_center_x = npc.rect.centerx
+        npc_center_y = npc.rect.centery
 
-        padding = 18
-        wrapped = self._wrap_text(text, width - padding * 2)
-        line_h = self.font.get_linesize() + 2
-        text_h = len(wrapped) * line_h
-        name_h = 22 if speaker_name else 0
-        box_h = text_h + name_h + padding * 2
+        # Calculate text dimensions
+        line_height = self.font.get_linesize() + 2
+        max_line_width = max(self.font.size(line)[0] for line in text_lines) if text_lines else 0
+        text_width = max_line_width + 20  # Add padding
+        text_height = len(text_lines) * line_height + 16  # Add padding
 
-        # Position in center of screen - Broken Sword style
-        if position is None:
-            x = (SCREEN_WIDTH - width) // 2
-            # Center vertically in the available space above inventory
-            available_height = SCREEN_HEIGHT - INVENTORY_HEIGHT
-            y = (available_height - box_h) // 2
-        else:
-            x, y = position
+        # Positioning priorities: above, right, left, below
+        positions = [
+            # Above NPC (primary)
+            (npc_center_x - text_width // 2, npc.rect.top - text_height - 10),
+            # Right of NPC
+            (npc.rect.right + 10, npc_center_y - text_height // 2),
+            # Left of NPC
+            (npc.rect.left - text_width - 10, npc_center_y - text_height // 2),
+            # Below NPC (last resort)
+            (npc_center_x - text_width // 2, npc.rect.bottom + 10)
+        ]
 
-        # Background
-        draw_rounded_rect(surface, Colors.DIALOG_BG, (x, y, width, box_h), radius=6)
-        pygame.draw.line(surface, Colors.ACCENT, (x + 12, y + 2), (x + width - 12, y + 2), 1)
+        # Check each position for validity
+        for x, y in positions:
+            # Ensure text stays on screen
+            x = max(10, min(x, SCREEN_WIDTH - text_width - 10))
+            y = max(10, min(y, SCREEN_HEIGHT - INVENTORY_HEIGHT - text_height - 10))
 
-        # Speaker name
-        text_y = y + padding
-        if speaker_name:
-            color = speaker_color if speaker_color else Colors.ACCENT
-            name_surf = self.font_name.render(speaker_name.upper(), True, color)
-            surface.blit(name_surf, (x + padding, y + padding - 2))
-            text_y += name_h
+            text_bounds = pygame.Rect(x, y, text_width, text_height)
 
-        # Dialog text
-        for line in wrapped:
-            line_surf = self.font.render(line, True, Colors.TEXT)
-            surface.blit(line_surf, (x + padding, text_y))
-            text_y += line_h
+            # Check for conflicts with other active speeches
+            if not self._check_position_conflicts(text_bounds):
+                return (x, y), text_bounds
 
-        return box_h  # Return height for answer positioning
+        # If all positions conflict, use the first one anyway (above NPC)
+        x, y = positions[0]
+        x = max(10, min(x, SCREEN_WIDTH - text_width - 10))
+        y = max(10, min(y, SCREEN_HEIGHT - INVENTORY_HEIGHT - text_height - 10))
+        text_bounds = pygame.Rect(x, y, text_width, text_height)
+        return (x, y), text_bounds
+
+    def _check_position_conflicts(self, text_bounds):
+        """Check if position conflicts with other active speech."""
+        for active_bounds in self.active_speeches:
+            if text_bounds.colliderect(active_bounds):
+                return True
+        return False
+
+    def render_dialog_text(self, surface, dialog_text, speaker_npc,
+                          speaker_name="", speaker_color=None):
+        """Render text positioned near the speaking NPC."""
+        if not dialog_text or not speaker_npc:
+            return
+
+        # Wrap text for reasonable width
+        max_width = at_percentage_width(40)
+        wrapped_lines = self._wrap_text(dialog_text, max_width)
+
+        # Calculate position
+        position, text_bounds = self._calculate_text_position(speaker_npc, wrapped_lines)
+
+        # Track this speech position
+        if text_bounds not in self.active_speeches:
+            self.active_speeches.append(text_bounds)
+
+        x, y = position
+        padding = 10
+
+        # Calculate actual text dimensions for proper centering
+        line_height = self.font.get_linesize() + 2
+        actual_text_width = max(self.font.size(line)[0] for line in wrapped_lines) if wrapped_lines else 0
+        actual_text_height = len(wrapped_lines) * line_height
+
+        # Create background box with equal padding around text
+        bg_width = actual_text_width + (padding * 2)
+        bg_height = actual_text_height + (padding * 2)
+        bg_rect = pygame.Rect(x, y, bg_width, bg_height)
+        draw_rounded_rect(surface, (0, 0, 0, 120), bg_rect, radius=8)
+
+        # Use NPC's speech color or default white
+        text_color = speaker_color if speaker_color else (255, 255, 255)
+
+        # Render each line with proper centering
+        for i, line in enumerate(wrapped_lines):
+            line_y = y + padding + i * line_height
+
+            # Multi-offset text shadow for better readability over any background
+            shadow_offsets = [(1, 1), (0, 1), (1, 0), (-1, 1), (1, -1)]
+            for dx, dy in shadow_offsets:
+                shadow_surf = self.font.render(line, True, (0, 0, 0))
+                surface.blit(shadow_surf, (x + padding + dx, line_y + dy))
+
+            # Main text
+            text_surf = self.font.render(line, True, text_color)
+            surface.blit(text_surf, (x + padding, line_y))
+
+    def clear_speaker_text(self, speaker_npc):
+        """Remove text for a specific NPC (not needed in current implementation)."""
+        # This would be used if we tracked per-NPC speech bounds
+        pass
+
+    def clear_all_speeches(self):
+        """Clear all tracked speech positions."""
+        self.active_speeches.clear()
 
 
 class AnswerRenderer:
@@ -268,7 +335,7 @@ _transition = None
 def _ensure_initialized():
     global _dialog_renderer, _answer_renderer, _inventory_renderer, _tooltip_renderer, _transition
     if _dialog_renderer is None:
-        _dialog_renderer = DialogRenderer()
+        _dialog_renderer = DirectTextRenderer()
         _answer_renderer = AnswerRenderer()
         _inventory_renderer = InventoryRenderer()
         _tooltip_renderer = TooltipRenderer()

@@ -23,9 +23,11 @@ def ChangeDialog(npc_string, new_dialog, room, npc, inventory, answerbox):
     """Change the NPC's dialog to a new state and continue talking."""
     if npc.name == npc_string:
         npc.active_dialog = new_dialog
+        npc.dialogline = 0  # Reset to beginning of dialog
         answerbox.state = npc.active_dialog
         npc.talk(room, inventory, answerbox)
         print(f"Dialog changed to: {new_dialog}")
+
     else:
         print(f"NPC '{npc_string}' not found")
 

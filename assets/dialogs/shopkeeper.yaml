@@ -22,7 +22,10 @@ start:
           - bye
 
 about_vase:
-  line: "Ah! That vase is from 500 BC! Or maybe 2005 AD, I forget. Very fragile, very expensive!"
+  line: 
+    - "Ah! That vase is from 500 BC! Or maybe 2005 AD, I forget."
+    - " Very fragile..."
+    - " very expensive!"
   speaker: "Dimitri"
   sound: "assets/sounds/dialogs/dimitri_vase.wav"
   duration: 4

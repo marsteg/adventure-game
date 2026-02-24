@@ -108,6 +108,12 @@ class NPC(RectShape):
         VoiceManager.play_voice(line)
 
     def talk_description(self, room):
+        # Clean up any existing dialog boxes for this NPC to prevent accumulation
+        for existing_dialog in DialogBox.dialogboxes[:]:  # Use slice to avoid modification during iteration
+            existing_speaker = getattr(existing_dialog, 'speaking_npc', None)
+            if existing_speaker == self:
+                existing_dialog.kill()
+
         dialbox = DialogBox(room, time.time())
         dialbox.state = "describe"
         dialbox.room = room
@@ -121,6 +127,7 @@ class NPC(RectShape):
         # Store text for new renderer
         dialbox.dialog_text = line
         dialbox.speaker_name = ""
+        dialbox.speaking_npc = self  # Add NPC reference for positioning
 
     def describe(self, room):
         print("NPC right-clicked: ", self.name)
@@ -132,6 +139,13 @@ class NPC(RectShape):
         self.timer = time.time()
         print("NPC Talking: ", self.name)
 
+        # Clean up any existing dialog boxes for this NPC to prevent accumulation
+        speaker = self._find_speaker(room)
+        for existing_dialog in DialogBox.dialogboxes[:]:  # Use slice to avoid modification during iteration
+            existing_speaker = getattr(existing_dialog, 'speaking_npc', None)
+            if existing_speaker == speaker:
+                existing_dialog.kill()
+
         dialbox = DialogBox(room, time.time())
         dialbox.state = self
         dialbox.room = room
@@ -142,7 +156,19 @@ class NPC(RectShape):
 
         line = speaker.dialog[self.active_dialog]["line"]
         if isinstance(line, list):
+            # Setup for array of lines
+            dialbox.total_lines = len(line)
+            dialbox.total_duration = speaker.dialog[self.active_dialog].get("duration", 3)
+            dialbox.line_duration = dialbox.total_duration / dialbox.total_lines
+            dialbox.current_line_index = self.dialogline
+            dialbox.auto_advance = True
+            dialbox.dialog_duration = dialbox.line_duration  # Use per-line duration
             line = line[self.dialogline]
+        else:
+            # Single line - use existing behavior
+            dialbox.auto_advance = False
+            dialbox.line_duration = speaker.dialog[self.active_dialog].get("duration", 3)
+            dialbox.dialog_duration = dialbox.line_duration  # Use full duration
 
         print("NPC Talking: ", speaker.name, "dialog:", line)
 
@@ -150,6 +176,7 @@ class NPC(RectShape):
         dialbox.dialog_text = line
         dialbox.speaker_name = speaker.name
         dialbox.speaker_color = speaker.speechcolor
+        dialbox.speaking_npc = speaker  # Add NPC reference for positioning
 
         # Check if the dialog unlocks something
         if self.dialog[self.active_dialog].get("unlock") is True:
@@ -165,8 +192,19 @@ class NPC(RectShape):
             self.active_dialog = exit_data["ExitDialog"]
             return
 
-        # Build answers
-        self._build_answers(room, inventory, answerbox)
+        # Build answers only if this is not an incomplete array dialog
+        line = speaker.dialog[self.active_dialog]["line"]
+        if isinstance(line, list):
+            # For array dialogs, only show answers after the last line
+            if self.dialogline >= len(line) - 1:
+                self._build_answers(room, inventory, answerbox)
+            else:
+                # Clear any existing answers - don't show until array is complete
+                answerbox.answers = {}
+                answerbox.state = None
+        else:
+            # Single line dialog - show answers immediately
+            self._build_answers(room, inventory, answerbox)
 
     def _find_speaker(self, room):
         """Find the NPC who should speak (might be different from self)."""

@@ -151,11 +151,8 @@ def main():
         elif isinstance(obj, NPC):
             print(f"Talk to NPC: {obj.name}")
             obj.talk(active_room, inventory, answerbox)
-            sound = obj.dialog[obj.active_dialog]["sound"]
-            if isinstance(sound, list):
-                sound = obj.dialog[obj.active_dialog]["sound"][obj.dialogline]
-            duration = get_sound_duration(sound)
-            active_timer = duration
+
+            # DialogBox now manages its own timing, no need to set active_timer
             active_talker = obj
         elif isinstance(obj, Item):
             print(f"Pickup item: {obj.name}")
@@ -299,7 +296,7 @@ def main():
                     dialbox.state = None
                     active_talker = None
                     dialbox.kill()
-                elif time.time() - dialbox.timer > active_timer:
+                elif time.time() - dialbox.timer > dialbox.dialog_duration:
                     # Timer expired - but DON'T close if answers are available or voice is still playing!
                     if answerbox.state is not None:
                         # Answers are showing - keep dialog open, just reset timer
@@ -317,15 +314,28 @@ def main():
                         if isinstance(line, list):
                             speaker.dialogline += 1
                             if speaker.dialogline >= len(line):
+                                # Array completed - end dialog
                                 speaker.dialogline = 0
+                                VoiceManager.stop_current_voice()
+                                dialbox.state = None
+                                active_talker = None
+                                dialbox.kill()
                             elif speaker.dialogline < len(line):
+                                # Continue with next line in array
                                 speaker.talk(active_room, inventory, answerbox)
                                 continue  # Don't kill dialog, continue with next line
-                    # Stop voice when dialog ends naturally
-                    VoiceManager.stop_current_voice()
-                    dialbox.state = None
-                    active_talker = None
-                    dialbox.kill()
+                        else:
+                            # Single line completed
+                            VoiceManager.stop_current_voice()
+                            dialbox.state = None
+                            active_talker = None
+                            dialbox.kill()
+                    else:
+                        # Non-NPC dialog completed
+                        VoiceManager.stop_current_voice()
+                        dialbox.state = None
+                        active_talker = None
+                        dialbox.kill()
 
             # Update all objects
             for updatable_object in updatable:

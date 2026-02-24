@@ -53,6 +53,15 @@ class DialogBox(pygame.sprite.Sprite):
         self.dialog_text = ""
         self.speaker_name = ""
         self.speaker_color = None
+        # Add NPC reference for positioning
+        self.speaking_npc = None
+        # Add duration tracking for sequential lines
+        self.total_duration = None      # Original duration from YAML
+        self.line_duration = None       # Duration per line (calculated)
+        self.current_line_index = 0     # Current line in array
+        self.total_lines = 1           # Total lines in array
+        self.auto_advance = False       # Whether to auto-advance through lines
+        self.dialog_duration = 3.0      # Duration for this specific dialog instance
         DialogBox.dialogboxes.append(self)
 
     def kill(self):
