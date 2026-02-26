@@ -12,6 +12,7 @@ The Project is also prepared to work with AI Agents. Try letting your AI Agent g
 
 
 ## Features Implemented
+- the game itself gets completely assempled in game.py. Here you define all your Rooms, NPCs, Items, Actions and their Actionfuncs.
 - creation of items, doors, actions and rooms.
 - stashing of items
 - items can now be destroyed on usage or not. if not, they go back to the inventory after usage
@@ -21,6 +22,7 @@ The Project is also prepared to work with AI Agents. Try letting your AI Agent g
 - Actionfuncs are a way to teach an action button tricks. With this theoretically anything can be executed via Actions
 - unlocking an action will also execute it's actionfuncs
 - Save and Loading the Game is now possible! Press 'S' to Save and 'L' to Load
+	- now with menu and support for multiple savefiles
 - Right-Click on NPCs, Doors, Items and Actions gives now a description about them
 	- different descriptions based on the lock state possible
 - Sounds!
@@ -62,17 +64,10 @@ The Project is also prepared to work with AI Agents. Try letting your AI Agent g
 		
 
 
-## Todo List: 
-- It would be nice to find a clean way to assign and create doors and rooms and assign items (currently in main func)
-	- it would be nice to have the "Game Definition" in a yaml file.
-		- All Items in a Yaml
-		- All Rooms in a Yaml
-		- All NPCs in a Yaml
-		- all Doors in a Yaml
+
 ## Saving/Loading:
-	- how to save and load the game?
+	- how to save and load the game - need a save/load menu
 		- save to yaml
-			- should provide some savename input
 			- support multiple savefiles
 		- load from yaml
 			- select savefile

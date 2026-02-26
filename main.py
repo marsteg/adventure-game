@@ -18,7 +18,8 @@ from npc import NPC
 from dialogbox import DialogBox, VoiceManager, get_sound_duration
 from answerbox import AnswerBox
 from answer import Answer
-from save import SaveState, LoadState
+from save import SaveState, LoadState, SaveStateToSlot, LoadStateFromSlot, MigrateOldSave, GetMostRecentSlot, DeleteSlot
+from saveloadmenu import SaveLoadMenu, ConfirmDialog
 from debug import debug_inventory_state, toggle_debug
 from player import Player
 from queueing import QueuedInteraction
@@ -37,6 +38,8 @@ class GameState:
     PLAYING = "playing"
     PAUSED = "paused"
     CUTSCENE = "intro"
+    SAVE_MENU = "save_menu"
+    LOAD_MENU = "load_menu"
 
 
 def main():
@@ -53,7 +56,7 @@ def main():
 
     # Game state
     game_state = GameState.MENU
-    menu = MainMenu(title)
+    menu = MainMenu(title, in_game=False)  # Startup menu
     #intro = TextCutscene("assets/textcutscenes/intro.yaml")
 
     # Initialize GameStateManager
@@ -68,15 +71,37 @@ def main():
     daisy = Player(at_percentage_width(20), at_percentage_height(80), 50, 75, "assets/player/daisy_waiting.png", "player")
     player = pygame.sprite.Group(daisy)
 
+    # Playtime tracking
+    playtime_seconds = 0
+    session_start_time = None
+
+    # Save/Load menus
+    save_menu = None
+    load_menu = None
+    confirm_dialog = None
+    pending_menu_action = None
+    gameplay_screenshot = None  # Store screenshot before menu opens
+
+    # Auto-save tracking
+    last_room_for_autosave = None
+
+    # Check for old save file and migrate
+    MigrateOldSave()
+
     def init_game():
         """Initialize or reset the game."""
-        nonlocal inventory, answerbox, player, active_room, rooms
+        nonlocal inventory, answerbox, player, active_room, rooms, playtime_seconds, session_start_time, last_room_for_autosave
 
         # Reset class-level containers
         Room.rooms = {}
         Item.items = {}
         NPC.NPCs = {}
         DialogBox.dialogboxes = []
+
+        # Reset playtime tracking
+        playtime_seconds = 0
+        session_start_time = time.time()
+        last_room_for_autosave = None
 
         updatable = pygame.sprite.Group()
         items_group = pygame.sprite.Group()
@@ -103,6 +128,102 @@ def main():
         pygame.mixer.music.play(-1, 0.0)
 
         return updatable, active_room, intro
+
+    def capture_thumbnail(scale=0.15):
+        """Capture current game screen as a thumbnail.
+
+        Args:
+            scale: Scale factor for thumbnail (default 0.15 = 15% of original size)
+
+        Returns:
+            pygame.Surface: Scaled thumbnail surface
+        """
+        # Capture current screen
+        thumbnail = screen.copy()
+        # Scale down for thumbnail
+        thumb_width = int(SCREEN_WIDTH * scale)
+        thumb_height = int(SCREEN_HEIGHT * scale)
+        thumbnail = pygame.transform.smoothscale(thumbnail, (thumb_width, thumb_height))
+        return thumbnail
+
+    def update_playtime():
+        """Update the playtime counter based on elapsed time."""
+        nonlocal playtime_seconds, session_start_time
+        if session_start_time:
+            elapsed = time.time() - session_start_time
+            playtime_seconds += int(elapsed)
+            session_start_time = time.time()
+
+    def perform_save(slot_number, thumbnail_override=None):
+        """Perform save to specified slot with thumbnail and playtime.
+
+        Args:
+            slot_number: Slot number to save to
+            thumbnail_override: Optional pre-captured thumbnail surface
+        """
+        nonlocal playtime_seconds
+        update_playtime()
+        # Use provided thumbnail or capture current screen
+        thumbnail = thumbnail_override if thumbnail_override else capture_thumbnail()
+        success = SaveStateToSlot(active_room, inventory, player, slot_number, playtime_seconds, thumbnail)
+        if success:
+            print(f"Game saved to slot {slot_number} (Playtime: {playtime_seconds}s)")
+        return success
+
+    def perform_load(slot_number):
+        """Load game from specified slot and update playtime."""
+        nonlocal inventory, active_room, playtime_seconds, session_start_time, last_room_for_autosave
+
+        loaded_room, new_inventory, player_pos, loaded_playtime = LoadStateFromSlot(slot_number)
+
+        if loaded_room and new_inventory:
+            # Clear current inventory state
+            inventory.clear_all_slots()
+            inventory.items.clear()
+
+            # Copy items from loaded inventory
+            for item_name, item_obj in new_inventory.items.items():
+                if hasattr(item_obj, 'stashed'):
+                    item_obj.stashed = True
+                inventory.items[item_name] = item_obj
+                pos = inventory.get_available_slots(item_obj)
+                if pos:
+                    item_obj.rect.topleft = pos
+                    item_obj.position = pygame.Vector2(pos)
+
+            # Safe room transition with music handling
+            if loaded_room != active_room:
+                pygame.mixer.music.stop()
+                active_room = loaded_room
+                last_room_for_autosave = active_room  # Update auto-save tracking
+                pygame.mixer.music.load(active_room.music)
+                pygame.mixer.music.set_volume(BACKGROUND_VOLUME)
+                pygame.mixer.music.play(-1, 0.0)
+
+            # Safe player positioning
+            player_x = max(0, min(player_pos.get("left", 100), SCREEN_WIDTH - 50))
+            player_y = max(0, min(player_pos.get("top", 100), SCREEN_HEIGHT - INVENTORY_HEIGHT - 50))
+            player.sprites()[0].rect.left = player_x
+            player.sprites()[0].rect.top = player_y
+            player.sprites()[0].pos = pygame.Vector2(player_x, player_y)
+
+            # Restore playtime and restart session timer
+            playtime_seconds = loaded_playtime
+            session_start_time = time.time()
+
+            print(f"Game loaded from slot {slot_number} successfully! (Playtime: {playtime_seconds}s)")
+            return True
+        else:
+            print(f"Failed to load from slot {slot_number}")
+            return False
+
+    def check_and_perform_autosave():
+        """Auto-save to slot 0 when changing rooms."""
+        nonlocal last_room_for_autosave
+        if active_room != last_room_for_autosave:
+            print(f"Room changed to {active_room.name} - Auto-saving...")
+            perform_save(0)  # Slot 0 is auto-save
+            last_room_for_autosave = active_room
 
     updatable = pygame.sprite.Group()
     pending_interaction = None
@@ -142,6 +263,8 @@ def main():
                 daisy.pos = pygame.Vector2(obj.player_target_position)
                 daisy.clear_target()
                 transition.start_fade(fade_in=True)
+                # Auto-save on room transition
+                check_and_perform_autosave()
         elif isinstance(obj, Action):
             if obj.locked:
                 print(f"Action locked: {obj.name}")
@@ -234,7 +357,7 @@ def main():
 
         if game_state == GameState.MENU:
             # Menu handling
-            action = menu.update(mouse_pos, clicked)
+            action = menu.update(mouse_pos, clicked, events)
             menu.draw(screen)
 
             if action == "start_game":
@@ -242,9 +365,43 @@ def main():
                 updatable, active_room, intro = init_game()
 
                 # Start intro sequence first
-                # For intro, we don't push a previous state since we go to PLAYING afterwards
                 cutscene = intro
                 game_state = GameState.CUTSCENE
+            elif action == "load_game":
+                # Open load menu from main menu
+                game_state = GameState.LOAD_MENU
+                load_menu = SaveLoadMenu(mode="load")
+            elif action == "save_game":
+                # Open save menu from in-game menu
+                gameplay_screenshot = capture_thumbnail()  # Capture before menu
+                game_state = GameState.SAVE_MENU
+                save_menu = SaveLoadMenu(mode="save")
+            elif action == "resume":
+                # Resume gameplay from in-game menu
+                game_state = GameState.PLAYING
+                session_start_time = time.time()  # Restart timer
+                menu = MainMenu(title, in_game=False)  # Reset menu for next time
+            elif isinstance(action, tuple) and action[0] == "continue":
+                # Continue from most recent save
+                slot_num = action[1]
+                print(f"Continuing from slot {slot_num}...")
+                # Initialize game first
+                updatable, active_room, intro = init_game()
+                # Then load the save
+                if perform_load(slot_num):
+                    game_state = GameState.PLAYING
+                    session_start_time = time.time()
+                else:
+                    # If load fails, just start new game
+                    cutscene = intro
+                    game_state = GameState.CUTSCENE
+            elif action == "quit_to_menu":
+                # Return to startup menu (reset game)
+                update_playtime()
+                state_manager.reset()
+                game_state = GameState.MENU
+                session_start_time = None
+                menu = MainMenu(title, in_game=False)  # Startup menu
             elif action == "quit":
                 run = False
 
@@ -272,6 +429,123 @@ def main():
                 previous_state = state_manager.pop_state()
                 game_state = previous_state if previous_state is not None else GameState.PLAYING
                 transition.start_fade(fade_in=True)
+                # Start session timer when entering gameplay
+                if game_state == GameState.PLAYING and session_start_time is None:
+                    session_start_time = time.time()
+
+        elif game_state == GameState.SAVE_MENU:
+            # Save menu handling
+            if confirm_dialog:
+                # Handle confirmation dialog
+                result = confirm_dialog.update(mouse_pos, events)
+                confirm_dialog.draw(screen)
+
+                if result == "confirm":
+                    # Execute the pending action
+                    if pending_menu_action and pending_menu_action[0] == "overwrite":
+                        slot_num = pending_menu_action[1]
+                        if perform_save(slot_num, gameplay_screenshot):
+                            save_menu.refresh_slots()
+                            # Show success message
+                            if slot_num == 0:
+                                save_menu.show_success("Auto-save overwritten!")
+                            else:
+                                save_menu.show_success(f"Slot {slot_num} overwritten!")
+                    confirm_dialog = None
+                    pending_menu_action = None
+                elif result == "cancel":
+                    confirm_dialog = None
+                    pending_menu_action = None
+            else:
+                # Normal save menu
+                if save_menu is None:
+                    save_menu = SaveLoadMenu(mode="save")
+
+                action = save_menu.update(mouse_pos, events, dt)
+                save_menu.draw(screen)
+
+                if action == "cancel":
+                    game_state = GameState.PLAYING
+                    save_menu = None
+                    gameplay_screenshot = None  # Clear screenshot
+                    session_start_time = time.time()  # Restart session timer
+                elif action and action[0] == "save":
+                    slot_num = action[1]
+                    if perform_save(slot_num, gameplay_screenshot):
+                        save_menu.refresh_slots()
+                        # Show success message and keep menu open
+                        if slot_num == 0:
+                            save_menu.show_success("Auto-save updated!")
+                        else:
+                            save_menu.show_success(f"Game saved to Slot {slot_num}!")
+                elif action and action[0] == "confirm_overwrite":
+                    pending_menu_action = ("overwrite", action[1])
+                    confirm_dialog = ConfirmDialog("overwrite", action[1])
+                elif action and action[0] == "confirm_delete":
+                    pending_menu_action = ("delete", action[1])
+                    confirm_dialog = ConfirmDialog("delete", action[1])
+
+            # Also handle delete confirmations
+            if confirm_dialog and pending_menu_action and pending_menu_action[0] == "delete":
+                result = confirm_dialog.update(mouse_pos, events)
+                if result == "confirm":
+                    slot_num = pending_menu_action[1]
+                    if DeleteSlot(slot_num):
+                        save_menu.refresh_slots()
+                        # Show success message
+                        save_menu.show_success(f"Slot {slot_num} deleted!")
+                    confirm_dialog = None
+                    pending_menu_action = None
+                elif result == "cancel":
+                    confirm_dialog = None
+                    pending_menu_action = None
+
+        elif game_state == GameState.LOAD_MENU:
+            # Load menu handling
+            if confirm_dialog:
+                # Handle confirmation dialog for delete
+                result = confirm_dialog.update(mouse_pos, events)
+                confirm_dialog.draw(screen)
+
+                if result == "confirm":
+                    if pending_menu_action and pending_menu_action[0] == "delete":
+                        slot_num = pending_menu_action[1]
+                        if DeleteSlot(slot_num):
+                            load_menu.refresh_slots()
+                            # Show success message
+                            load_menu.show_success(f"Slot {slot_num} deleted!")
+                    confirm_dialog = None
+                    pending_menu_action = None
+                elif result == "cancel":
+                    confirm_dialog = None
+                    pending_menu_action = None
+            else:
+                # Normal load menu
+                if load_menu is None:
+                    load_menu = SaveLoadMenu(mode="load")
+
+                action = load_menu.update(mouse_pos, events, dt)
+                load_menu.draw(screen)
+
+                if action == "cancel":
+                    # Return to menu or playing depending on context
+                    if active_room is None:
+                        game_state = GameState.MENU
+                    else:
+                        game_state = GameState.PLAYING
+                        session_start_time = time.time()
+                    load_menu = None
+                elif action and action[0] == "load":
+                    slot_num = action[1]
+                    if perform_load(slot_num):
+                        # Initialize game if loading from menu
+                        if active_room:
+                            game_state = GameState.PLAYING
+                            session_start_time = time.time()
+                        load_menu = None
+                elif action and action[0] == "confirm_delete":
+                    pending_menu_action = ("delete", action[1])
+                    confirm_dialog = ConfirmDialog("delete", action[1])
 
         elif game_state == GameState.PLAYING:
             # Check for pending cutscenes first
@@ -381,62 +655,19 @@ def main():
                 for drawable_room in Room.rooms.values():
                     if drawable_room == active_room:
                         drawable_room.shine(screen)
+
+            # New save/load menu system (S and L keys)
             if keys[pygame.K_s]:
-                debug_inventory_state(inventory, "Before Save (Main)")
-                SaveState(active_room, inventory, player, "save.yaml")
-                print("Save operation completed - press L to test loading")
+                update_playtime()  # Update playtime before entering save menu
+                gameplay_screenshot = capture_thumbnail()  # Capture BEFORE menu opens
+                game_state = GameState.SAVE_MENU
+                save_menu = SaveLoadMenu(mode="save")
+                print("Opening save menu...")
+
             if keys[pygame.K_l]:
-                try:
-                    loaded_room, new_inventory, player_pos = LoadState("save.yaml")
-                    if loaded_room and new_inventory:
-                        # FIXED: Use safe inventory restoration method
-                        # The LoadState already restored room items correctly,
-                        # so we just need to restore the inventory contents safely
-
-                        # Clear current inventory state
-                        inventory.clear_all_slots()
-                        inventory.items.clear()
-
-                        # Copy items from loaded inventory with proper slot management
-                        for item_name, item_obj in new_inventory.items.items():
-                            # Ensure item is marked as stashed
-                            if hasattr(item_obj, 'stashed'):
-                                item_obj.stashed = True
-
-                            # Add to current inventory
-                            inventory.items[item_name] = item_obj
-
-                            # Use proper slot assignment
-                            pos = inventory.get_available_slots(item_obj)
-                            if pos:
-                                item_obj.rect.topleft = pos
-                                item_obj.position = pygame.Vector2(pos)
-                                print(f"Restored '{item_name}' to inventory")
-                            else:
-                                print(f"Warning: No inventory slot available for '{item_name}'")
-
-                        # Safe room transition with music handling
-                        if loaded_room != active_room:
-                            pygame.mixer.music.stop()
-                            active_room = loaded_room
-                            pygame.mixer.music.load(active_room.music)
-                            pygame.mixer.music.set_volume(BACKGROUND_VOLUME)
-                            pygame.mixer.music.play(-1, 0.0)
-
-                        # Safe player positioning with bounds checking
-                        player_x = max(0, min(player_pos.get("left", 100), SCREEN_WIDTH - 50))
-                        player_y = max(0, min(player_pos.get("top", 100), SCREEN_HEIGHT - INVENTORY_HEIGHT - 50))
-                        player.sprites()[0].rect.left = player_x
-                        player.sprites()[0].rect.top = player_y
-
-                        debug_inventory_state(inventory, "After Load Integration (Main)")
-                        print("Game loaded successfully!")
-                    else:
-                        print("Failed to load save file - incompatible or missing data")
-
-                except Exception as e:
-                    print(f"Load failed: {e} - continuing with current game")
-                    # Game continues normally instead of crashing
+                game_state = GameState.LOAD_MENU
+                load_menu = SaveLoadMenu(mode="load")
+                print("Opening load menu...")
 
             # Debug toggle (press D for debug info)
             if keys[pygame.K_d]:
@@ -446,11 +677,13 @@ def main():
             if keys[pygame.K_t]:
                 debug_enabled = toggle_debug()
                 print(f"Debug logging {'ON' if debug_enabled else 'OFF'}")
-                    
+
             if keys[pygame.K_ESCAPE]:
-                # Reset state manager when returning to menu
-                state_manager.reset()
+                # Open in-game menu (pause game)
+                update_playtime()
                 game_state = GameState.MENU
+                menu = MainMenu(title, in_game=True)  # In-game menu
+                session_start_time = None  # Pause timer
 
             # Mouse event handling
             for event in events:

@@ -1,0 +1,6 @@
+# Ignore all save files
+*.yaml
+*.png
+
+# Keep the directory in git
+!.gitignore
