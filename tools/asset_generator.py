@@ -81,7 +81,6 @@ class AssetGenerator:
         self.style_config_path = Path(style_config_path)
         self.config = self._load_config()
         self.style_config = self._load_style_config()
-        self.prompts = self._load_prompts()
         self.usage_file = Path("tools/.usage_tracker.json")
         self.usage = self._load_usage()
 
@@ -104,19 +103,6 @@ class AssetGenerator:
 
         with open(self.style_config_path, 'r') as f:
             return yaml.safe_load(f)
-
-    def _load_prompts(self) -> Dict:
-        """Load prompt templates."""
-        prompts = {}
-        prompts_dir = Path("tools/prompts")
-
-        for asset_type in self.ASSET_TYPES.keys():
-            prompt_file = prompts_dir / f"{asset_type}_prompts.yaml"
-            if prompt_file.exists():
-                with open(prompt_file, 'r') as f:
-                    prompts[asset_type] = yaml.safe_load(f)
-
-        return prompts
 
     def _load_usage(self) -> Dict:
         """Load usage tracker."""
@@ -227,11 +213,6 @@ class AssetGenerator:
         universal_negatives = enhancement.get('universal_negatives', [])
         if universal_negatives:
             negative_parts.extend(universal_negatives)
-
-        # Legacy negative prompt from old config (for backwards compatibility)
-        legacy_negative = self.prompts.get(asset_type, {}).get('negative_prompts', '')
-        if legacy_negative:
-            negative_parts.append(legacy_negative)
 
         negative_prompt = ', '.join(negative_parts)
 
@@ -353,12 +334,56 @@ class AssetGenerator:
         return filepath
 
     def list_templates(self, asset_type: Optional[str] = None):
-        """List available prompt templates."""
+        """List common examples for generating assets."""
+
+        examples = {
+            'npc': [
+                ('wizard', 'Magical character with staff and robes'),
+                ('guard', 'Armored guard with sword or spear'),
+                ('shopkeeper', 'Friendly merchant with apron'),
+                ('villager', 'Common townsperson'),
+                ('monster', 'Fantasy creature or beast'),
+                ('knight', 'Armored warrior'),
+                ('thief', 'Rogue character in dark clothes'),
+                ('priest', 'Religious figure in robes'),
+            ],
+            'room': [
+                ('library', 'Library with bookshelves and reading area'),
+                ('tavern', 'Inn or tavern with tables and bar'),
+                ('dungeon', 'Dark prison or dungeon cell'),
+                ('throne_room', 'Grand royal throne room'),
+                ('bedroom', 'Cozy bedroom interior'),
+                ('kitchen', 'Cooking area with stove and utensils'),
+                ('forest', 'Outdoor forest clearing'),
+                ('cave', 'Dark cave interior'),
+            ],
+            'item': [
+                ('key', 'Key for unlocking doors'),
+                ('potion', 'Magical potion bottle'),
+                ('sword', 'Weapon - sword or blade'),
+                ('book', 'Old book or tome'),
+                ('gem', 'Precious gemstone or crystal'),
+                ('amulet', 'Magical amulet or pendant'),
+                ('scroll', 'Ancient scroll or parchment'),
+                ('coin', 'Gold coin or currency'),
+            ],
+            'door': [
+                ('wooden_door', 'Simple wooden door'),
+                ('metal_door', 'Heavy metal or iron door'),
+                ('castle_door', 'Large ornate castle door'),
+                ('dungeon_door', 'Prison cell door with bars'),
+                ('magic_door', 'Mystical door with runes'),
+            ],
+        }
+
         if asset_type:
-            templates = self.prompts.get(asset_type, {}).get('templates', [])
-            print(f"\n{asset_type.upper()} Templates:")
-            for template in templates:
-                print(f"  - {template['name']}: {template['description']}")
+            if asset_type in examples:
+                print(f"\n{asset_type.upper()} Examples:")
+                print(f"Use these as inspiration for your descriptions:\n")
+                for name, description in examples[asset_type]:
+                    print(f"  {name:20} - {description}")
+                print(f"\nExample usage:")
+                print(f"  python tools/asset_generator.py {asset_type} \"{examples[asset_type][0][0]} character\" {examples[asset_type][0][0]}")
         else:
             for atype in self.ASSET_TYPES.keys():
                 self.list_templates(atype)
