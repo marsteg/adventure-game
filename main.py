@@ -121,8 +121,8 @@ def main():
         # Set player starting position in Tourist Shop
         from constants import at_percentage_width, at_percentage_height
         start_pos = pygame.Vector2(at_percentage_width(player_start_percent[0]), at_percentage_height(player_start_percent[1]))
-        # Validate starting position is walkable
-        walkable_start = active_room.find_nearest_walkable(start_pos)
+        # Validate starting position - ensure feet will be walkable
+        walkable_start = active_room.find_nearest_walkable_spawn(start_pos)
         daisy.pos = pygame.Vector2(walkable_start)
 
         # Start music
@@ -203,11 +203,11 @@ def main():
                 pygame.mixer.music.set_volume(BACKGROUND_VOLUME)
                 pygame.mixer.music.play(-1, 0.0)
 
-            # Safe player positioning - validate loaded position is walkable
+            # Safe player positioning - validate loaded position with feet check
             player_x = max(0, min(player_pos.get("left", 100), SCREEN_WIDTH - 50))
             player_y = max(0, min(player_pos.get("top", 100), SCREEN_HEIGHT - INVENTORY_HEIGHT - 50))
             loaded_pos = pygame.Vector2(player_x, player_y)
-            walkable_pos = active_room.find_nearest_walkable(loaded_pos)
+            walkable_pos = active_room.find_nearest_walkable_spawn(loaded_pos)
             player.sprites()[0].rect.left = int(walkable_pos.x)
             player.sprites()[0].rect.top = int(walkable_pos.y)
             player.sprites()[0].pos = walkable_pos
@@ -270,10 +270,10 @@ def main():
                 transition.start_fade(fade_in=False)
                 active_room = obj.target_room
                 active_room.play()
-                # Validate player target position is walkable
+                # Validate player spawn position - ensure feet will be walkable
                 target_pos = pygame.Vector2(obj.player_target_position)
-                walkable_pos = active_room.find_nearest_walkable(target_pos)
-                daisy.pos = pygame.Vector2(walkable_pos)
+                walkable_spawn = active_room.find_nearest_walkable_spawn(target_pos)
+                daisy.pos = pygame.Vector2(walkable_spawn)
                 daisy.clear_target()
                 transition.start_fade(fade_in=True)
                 # Auto-save on room transition

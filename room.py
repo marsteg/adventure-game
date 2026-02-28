@@ -190,3 +190,50 @@ class Room(pygame.sprite.Sprite):
 
         # If no walkable point found, return original (player won't move)
         return pos
+
+    def find_nearest_walkable_spawn(self, spawn_pos, player_width=50, player_height=75):
+        """Find nearest valid spawn position where player's FEET will be walkable.
+
+        This is specifically for door spawns. It ensures that when a player spawns
+        at the returned position, their feet (spawn + (width/2, height)) will be
+        on a walkable area.
+
+        Args:
+            spawn_pos: Tuple (x, y) desired spawn position (top-left of player)
+            player_width: Width of player sprite (default 50)
+            player_height: Height of player sprite (default 75)
+
+        Returns:
+            Tuple (x, y) of valid spawn position where feet will be walkable
+        """
+        if not self.walkable_mask:
+            return spawn_pos
+
+        # Calculate where feet would be from this spawn
+        feet_x = int(spawn_pos[0] + player_width // 2)
+        feet_y = int(spawn_pos[1] + player_height)
+
+        # If feet are already walkable, use this spawn
+        if self.is_walkable((feet_x, feet_y)):
+            return spawn_pos
+
+        # Otherwise, search for a spawn where feet WILL be walkable
+        import math
+        x, y = int(spawn_pos[0]), int(spawn_pos[1])
+        max_search_radius = 200
+
+        for radius in range(1, max_search_radius, 5):
+            for angle in range(0, 360, 15):
+                check_spawn_x = int(x + radius * math.cos(math.radians(angle)))
+                check_spawn_y = int(y + radius * math.sin(math.radians(angle)))
+
+                # Calculate where feet would be from this spawn
+                check_feet_x = check_spawn_x + player_width // 2
+                check_feet_y = check_spawn_y + player_height
+
+                # Check if feet position is walkable
+                if self.is_walkable((check_feet_x, check_feet_y)):
+                    return (check_spawn_x, check_spawn_y)
+
+        # If no valid spawn found, return original
+        return spawn_pos
