@@ -5,6 +5,7 @@ from constants import (
     SCREEN_WIDTH, SCREEN_HEIGHT, INVENTORY_HEIGHT, FPS, INTERACTION_DISTANCE,
     BACKGROUND_VOLUME, WHITE, YELLOW, GREEN, PURPLE, at_percentage_width, at_percentage_height
 )
+from debug_grid import debug_grid
 from item import Item
 from inventory import Inventory
 from room import Room
@@ -681,6 +682,17 @@ def main():
             if constants.SHOW_WALKABLE_AREA:
                 active_room.draw_walkable_overlay(screen)
 
+            # G key to toggle debug grid
+            if keys[pygame.K_g]:
+                grid_status = debug_grid.toggle()
+                status = "ON" if grid_status else "OFF"
+                print(f"Debug grid: {status}")
+                pygame.time.wait(200)  # Debounce
+
+            # Draw debug grid if enabled
+            if debug_grid.enabled:
+                debug_grid.draw(screen, pygame.mouse.get_pos())
+
             # New save/load menu system (S and L keys)
             if keys[pygame.K_s]:
                 update_playtime()  # Update playtime before entering save menu
@@ -901,6 +913,10 @@ def main():
 
             # Draw transition overlay
             transition.render(screen)
+
+            # Draw debug grid on top of everything (if enabled)
+            if debug_grid.enabled:
+                debug_grid.draw(screen, pygame.mouse.get_pos())
 
         dt = clock.tick(FPS)
         pygame.display.flip()
