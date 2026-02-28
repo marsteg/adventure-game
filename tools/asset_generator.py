@@ -15,6 +15,21 @@ from datetime import datetime
 from typing import Optional, List, Dict
 import base64
 
+# Load environment variables
+try:
+    from dotenv import load_dotenv
+    load_dotenv()
+except ImportError:
+    print("Warning: python-dotenv not installed. Install with: pip install python-dotenv")
+
+# Import Hugging Face SDK
+try:
+    from huggingface_hub import InferenceClient
+    HF_AVAILABLE = True
+except ImportError:
+    print("Warning: huggingface_hub not installed. Install with: pip install huggingface_hub")
+    HF_AVAILABLE = False
+
 try:
     from PIL import Image
     import io
@@ -84,15 +99,34 @@ class AssetGenerator:
         self.usage_file = Path("tools/.usage_tracker.json")
         self.usage = self._load_usage()
 
+        # Initialize Hugging Face client if available
+        self.hf_client = None
+        if HF_AVAILABLE:
+            hf_token = os.getenv('HF_TOKEN')
+            if hf_token and hf_token != 'your-huggingface-token-here':
+                try:
+                    # Initialize with token only - SDK will use correct endpoint
+                    self.hf_client = InferenceClient(token=hf_token)
+                except Exception as e:
+                    print(f"Warning: Failed to initialize Hugging Face client: {e}")
+
     def _load_config(self) -> Dict:
         """Load configuration from YAML file."""
         if not self.config_path.exists():
             print(f"Config file not found at {self.config_path}")
-            print("Please copy config.yaml.example to config.yaml and add your API key.")
+            print("Please copy config.yaml.example to config.yaml and configure it.")
             sys.exit(1)
 
         with open(self.config_path, 'r') as f:
-            return yaml.safe_load(f)
+            config = yaml.safe_load(f)
+
+        # Override with environment variables if present
+        if os.getenv('HF_TOKEN'):
+            config['huggingface_api_key'] = os.getenv('HF_TOKEN')
+        if os.getenv('STABILITY_API_KEY'):
+            config['stability_api_key'] = os.getenv('STABILITY_API_KEY')
+
+        return config
 
     def _load_style_config(self) -> Dict:
         """Load style configuration from YAML file."""
@@ -135,10 +169,20 @@ class AssetGenerator:
         limit = self.config.get('monthly_limit', 25)
         remaining = limit - self.usage["count"]
 
+        provider = self.config.get('provider', 'huggingface').lower()
+
+        # For Hugging Face, show usage tracking but no real limit
+        if provider in ['huggingface', 'hf']:
+            print(f"Images generated this month: {self.usage['count']} (Hugging Face - unlimited)")
+            return True
+
+        # For Stability AI, show actual limits
         print(f"Monthly usage: {self.usage['count']}/{limit} (Remaining: {remaining})")
 
         if self.usage["count"] >= limit:
-            print("⚠️  Monthly limit reached! Wait until next month or upgrade your plan.")
+            print("⚠️  Monthly limit reached!")
+            print("💡 Switch to Hugging Face for unlimited free generation:")
+            print("   Set provider: 'huggingface' in config.yaml")
             return False
         return True
 
@@ -218,12 +262,107 @@ class AssetGenerator:
 
         return positive_prompt.strip(), negative_prompt.strip()
 
-    def generate_image_stability(self, prompt: str, negative_prompt: str, asset_type: str) -> Optional[bytes]:
-        """Generate image using Stability AI API."""
-        api_key = self.config.get('stability_api_key')
+    def generate_image_huggingface(self, prompt: str, negative_prompt: str, asset_type: str,
+                                   width: int = None, height: int = None) -> Optional[bytes]:
+        """Generate image using Hugging Face Inference API (FREE!).
+
+        Args:
+            prompt: Positive prompt
+            negative_prompt: Negative prompt
+            asset_type: Type of asset (for default dimensions)
+            width: Override width (None = use config)
+            height: Override height (None = use config)
+        """
+        if not HF_AVAILABLE:
+            print("Error: huggingface_hub not installed.")
+            print("Install with: pip install huggingface_hub")
+            return None
+
+        if not self.hf_client:
+            hf_token = os.getenv('HF_TOKEN')
+            if not hf_token or hf_token == 'your-huggingface-token-here':
+                print("Error: Please set HF_TOKEN in .env file")
+                print("Get a FREE token at: https://huggingface.co/settings/tokens")
+                print("Then add it to .env file: HF_TOKEN=hf_your_token")
+                return None
+
+            try:
+                self.hf_client = InferenceClient(token=hf_token)
+            except Exception as e:
+                print(f"Error initializing Hugging Face client: {e}")
+                return None
+
+        model = self.config.get('huggingface_model', 'black-forest-labs/FLUX.1-schnell')
+
+        print(f"Generating with style: {self.style_config.get('master_style', {}).get('art_style', 'default')}")
+        print(f"Provider: Hugging Face (FREE, unlimited)")
+        print(f"Model: {model.split('/')[-1]}")
+
+        # FLUX models work better with negative prompts integrated into the main prompt
+        if 'flux' in model.lower():
+            # Build comprehensive prompt with style and negative keywords
+            art_style = self.style_config.get('master_style', {}).get('art_style', '')
+            full_prompt = f"{prompt}"
+            if art_style:
+                full_prompt += f". Style: {art_style}"
+            if negative_prompt:
+                # Take first 100 chars of negative prompt to keep it concise
+                full_prompt += f". Avoid: {negative_prompt[:100]}"
+
+            print(f"Prompt: {full_prompt[:150]}...")
+        else:
+            full_prompt = prompt
+            print(f"Prompt: {prompt[:100]}..." if len(prompt) > 100 else f"Prompt: {prompt}")
+            print(f"Negative: {negative_prompt[:80]}..." if len(negative_prompt) > 80 else f"Negative: {negative_prompt}")
+
+        print("Please wait (may take 20-60 seconds for free tier)...")
+
+        try:
+            # Get dimensions: use override if provided, otherwise config default
+            if width is None or height is None:
+                dimensions = self.config.get('dimensions', {}).get(asset_type, [1024, 1024])
+                width = width or dimensions[0]
+                height = height or dimensions[1]
+
+            print(f"Size: {width}x{height}")
+
+            # Generate image using SDK
+            image = self.hf_client.text_to_image(
+                prompt=full_prompt,
+                model=model,
+                width=width,
+                height=height,
+            )
+
+            # Convert PIL Image to bytes
+            img_byte_arr = io.BytesIO()
+            image.save(img_byte_arr, format='PNG')
+            img_bytes = img_byte_arr.getvalue()
+
+            print("✓ Image generated successfully!")
+            self._increment_usage()
+            return img_bytes
+
+        except Exception as e:
+            print(f"Error generating image: {e}")
+            return None
+
+    def generate_image_stability(self, prompt: str, negative_prompt: str, asset_type: str,
+                                width: int = None, height: int = None) -> Optional[bytes]:
+        """Generate image using Stability AI API (LIMITED FREE TIER).
+
+        Args:
+            prompt: Positive prompt
+            negative_prompt: Negative prompt
+            asset_type: Type of asset (for default dimensions)
+            width: Override width (None = use config)
+            height: Override height (None = use config)
+        """
+        api_key = os.getenv('STABILITY_API_KEY') or self.config.get('stability_api_key')
         if not api_key or api_key == 'your-api-key-here':
-            print("Error: Please set your Stability AI API key in config.yaml")
+            print("Error: Please set STABILITY_API_KEY in .env file")
             print("Get a free API key at: https://platform.stability.ai/")
+            print("Note: Free tier only gives ~3 images. Consider using Hugging Face instead!")
             return None
 
         # Use Stable Diffusion 3.5 Large (free tier compatible)
@@ -234,15 +373,31 @@ class AssetGenerator:
             "accept": "image/*"
         }
 
+        # Get dimensions: use override if provided, otherwise config default
+        if width is None or height is None:
+            dimensions = self.config.get('dimensions', {}).get(asset_type, [1024, 1024])
+            width = width or dimensions[0]
+            height = height or dimensions[1]
+
+        # Calculate aspect ratio for Stability AI (they use aspect_ratio, not exact dimensions)
+        if width == height:
+            aspect_ratio = "1:1"
+        elif width > height:
+            aspect_ratio = "16:9" if width / height > 1.5 else "4:3"
+        else:
+            aspect_ratio = "9:16" if height / width > 1.5 else "3:4"
+
         data = {
             "prompt": prompt,
             "negative_prompt": negative_prompt,
-            "aspect_ratio": "1:1",
+            "aspect_ratio": aspect_ratio,
             "output_format": "png",
             "mode": "text-to-image"
         }
 
         print(f"Generating with style: {self.style_config.get('master_style', {}).get('art_style', 'default')}")
+        print(f"Provider: Stability AI (Limited free tier)")
+        print(f"Size: ~{width}x{height} (aspect ratio: {aspect_ratio})")
         print(f"Prompt: {prompt[:100]}..." if len(prompt) > 100 else f"Prompt: {prompt}")
         print(f"Negative: {negative_prompt[:80]}..." if len(negative_prompt) > 80 else f"Negative: {negative_prompt}")
         print("Please wait...")
@@ -261,6 +416,28 @@ class AssetGenerator:
 
         except Exception as e:
             print(f"Error generating image: {e}")
+            return None
+
+    def generate_image(self, prompt: str, negative_prompt: str, asset_type: str,
+                      width: int = None, height: int = None) -> Optional[bytes]:
+        """Generate image using configured provider.
+
+        Args:
+            prompt: Positive prompt
+            negative_prompt: Negative prompt
+            asset_type: Type of asset (for default dimensions)
+            width: Override width (None = use config)
+            height: Override height (None = use config)
+        """
+        provider = self.config.get('provider', 'huggingface').lower()
+
+        if provider == 'huggingface' or provider == 'hf':
+            return self.generate_image_huggingface(prompt, negative_prompt, asset_type, width, height)
+        elif provider == 'stability' or provider == 'stabilityai':
+            return self.generate_image_stability(prompt, negative_prompt, asset_type, width, height)
+        else:
+            print(f"Unknown provider: {provider}")
+            print("Valid providers: 'huggingface' (default, free) or 'stability'")
             return None
 
     def remove_background(self, image_data: bytes) -> Optional[bytes]:
@@ -309,22 +486,33 @@ class AssetGenerator:
         return filepath
 
     def generate_asset(self, asset_type: str, description: str, name: str,
-                      remove_bg: bool = None) -> Optional[Path]:
-        """Generate a single asset."""
+                      remove_bg: bool = None, width: int = None, height: int = None) -> Optional[Path]:
+        """Generate a single asset.
+
+        Args:
+            asset_type: Type of asset (npc, room, item, door)
+            description: Text description of the asset
+            name: Filename for the asset
+            remove_bg: Override background removal setting (None = use config)
+            width: Override width (None = use config default)
+            height: Override height (None = use config default)
+        """
         if not self.check_usage_limit():
             return None
 
         # Build prompt with style configuration
         positive_prompt, negative_prompt = self.build_prompt(asset_type, description)
 
-        # Generate image
-        image_data = self.generate_image_stability(positive_prompt, negative_prompt, asset_type)
+        # Generate image with optional size override
+        image_data = self.generate_image(positive_prompt, negative_prompt, asset_type, width, height)
         if not image_data:
             return None
 
-        # Remove background for NPCs and items (unless disabled)
+        # Remove background based on config (unless explicitly overridden)
         if remove_bg is None:
-            remove_bg = asset_type in ['npc', 'item']
+            # Check config for this asset type
+            bg_config = self.config.get('remove_background', {})
+            remove_bg = bg_config.get(asset_type, asset_type in ['npc', 'item'])
 
         if remove_bg:
             image_data = self.remove_background(image_data)
@@ -418,6 +606,20 @@ class AssetGenerator:
             if not name:
                 name = description.split()[0]
 
+            # Get default dimensions from config
+            default_dimensions = self.config.get('dimensions', {}).get(asset_type, [1024, 1024])
+            default_width, default_height = default_dimensions
+
+            # Ask for dimensions with default
+            size_input = input(f"Size in pixels [WIDTHxHEIGHT] (default={default_width}x{default_height}, press Enter to use default): ").strip()
+            width, height = None, None
+            if size_input:
+                try:
+                    width, height = map(int, size_input.lower().split('x'))
+                    print(f"Using custom size: {width}x{height}")
+                except ValueError:
+                    print(f"Invalid format. Using default: {default_width}x{default_height}")
+
             # Ask about background removal for rooms/doors
             remove_bg = None
             if asset_type in ['room', 'door']:
@@ -425,7 +627,7 @@ class AssetGenerator:
                 remove_bg = bg_choice == 'y'
 
             print(f"\nGenerating {asset_type}...")
-            self.generate_asset(asset_type, description, name, remove_bg)
+            self.generate_asset(asset_type, description, name, remove_bg, width, height)
 
             another = input("\nGenerate another asset? (y/n): ").strip().lower()
             if another != 'y':
@@ -442,13 +644,13 @@ Examples:
   # Generate an NPC
   python tools/asset_generator.py npc "elderly professor with glasses" professor
 
-  # Generate a room
-  python tools/asset_generator.py room "ancient library with mystical books" library_ancient
+  # Generate a room with custom size
+  python tools/asset_generator.py room "ancient library" library --width 1920 --height 1080
 
   # Generate an item
   python tools/asset_generator.py item "golden key with ornate design" key_ornate
 
-  # Interactive mode
+  # Interactive mode (asks for size)
   python tools/asset_generator.py --interactive
 
   # List templates
@@ -464,6 +666,8 @@ Examples:
                        help='Run in interactive mode')
     parser.add_argument('--no-bg-removal', action='store_true',
                        help='Disable background removal')
+    parser.add_argument('--width', type=int, help='Image width in pixels (overrides config)')
+    parser.add_argument('--height', type=int, help='Image height in pixels (overrides config)')
     parser.add_argument('--list-templates', action='store_true',
                        help='List available templates')
     parser.add_argument('--check-usage', action='store_true',
@@ -492,7 +696,7 @@ Examples:
     name = args.name or args.description.split()[0]
     remove_bg = None if not args.no_bg_removal else False
 
-    generator.generate_asset(args.asset_type, args.description, name, remove_bg)
+    generator.generate_asset(args.asset_type, args.description, name, remove_bg, args.width, args.height)
 
 
 if __name__ == "__main__":

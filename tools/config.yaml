@@ -1,19 +1,19 @@
-# Stability AI API Configuration
-# Get your free API key at: https://platform.stability.ai/
+# Image Generation Provider Configuration
+provider: "huggingface"
 
-stability_api_key: "your-api-key-here"
+# Hugging Face Model (FLUX is fast and high quality)
+huggingface_model: "black-forest-labs/FLUX.1-schnell"
 
-# Monthly generation limit (free tier = 25)
-monthly_limit: 25
+# Image dimensions per asset type
+dimensions:
+  npc: [1024, 1024]      # for characters
+  item: [1024, 1024]     # for items
+  door: [1024, 1024]       # for doors (adjust if needed)
+  room: [1920, 1080]     # for rooms (could use [1920, 1080] for widescreen backgrounds)
 
-# Model settings
-model: "sd3"  # Stable Diffusion 3.5 Large
-
-# Default settings
-defaults:
-  aspect_ratio: "1:1"
-  output_format: "png"
-  remove_background_npcs: true
-  remove_background_items: true
-  remove_background_rooms: false
-  remove_background_doors: false
+# Background removal per asset type
+remove_background:
+  npc: true              # Remove background for NPCs
+  item: true             # Remove background for items
+  door: false            # Keep background for doors
+  room: false            # Keep background for rooms

@@ -1,18 +1,20 @@
 # Asset Generator Tool
 
-AI-powered asset generation tool for the Point & Click Adventure Game Engine. Generate NPCs, rooms, items, and doors using Stability AI's free tier.
+AI-powered asset generation tool for the Point & Click Adventure Game Engine. Generate NPCs, rooms, items, and doors using Hugging Face's free unlimited API with consistent, customizable art styles.
 
 ## Features
 
-✅ **Free AI Image Generation** - Uses Stability AI free tier (25 images/month)
-✅ **Asset Type Templates** - Pre-configured prompts for NPCs, rooms, items, doors
-✅ **Automatic Background Removal** - Removes backgrounds for NPCs and items
-✅ **Style Consistency** - Maintains your game's art style
-✅ **Usage Tracking** - Tracks monthly API usage
-✅ **Interactive Mode** - Easy-to-use CLI interface
-✅ **Batch Generation** - Generate multiple assets quickly
+✅ **FREE Unlimited AI Image Generation** - Uses Hugging Face FLUX.1-schnell model (no credit limits!)
+✅ **Centralized Style Control** - Define your game's art style once in `style_config.yaml`
+✅ **Negative Prompts** - Exclude unwanted styles (3D, photorealistic, CGI, etc.)
+✅ **Configurable Dimensions** - Set default sizes per asset type, override per-generation
+✅ **Automatic Background Removal** - Transparent backgrounds for NPCs and items
+✅ **Interactive & CLI Modes** - Easy-to-use interface or scriptable commands
+✅ **Multiple Providers** - Switch between Hugging Face (free) and Stability AI (limited)
 
-## Installation
+---
+
+## Quick Start
 
 ### 1. Install Dependencies
 
@@ -20,77 +22,315 @@ AI-powered asset generation tool for the Point & Click Adventure Game Engine. Ge
 pip install -r tools/requirements.txt
 ```
 
-**Dependencies:**
-- `requests` - API communication
-- `PyYAML` - Configuration files
-- `Pillow` - Image processing
-- `rembg` - Background removal (optional but recommended)
+**Key dependencies:** `huggingface_hub`, `python-dotenv`, `Pillow`, `PyYAML`, `rembg` (for background removal)
 
-### 2. Get Your Free API Key
+### 2. Get Free API Token
 
-1. Go to [Stability AI Platform](https://platform.stability.ai/)
-2. Sign up for a free account
-3. Navigate to API Keys section
-4. Generate a new API key
-5. Free tier includes **25 image generations per month**
+Visit: **https://huggingface.co/settings/tokens**
 
-### 3. Configure the Tool
+1. Sign up (no credit card required!)
+2. Click "New token" → Select "Read" access
+3. Copy your token (starts with `hf_...`)
+
+### 3. Configure API
 
 ```bash
-# Copy the example config
-cp tools/config.yaml.example tools/config.yaml
-
-# Edit config.yaml and add your API key
-# Replace 'your-api-key-here' with your actual API key
+# Create .env file
+cp .env.example .env
+nano .env
 ```
 
-## Usage
+Add your token:
+```
+HF_TOKEN=hf_your_token_here
+```
 
-### Quick Start - Interactive Mode
+### 4. Configure Your Game Settings
 
-The easiest way to generate assets:
+```bash
+# Copy config template
+cp tools/config.yaml.example tools/config.yaml
+
+# Copy style template
+cp tools/style_config.yaml.example tools/style_config.yaml
+```
+
+### 5. Start Generating!
 
 ```bash
 python tools/asset_generator.py --interactive
 ```
 
-This will guide you through generating assets step-by-step.
+---
 
-### Command Line Usage
+## API Configuration
 
-#### Generate an NPC
+API configuration is managed through **two files**: `.env` (secrets) and `config.yaml` (settings).
 
-```bash
-python tools/asset_generator.py npc "friendly shopkeeper with apron" shopkeeper
-```
-
-#### Generate a Room
+### `.env` - API Keys (Not tracked in git)
 
 ```bash
-python tools/asset_generator.py room "dark mysterious library with ancient books" library_dark
+# Hugging Face Token (FREE, unlimited)
+HF_TOKEN=hf_your_token_here
+
+# Stability AI Key (optional, only if using stability provider)
+STABILITY_API_KEY=your_stability_key
 ```
 
-#### Generate an Item
+**Security:** The `.env` file is excluded from git to keep your API keys private.
+
+### `config.yaml` - Provider & Generation Settings
+
+```yaml
+# Provider selection
+provider: "huggingface"  # or "stability"
+
+# Model selection (for Hugging Face)
+huggingface_model: "black-forest-labs/FLUX.1-schnell"
+
+# Image dimensions per asset type [width, height]
+dimensions:
+  npc: [1024, 1024]      # Square for characters
+  item: [1024, 1024]     # Square for items
+  door: [512, 768]       # Portrait for doors
+  room: [1024, 1024]     # Square (or [1920, 1080] for widescreen)
+
+# Background removal per asset type
+remove_background:
+  npc: true              # Remove background for NPCs (transparent)
+  item: true             # Remove background for items (transparent)
+  door: false            # Keep background for doors
+  room: false            # Keep background for rooms
+```
+
+**Override dimensions per-call:**
+```bash
+# Command-line
+python tools/asset_generator.py room "library" library --width 1920 --height 1080
+
+# Interactive mode - you'll be prompted for size
+python tools/asset_generator.py --interactive
+```
+
+### Provider Comparison
+
+| Feature | Hugging Face (Default) | Stability AI |
+|---------|----------------------|--------------|
+| **Cost** | FREE | FREE |
+| **Limits** | Unlimited* | ~3 images/month |
+| **Model** | FLUX.1-schnell | Stable Diffusion 3.5 |
+| **Speed** | 20-60 sec | 5-15 sec |
+| **Credit Card** | Not required | Not required |
+| **Best For** | Everything! | Quick tests only |
+
+*Rate limited but very generous for personal use
+
+**To switch providers:** Edit `config.yaml` and set `provider: "stability"` (requires `STABILITY_API_KEY` in `.env`)
+
+---
+
+## Style Configuration
+
+Your game's visual style is controlled by **`tools/style_config.yaml`**. This is the most important configuration for consistent, high-quality assets.
+
+### Master Style - Applied to ALL Assets
+
+```yaml
+master_style:
+  art_style: "2D cartoon illustration, hand-drawn style, flat colors, cel-shaded"
+  detail_level: "simple, clean lines, not photorealistic, not 3D rendered"
+  color_style: "vibrant colors, bold outlines, adventure game aesthetic"
+  negative_keywords: "3D render, photorealistic, realistic, cinema4d, unreal engine, 3D animated, CGI, octane render, ray tracing, volumetric lighting, depth of field, Pixar style, Disney 3D"
+  additional: "similar to classic point-and-click adventure games like Monkey Island or Day of the Tentacle"
+```
+
+**Key fields:**
+- **`art_style`** - Define your desired visual style (e.g., "2D cartoon", "pixel art", "watercolor")
+- **`negative_keywords`** - **MOST IMPORTANT!** Tells AI what to avoid (e.g., "3D render, CGI, photorealistic")
+- **`color_style`** - Color palette guidance (e.g., "vibrant", "muted", "dark and moody")
+- **`additional`** - Reference games/artists for style consistency
+
+### Asset-Specific Overrides
+
+Fine-tune each asset type while keeping the master style:
+
+```yaml
+npcs:
+  style: "full body character sprite, front view, standing pose, 2D game character"
+  negative: "side view, multiple poses, action pose, dynamic pose, 3D model"
+  additional: "simple character design, clear silhouette, flat shading"
+
+rooms:
+  style: "interior background scene, wide angle view, 2D game background art"
+  negative: "character in scene, portrait orientation, close-up, 3D environment"
+  additional: "atmospheric, detailed environment, clear depth, painted background"
+
+items:
+  style: "2D game item icon, single object, centered, clear and recognizable"
+  negative: "multiple objects, scene, background elements, text, UI elements, 3D object"
+  additional: "inventory item style, easily identifiable, flat icon"
+
+doors:
+  style: "front-facing door, architectural element, straight-on view, 2D sprite"
+  negative: "perspective view, open door, angled view, 3D model"
+  additional: "clear and centered, game asset style, flat rendering"
+```
+
+### Quality Boosters & Universal Negatives
+
+```yaml
+enhancement:
+  style_weight: 0.9
+  quality_boosters:
+    - "high quality"
+    - "clean artwork"
+    - "professional game art"
+    - "2D illustration"
+  universal_negatives:
+    - "blurry"
+    - "low quality"
+    - "distorted"
+    - "watermark"
+    - "signature"
+    - "text"
+    - "amateur"
+    - "photograph"
+```
+
+### Why Negative Keywords Matter
+
+**Problem:** AI models default to popular styles (3D renders, photorealistic) unless explicitly told not to.
+
+**Solution:** Strong negative keywords force the AI to avoid unwanted styles.
+
+**Example - Before:**
+```yaml
+# Weak negative keywords
+negative_keywords: "3D, realistic"
+```
+Result: Still getting 3D-looking zombies!
+
+**Example - After:**
+```yaml
+# Strong negative keywords
+negative_keywords: "3D render, photorealistic, realistic, cinema4d, unreal engine, 3D animated, CGI, octane render, ray tracing, volumetric lighting, depth of field, Pixar style, Disney 3D"
+```
+Result: Perfect 2D cartoon zombies! ✅
+
+### Common Style Presets
+
+#### 2D Cartoon (Current Default)
+```yaml
+art_style: "2D cartoon illustration, hand-drawn style, flat colors, cel-shaded"
+negative_keywords: "3D render, photorealistic, CGI, Pixar, Disney 3D"
+additional: "similar to Monkey Island, Day of the Tentacle"
+```
+
+#### Pixel Art
+```yaml
+art_style: "pixel art, 16-bit style, retro game sprites"
+negative_keywords: "smooth, anti-aliased, high resolution, 3D, realistic"
+additional: "similar to classic SNES games"
+```
+
+#### Watercolor
+```yaml
+art_style: "watercolor painting, soft brushstrokes, painted"
+negative_keywords: "digital, 3D, photorealistic, vector art"
+additional: "hand-painted watercolor illustration"
+```
+
+#### Comic Book
+```yaml
+art_style: "comic book illustration, ink and color, bold linework"
+negative_keywords: "3D render, photograph, realistic lighting"
+additional: "similar to graphic novels and comics"
+```
+
+### Testing Your Style
+
+1. **Generate a test asset:**
+   ```bash
+   python3 tools/asset_generator.py npc "test character" test
+   ```
+
+2. **Check the result:**
+   - Is it the right art style?
+   - Is it 2D or 3D?
+   - Does it match your existing assets?
+
+3. **Adjust if needed:**
+   - Edit `style_config.yaml`
+   - Add more negative keywords if seeing unwanted styles
+   - Strengthen positive descriptions
+   - Reference specific games or artists
+
+4. **Regenerate:**
+   - Delete the test asset
+   - Generate again with updated config
+
+### Troubleshooting Style Issues
+
+**Issue: "Still getting 3D-looking results"**
+- ✅ Add more 3D-related terms to `negative_keywords`
+- ✅ Make `art_style` description stronger (e.g., "NOT 3D, NOT photorealistic")
+- ✅ Reference 2D games in `additional` field
+
+**Issue: "Results vary too much"**
+- ✅ Be very specific in style descriptions
+- ✅ Use reference games/artists
+- ✅ Generate multiple versions and pick the best
+
+**Issue: "Colors are wrong"**
+- ✅ Add color guidance to `color_style`:
+  ```yaml
+  color_style: "vibrant colors, saturated, bold color palette"
+  # OR
+  color_style: "muted colors, pastel tones, soft palette"
+  ```
+
+**For detailed style guide:** See [STYLE_CONFIG_GUIDE.md](../STYLE_CONFIG_GUIDE.md)
+
+---
+
+## Usage
+
+### Interactive Mode (Recommended)
 
 ```bash
-python tools/asset_generator.py item "golden ornate key with ruby" key_ornate
+python tools/asset_generator.py --interactive
 ```
 
-#### Generate a Door
+Prompts you for:
+- Asset type
+- Description
+- Filename
+- Image size (shows default, press Enter to accept)
+- Background removal (for rooms/doors)
 
+### Command Line
+
+**Basic usage:**
 ```bash
-python tools/asset_generator.py door "heavy wooden door with iron lock" door_castle
+python tools/asset_generator.py <type> "<description>" <name>
 ```
 
-### Advanced Options
-
-#### Disable Background Removal
-
+**Examples:**
 ```bash
-python tools/asset_generator.py npc "wizard character" wizard --no-bg-removal
+# NPC with default size (1024x1024)
+python tools/asset_generator.py npc "elderly wizard" wizard
+
+# Room with custom widescreen size
+python tools/asset_generator.py room "ancient library" library --width 1920 --height 1080
+
+# Item without background removal
+python tools/asset_generator.py item "golden key" key --no-bg-removal
+
+# Door with custom portrait size
+python tools/asset_generator.py door "wooden door" door --width 512 --height 768
 ```
 
-#### Check Usage
+### Check Usage Stats
 
 ```bash
 python tools/asset_generator.py --check-usage
@@ -98,308 +338,186 @@ python tools/asset_generator.py --check-usage
 
 Output:
 ```
-Monthly usage: 5/25 (Remaining: 20)
+Images generated this month: 15 (Hugging Face - unlimited)
 ```
 
-#### List Available Templates
+### List Example Templates
 
 ```bash
 python tools/asset_generator.py --list-templates
 ```
 
+Shows example descriptions for NPCs, rooms, items, and doors.
+
+---
+
 ## Asset Types
 
 ### NPCs (Non-Player Characters)
+- **Default Size:** 1024x1024 (square)
+- **Background:** Removed (transparent PNG)
+- **Style:** Full-body character sprite, front view
+- **Location:** `assets/npcs/`
 
-- **Style**: Full-body character illustrations, cartoon style
-- **Background**: Automatically removed (transparent)
-- **Size**: 1024x1024 PNG
-- **Location**: `assets/npcs/`
-
-**Examples:**
 ```bash
-python tools/asset_generator.py npc "elderly professor with glasses and lab coat" professor
+python tools/asset_generator.py npc "friendly shopkeeper with apron" shopkeeper
 python tools/asset_generator.py npc "medieval guard in armor" guard
-python tools/asset_generator.py npc "friendly tavern keeper" tavern_keeper
 ```
 
 ### Rooms (Backgrounds)
+- **Default Size:** 1024x1024 (configurable to 1920x1080)
+- **Background:** Kept (full scene)
+- **Style:** Interior scene, wide angle, atmospheric
+- **Location:** `assets/rooms/`
 
-- **Style**: Detailed interior backgrounds, atmospheric
-- **Background**: Kept (full scene)
-- **Size**: 1024x1024 PNG
-- **Location**: `assets/rooms/`
-
-**Examples:**
 ```bash
-python tools/asset_generator.py room "grand castle throne room with red carpet" throne_room
-python tools/asset_generator.py room "cozy cottage interior with fireplace" cottage
-python tools/asset_generator.py room "mysterious cave with glowing crystals" crystal_cave
+python tools/asset_generator.py room "cozy tavern with fireplace" tavern
+python tools/asset_generator.py room "dark dungeon corridor" dungeon --width 1920 --height 1080
 ```
 
 ### Items (Objects)
+- **Default Size:** 1024x1024 (square)
+- **Background:** Removed (transparent PNG)
+- **Style:** Single object, centered, icon-style
+- **Location:** `assets/items/`
 
-- **Style**: Clear icon-style illustrations, single object
-- **Background**: Automatically removed (transparent)
-- **Size**: 1024x1024 PNG
-- **Location**: `assets/items/`
-
-**Examples:**
 ```bash
-python tools/asset_generator.py item "ancient scroll with red seal" scroll_ancient
-python tools/asset_generator.py item "blue glowing magical potion" potion_magic
-python tools/asset_generator.py item "rusty old key" key_rusty
+python tools/asset_generator.py item "red potion bottle" potion_red
+python tools/asset_generator.py item "ancient scroll" scroll
 ```
 
 ### Doors
+- **Default Size:** 512x768 (portrait)
+- **Background:** Kept by default
+- **Style:** Front-facing, architectural element
+- **Location:** `assets/doors/`
 
-- **Style**: Front-facing door illustrations
-- **Background**: Usually kept, can be removed
-- **Size**: 1024x1024 PNG
-- **Location**: `assets/doors/`
-
-**Examples:**
 ```bash
-python tools/asset_generator.py door "ornate wooden door with brass handle" door_ornate
-python tools/asset_generator.py door "metal dungeon door with bars" door_dungeon
+python tools/asset_generator.py door "ornate wooden door" door_ornate
+python tools/asset_generator.py door "metal dungeon door" door_dungeon
 ```
 
-## Prompt Templates
-
-The tool includes pre-configured templates for common asset types. Each template has:
-- **Style guide** - Consistent art direction
-- **Templates** - Common asset variations
-- **Negative prompts** - What to avoid
-
-Templates are located in `tools/prompts/`:
-- `npc_prompts.yaml` - Character templates
-- `room_prompts.yaml` - Room/background templates
-- `item_prompts.yaml` - Item/object templates
-- `door_prompts.yaml` - Door templates
-
-You can edit these files to customize the style for your game!
+---
 
 ## Tips for Best Results
 
 ### Writing Good Prompts
 
 ✅ **Do:**
-- Be specific about what you want
-- Include style keywords (e.g., "cartoon", "detailed", "ornate")
-- Describe key features (e.g., "with glasses", "wearing armor")
-- Keep it concise but descriptive
+- Be specific about appearance and style
+- Include key features ("with glasses", "wearing armor", "glowing")
+- Describe mood or atmosphere for rooms
+- Keep items simple (single object)
 
 ❌ **Don't:**
-- Use vague descriptions (e.g., "a person")
-- Include multiple objects in item prompts
-- Ask for text or words in the image
-- Request complex scenes for items
+- Use vague descriptions ("a person", "a room")
+- Request text or words in images
+- Include multiple objects for items
+- Ask for specific camera angles (let style config handle it)
 
-### Examples of Good Prompts
+### Example Prompts
 
 **NPCs:**
-- "friendly elderly wizard with long white beard and purple robes"
-- "young shopkeeper with brown apron and welcoming smile"
-- "mysterious hooded figure in dark cloak"
+- ✅ "friendly elderly wizard with long white beard and purple robes"
+- ✅ "young shopkeeper with brown apron and welcoming smile"
+- ❌ "a wizard" (too vague)
 
 **Rooms:**
-- "ancient library with tall bookshelves and candlelight"
-- "royal bedroom with four-poster bed and red curtains"
-- "dungeon corridor with stone walls and torches"
+- ✅ "ancient library with tall bookshelves, candlelight, and mystical atmosphere"
+- ✅ "cozy cottage interior with fireplace, wooden furniture, and warm lighting"
+- ❌ "a room with books" (too vague)
 
 **Items:**
-- "ornate silver key with emerald gem in handle"
-- "red potion bottle with glowing liquid"
-- "leather-bound book with golden clasp"
+- ✅ "ornate silver key with emerald gem in the handle"
+- ✅ "red potion bottle with glowing magical liquid"
+- ❌ "a key and a potion" (multiple objects)
 
-### Style Consistency
-
-The tool automatically adds style guidelines based on your existing assets. The prompts are configured to match the cartoon/illustrated style seen in your game.
-
-If generated assets don't match your style:
-1. Check the `style_guide` in prompt templates
-2. Adjust the style descriptions
-3. Add more specific style keywords
-
-## Usage Limits & Costs
-
-### Free Tier (Stability AI)
-
-- **Cost**: FREE
-- **Limit**: 25 images per month
-- **Quality**: High quality, 1024x1024
-- **Commercial use**: Allowed
-
-### Tracking Usage
-
-The tool automatically tracks your usage in `tools/.usage_tracker.json`:
-
-```json
-{
-  "month": "2026-02",
-  "count": 5
-}
-```
-
-This resets automatically each month.
-
-### If You Hit the Limit
-
-Options:
-1. **Wait until next month** (free tier resets monthly)
-2. **Upgrade to paid plan** (Stability AI offers paid tiers)
-3. **Use alternative service** (e.g., Replicate, Hugging Face)
+---
 
 ## Troubleshooting
 
-### "PIL not available"
+### "ModuleNotFoundError: No module named 'huggingface_hub'"
 
 ```bash
-pip install Pillow
+pip install huggingface_hub python-dotenv
 ```
 
-### "rembg not available"
+### "Error: Please set HF_TOKEN in .env file"
 
-Background removal won't work without this:
-
-```bash
-pip install rembg
-```
-
-### "Config file not found"
-
-Make sure you've created `tools/config.yaml`:
-
-```bash
-cp tools/config.yaml.example tools/config.yaml
-```
-
-### "Please set your Stability AI API key"
-
-Edit `tools/config.yaml` and replace `your-api-key-here` with your actual API key.
-
-### Generated Image Doesn't Match Style
-
-1. Edit the prompt templates in `tools/prompts/`
-2. Adjust the `style_guide` field
-3. Add more specific style keywords to match your game
+1. Create `.env` file: `cp .env.example .env`
+2. Get token at: https://huggingface.co/settings/tokens
+3. Add to `.env`: `HF_TOKEN=hf_your_token_here`
 
 ### "NumPy 2.x detected" Error
 
-If you see this error, the tool detected NumPy 2.x which is incompatible with the background removal library (rembg/onnxruntime).
+Background removal requires NumPy 1.x:
 
-**Quick Fix:**
 ```bash
 pip install 'numpy<2'
 pip install rembg
 ```
 
-Or run the setup script which handles this automatically:
-```bash
-./setup_asset_generator.sh
-```
+### Generated Assets Don't Match Style
 
-**Why this happens:**
-The `onnxruntime` library (used by rembg for AI-powered background removal) hasn't been updated for NumPy 2.x yet and will cause crashes.
+1. Check `tools/style_config.yaml`
+2. Strengthen `negative_keywords` (exclude 3D, CGI, photorealistic)
+3. Be more specific in `art_style`
+4. Add reference games in `additional`
+5. See [STYLE_CONFIG_GUIDE.md](../STYLE_CONFIG_GUIDE.md) for detailed guide
 
-### Background Not Removed
+### Background Removal Not Working
 
-If background removal doesn't work:
+1. Check NumPy version: `pip install 'numpy<2'`
+2. Install rembg: `pip install rembg`
+3. Note: Rooms and doors have background removal disabled by default
+4. Use `--no-bg-removal` to skip for any asset type
 
-1. Make sure you have NumPy 1.x installed (see above)
-2. Check if `rembg` is installed: `pip install rembg`
-3. For rooms/doors, background removal is disabled by default (you want the background!)
-4. Use `--no-bg-removal` flag to skip background removal for any asset type
-
-**Note:** Background removal is automatic for NPCs and items, but optional for rooms and doors.
+---
 
 ## File Structure
 
 ```
 tools/
 ├── asset_generator.py          # Main script
-├── config.yaml                 # Your API configuration (create this!)
-├── config.yaml.example         # Template configuration
-├── requirements.txt            # Python dependencies
-├── .usage_tracker.json         # Usage tracking (auto-generated)
-├── prompts/
-│   ├── npc_prompts.yaml       # NPC templates
-│   ├── room_prompts.yaml      # Room templates
-│   ├── item_prompts.yaml      # Item templates
-│   └── door_prompts.yaml      # Door templates
+├── config.yaml                 # Your settings (create from .example)
+├── config.yaml.example         # Template
+├── style_config.yaml           # Your style config (create from .example)
+├── style_config.yaml.example   # Template
+├── requirements.txt            # Dependencies
+├── .usage_tracker.json         # Auto-generated usage tracking
 └── README.md                   # This file
+
+.env                            # Your API keys (create from .example)
+.env.example                    # Template
 ```
 
-## Examples Gallery
-
-### NPCs Generated
-- `janitor.png` - Friendly janitor with mop
-- `wizard.png` - Magical wizard character
-- `librarian.png` - Scholarly librarian
-- `villager_male.png` - Common villager
-
-### Rooms Generated
-- `Library.png` - Dark mysterious library
-- `MainHall.png` - Grand entrance hall
-- `StorageRoom.png` - Storage area
-
-### Items Generated
-- `key_gold.png` - Golden ornate key
-- `potion_blue.png` - Blue magical potion
-- `ancient_scroll.png` - Old parchment scroll
+---
 
 ## Advanced: Batch Generation
 
-Want to generate multiple variations? Create a script:
+Generate multiple variations:
 
 ```bash
 #!/bin/bash
-# generate_npcs.sh
+# batch_generate.sh
 
-python tools/asset_generator.py npc "friendly merchant" merchant_1
-python tools/asset_generator.py npc "friendly merchant" merchant_2
-python tools/asset_generator.py npc "friendly merchant" merchant_3
+# Generate 3 zombie variations
+python tools/asset_generator.py npc "zombie school kid" zombie_1
+python tools/asset_generator.py npc "zombie in suit" zombie_2
+python tools/asset_generator.py npc "zombie chef" zombie_3
+
+# Generate room variations
+python tools/asset_generator.py room "dark library" library_dark
+python tools/asset_generator.py room "bright library" library_bright
 ```
 
-## API Reference
+---
 
-### Stability AI Endpoints
+## Related Documentation
 
-The tool uses Stability AI's v2beta API:
-- Endpoint: `https://api.stability.ai/v2beta/stable-image/generate/sd3`
-- Model: Stable Diffusion 3.5 Large
-- Format: PNG, 1024x1024, aspect ratio 1:1
-
-### Configuration Options
-
-Edit `tools/config.yaml`:
-
-```yaml
-stability_api_key: "your-key"
-monthly_limit: 25
-model: "sd3"
-defaults:
-  aspect_ratio: "1:1"
-  output_format: "png"
-  remove_background_npcs: true
-  remove_background_items: true
-  remove_background_rooms: false
-  remove_background_doors: false
-```
-
-## Contributing
-
-Found a bug or want to improve the tool? Contributions welcome!
-
-## License
-
-This tool is part of the Point & Click Adventure Game Engine project.
-
-## Support
-
-- **Stability AI Docs**: https://platform.stability.ai/docs
-- **Get API Key**: https://platform.stability.ai/account/keys
-- **Game Engine Docs**: See main README.md
+- **[STYLE_CONFIG_GUIDE.md](../STYLE_CONFIG_GUIDE.md)** - Comprehensive style configuration guide
+- **[QUICKSTART.md](../QUICKSTART.md)** - Quick setup instructions
+- **[FREE_ALTERNATIVES.md](../FREE_ALTERNATIVES.md)** - Provider comparison
 
 ---
 

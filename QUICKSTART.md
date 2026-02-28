@@ -13,14 +13,21 @@ The tool now checks for NumPy compatibility and guides you to fix it if needed.
    ```
 
 ### 2. **Get Free API Key**
-   - Go to: https://platform.stability.ai/
-   - Sign up (free)
-   - Get API key (25 images/month free)
+   - Go to: https://huggingface.co/settings/tokens
+   - Click "New token" (select "Read" access)
+   - Copy your token
+   - **No credit card required!** Truly free and unlimited!
 
 ### 3. **Configure API**
    ```bash
    cp tools/config.yaml.example tools/config.yaml
-   nano tools/config.yaml  # Add your API key
+   nano tools/config.yaml  # Add your Hugging Face API key
+   ```
+
+   Set `provider: "huggingface"` (already the default) and add your token:
+   ```yaml
+   provider: "huggingface"
+   huggingface_api_key: "hf_your_token_here"
    ```
 
 ### 4. **Configure Your Game's Art Style** ⭐ NEW!
@@ -60,7 +67,7 @@ python3 tools/asset_generator.py --check-usage
 
 ## What Works Now
 
-✅ Image generation (Stability AI)
+✅ Image generation (Hugging Face - FREE & UNLIMITED!)
 ✅ Automatic file naming
 ✅ Saves to correct folders
 ✅ Usage tracking
@@ -69,6 +76,7 @@ python3 tools/asset_generator.py --check-usage
 ✅ Template system
 ✅ Centralized style configuration
 ✅ Negative prompts to avoid unwanted styles
+✅ Provider switching (Hugging Face or Stability AI)
 
 ⚠️ Background removal requires NumPy 1.x
    - To enable: `pip install 'numpy<2' && pip install rembg`
@@ -108,11 +116,11 @@ Negative keywords are CRITICAL! They tell the AI what to avoid:
 ## Example Workflow
 
 ```bash
-# 1. Check remaining quota
+# 1. Check remaining quota (not really needed for HF but shows tracking)
 python3 tools/asset_generator.py --check-usage
-# Output: Monthly usage: 0/25 (Remaining: 25)
+# Output: Monthly usage: 0/999 (Remaining: 999)
 
-# 2. Generate assets
+# 2. Generate assets (all FREE with Hugging Face!)
 python3 tools/asset_generator.py npc "elderly librarian" librarian_old
 python3 tools/asset_generator.py room "ancient library" library_ancient
 python3 tools/asset_generator.py item "magic book" book_magic
@@ -127,8 +135,9 @@ python3 tools/asset_generator.py item "magic book" book_magic
 
 1. **Be specific** - "friendly shopkeeper with apron" not just "person"
 2. **Use style keywords** - "cartoon style", "illustrated", "detailed"
-3. **Check usage** - Stay within 25/month limit
+3. **Unlimited generation** - Hugging Face has no credit limits!
 4. **Preview prompts** - Use `--list-templates` for ideas
+5. **Switch providers** - Set `provider: "stability"` in config.yaml if needed
 
 ## Need Help?
 

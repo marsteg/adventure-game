@@ -61,17 +61,17 @@ The Project is also prepared to work with AI Agents. Try letting your AI Agent g
 - The Inventory is now centered
 - Cutscenes! There is now the possibility to have Text-based Cutscenes for intros or short explanations of story.
 	- They can be triggered via Actionfuncs
+- Walkable Areas!
+	- You can now create a mask for rooms, so players can only walk on the white Areas of the Mask. Black and Transparent Areas are blocked paths.
+- Asset Generator
+	- there is now an Asset Generator in the tools folder. It can be used to generate Assets with [Stability AI or huggingface (default)!](https://platform.stability.ai/)
+	- Check [the docs](tools/README.md)
 		
 
+## Improve Documentation
+- create index
+- properly route through documentation
 
-
-## Saving/Loading:
-	- how to save and load the game - need a save/load menu
-		- save to yaml
-			- support multiple savefiles
-		- load from yaml
-			- select savefile
-	- needs further debugging - currently items are not correctly restored
 ## Player Character
 	- doubleclick on actions, doors, items for faster walking speed
 	- Improve Walking
@@ -84,7 +84,7 @@ The Project is also prepared to work with AI Agents. Try letting your AI Agent g
 
 
 # Thanks and Grateful links to external helping tools:
-Background Music from: https://www.musicfox.com/info/kostenlose-gemafreie-musik/
+Background Music from: [Musicfox](https://www.musicfox.com/info/kostenlose-gemafreie-musik/).  
 Sound Effeces from:
 freesound.org
 	- Brickhario (unlocking doors)

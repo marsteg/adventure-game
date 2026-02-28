@@ -4,3 +4,7 @@ Pillow>=10.0.0
 # rembg has numpy compatibility issues - install numpy 1.x first
 numpy<2.0.0
 rembg>=2.0.50
+# Hugging Face SDK for image generation
+huggingface_hub>=0.20.0
+# Environment variable management
+python-dotenv>=1.0.0

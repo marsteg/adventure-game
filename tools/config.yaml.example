@@ -1,19 +1,31 @@
-# Stability AI API Configuration
-# Get your free API key at: https://platform.stability.ai/
+# Image Generation Provider Configuration
+# API keys are now in .env file (copy .env.example to .env and add your keys)
 
-stability_api_key: "your-api-key-here"
+# Provider: 'huggingface' (FREE unlimited) or 'stability' (limited)
+provider: "huggingface"
 
-# Monthly generation limit (free tier = 25)
-monthly_limit: 25
+# === HUGGING FACE ===
+# Set HF_TOKEN in .env file
+# Get FREE token at: https://huggingface.co/settings/tokens (no credit card!)
+huggingface_model: "black-forest-labs/FLUX.1-schnell"
 
-# Model settings
-model: "sd3"  # Stable Diffusion 3.5 Large
+# === STABILITY AI ===
+# Set STABILITY_API_KEY in .env file (if using stability provider)
+# Get key at: https://platform.stability.ai/
+# Warning: Only ~3 images/month on free tier
 
-# Default settings
-defaults:
-  aspect_ratio: "1:1"
-  output_format: "png"
-  remove_background_npcs: true
-  remove_background_items: true
-  remove_background_rooms: false
-  remove_background_doors: false
+# Image dimensions per asset type [width, height]
+# These are defaults - can be overridden per-call with --width and --height
+# In interactive mode, you'll be prompted for size (press Enter for default)
+dimensions:
+  npc: [1024, 1024]      # Square for characters
+  item: [1024, 1024]     # Square for items
+  door: [512, 768]       # Portrait for doors
+  room: [1024, 1024]     # Square (or try [1920, 1080] for widescreen)
+
+# Background removal per asset type
+remove_background:
+  npc: true              # Remove background for NPCs (transparent)
+  item: true             # Remove background for items (transparent)
+  door: false            # Keep background for doors
+  room: false            # Keep background for rooms
