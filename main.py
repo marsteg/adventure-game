@@ -119,8 +119,10 @@ def main():
 
         # Set player starting position in Tourist Shop
         from constants import at_percentage_width, at_percentage_height
-        daisy.pos = pygame.Vector2(at_percentage_width(player_start_percent[0]), at_percentage_height(player_start_percent[1]))
-        daisy.pos = pygame.Vector2(at_percentage_width(player_start_percent[0]), at_percentage_height(player_start_percent[1]))
+        start_pos = pygame.Vector2(at_percentage_width(player_start_percent[0]), at_percentage_height(player_start_percent[1]))
+        # Validate starting position is walkable
+        walkable_start = active_room.find_nearest_walkable(start_pos)
+        daisy.pos = pygame.Vector2(walkable_start)
 
         # Start music
         pygame.mixer.music.load(active_room.music)
@@ -200,12 +202,14 @@ def main():
                 pygame.mixer.music.set_volume(BACKGROUND_VOLUME)
                 pygame.mixer.music.play(-1, 0.0)
 
-            # Safe player positioning
+            # Safe player positioning - validate loaded position is walkable
             player_x = max(0, min(player_pos.get("left", 100), SCREEN_WIDTH - 50))
             player_y = max(0, min(player_pos.get("top", 100), SCREEN_HEIGHT - INVENTORY_HEIGHT - 50))
-            player.sprites()[0].rect.left = player_x
-            player.sprites()[0].rect.top = player_y
-            player.sprites()[0].pos = pygame.Vector2(player_x, player_y)
+            loaded_pos = pygame.Vector2(player_x, player_y)
+            walkable_pos = active_room.find_nearest_walkable(loaded_pos)
+            player.sprites()[0].rect.left = int(walkable_pos.x)
+            player.sprites()[0].rect.top = int(walkable_pos.y)
+            player.sprites()[0].pos = walkable_pos
 
             # Restore playtime and restart session timer
             playtime_seconds = loaded_playtime
@@ -265,7 +269,10 @@ def main():
                 transition.start_fade(fade_in=False)
                 active_room = obj.target_room
                 active_room.play()
-                daisy.pos = pygame.Vector2(obj.player_target_position)
+                # Validate player target position is walkable
+                target_pos = pygame.Vector2(obj.player_target_position)
+                walkable_pos = active_room.find_nearest_walkable(target_pos)
+                daisy.pos = pygame.Vector2(walkable_pos)
                 daisy.clear_target()
                 transition.start_fade(fade_in=True)
                 # Auto-save on room transition
@@ -887,7 +894,9 @@ def main():
             # Only update player movement if no dialog is active
             dialog_active = len(DialogBox.dialogboxes) > 0 or answerbox.state is not None
             if not dialog_active:
-                player.update(dt)
+                # Pass active_room to player update for walkable area validation
+                for char in player.sprites():
+                    char.update(dt, active_room)
                 try_execute_pending()
 
             # Draw transition overlay
