@@ -522,6 +522,51 @@ class AssetGenerator:
         filepath = self.save_asset(image_data, asset_type, name)
         return filepath
 
+    def generate_double_asset(self, asset_type: str,
+                             base_description: str,
+                             variation_description: str,
+                             base_name: str,
+                             variation_name: str,
+                             remove_bg: bool = None,
+                             width: int = None,
+                             height: int = None) -> tuple[Optional[Path], Optional[Path]]:
+        """Generate two variations of the same asset.
+
+        Args:
+            asset_type: Type of asset (npc, room, item, door, action)
+            base_description: Description of the base/original asset
+            variation_description: Description of the variation
+            base_name: Filename for base asset
+            variation_name: Filename for variation asset
+            remove_bg: Background removal setting
+            width: Image width
+            height: Image height
+
+        Returns:
+            tuple: (base_filepath, variation_filepath) or (None, None) if failed
+        """
+        print("\n=== Generating Base Asset ===")
+        base_path = self.generate_asset(asset_type, base_description, base_name,
+                                        remove_bg, width, height)
+
+        if not base_path:
+            print("Failed to generate base asset. Aborting.")
+            return None, None
+
+        print("\n=== Generating Variation ===")
+        variation_path = self.generate_asset(asset_type, variation_description,
+                                            variation_name, remove_bg, width, height)
+
+        if not variation_path:
+            print("Warning: Base asset generated but variation failed.")
+            return base_path, None
+
+        print("\n✓ Double-asset generation complete!")
+        print(f"  Base: {base_path}")
+        print(f"  Variation: {variation_path}")
+
+        return base_path, variation_path
+
     def list_templates(self, asset_type: Optional[str] = None):
         """List common examples for generating assets."""
 
@@ -595,14 +640,86 @@ class AssetGenerator:
             print("\nAsset Types:")
             for i, atype in enumerate(self.ASSET_TYPES.keys(), 1):
                 print(f"  {i}. {atype.upper()}")
-            print(f"  {len(self.ASSET_TYPES) + 1}. Exit")
+            print(f"  {len(self.ASSET_TYPES) + 1}. DOUBLE-ASSET")
+            print(f"  {len(self.ASSET_TYPES) + 2}. Exit")
 
-            choice = input(f"\nSelect asset type (1-{len(self.ASSET_TYPES) + 1}): ").strip()
+            choice = input(f"\nSelect asset type (1-{len(self.ASSET_TYPES) + 2}): ").strip()
 
-            if choice == str(len(self.ASSET_TYPES) + 1):
+            if choice == str(len(self.ASSET_TYPES) + 2):
                 print("Goodbye!")
                 break
 
+            # Double-asset mode
+            if choice == str(len(self.ASSET_TYPES) + 1):
+                print("\n--- Double-Asset Mode ---\n")
+
+                # Ask for asset type with number selection
+                print("Select asset type for double generation:")
+                asset_types_list = list(self.ASSET_TYPES.keys())
+                for i, atype in enumerate(asset_types_list, 1):
+                    print(f"  {i}. {atype.upper()}")
+
+                asset_choice = input(f"\nSelect type (1-{len(asset_types_list)}): ").strip()
+
+                try:
+                    asset_type = asset_types_list[int(asset_choice) - 1]
+                except (ValueError, IndexError):
+                    print("Invalid choice!")
+                    continue
+
+                # Get descriptions
+                base_description = input("\nBase description: ").strip()
+                if not base_description:
+                    print("Base description cannot be empty!")
+                    continue
+
+                variation_description = input("Variation description: ").strip()
+                if not variation_description:
+                    print("Variation description cannot be empty!")
+                    continue
+
+                # Get names
+                base_name = input("\nBase name: ").strip()
+                if not base_name:
+                    base_name = base_description.split()[0] + "_base"
+
+                variation_name = input("Variation name: ").strip()
+                if not variation_name:
+                    variation_name = base_description.split()[0] + "_variant"
+
+                # Get size (shared between both)
+                default_dimensions = self.config.get('dimensions', {}).get(asset_type, [1024, 1024])
+                default_width, default_height = default_dimensions
+
+                size_input = input(f"\nSize in pixels [WIDTHxHEIGHT] (default={default_width}x{default_height}, press Enter to use default): ").strip()
+                width, height = None, None
+                if size_input:
+                    try:
+                        width, height = map(int, size_input.lower().split('x'))
+                        print(f"Using custom size: {width}x{height}")
+                    except ValueError:
+                        print(f"Invalid format. Using default: {default_width}x{default_height}")
+
+                # Background removal (shared between both)
+                remove_bg = None
+                if asset_type in ['room', 'door']:
+                    bg_choice = input("Remove background? (y/n, default=n): ").strip().lower()
+                    remove_bg = bg_choice == 'y'
+                elif asset_type in ['npc', 'item', 'action']:
+                    bg_choice = input("Remove background? (y/n, default=y): ").strip().lower()
+                    if bg_choice == 'n':
+                        remove_bg = False
+
+                # Generate both assets
+                self.generate_double_asset(asset_type, base_description, variation_description,
+                                          base_name, variation_name, remove_bg, width, height)
+
+                another = input("\nGenerate another asset? (y/n): ").strip().lower()
+                if another != 'y':
+                    break
+                continue  # Skip normal single-asset logic
+
+            # Single asset mode
             try:
                 asset_type = list(self.ASSET_TYPES.keys())[int(choice) - 1]
             except (ValueError, IndexError):
