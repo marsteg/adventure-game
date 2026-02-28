@@ -146,6 +146,7 @@ def create_game_content(player, inventory):
     puzzle_box.add_function(actionfuncs.LogText, "The box opens, revealing a secret passage!")
     puzzle_box.add_function(actionfuncs.PlaySound, "assets/sounds/actions/grunz.wav")
     puzzle_box.add_function(actionfuncs.UnlockDoor, puzzle_box, underworld_door)
+    puzzle_box.add_function(actionfuncs.AllowDestroy, brochure)
     puzzle_box.add_function(actionfuncs.GiveItem, silver_coin, inventory)
     puzzle_box.add_function(actionfuncs.PlayTextCutScene, "assets/textcutscenes/puzzle_solved.yaml")
 
@@ -163,7 +164,7 @@ def create_game_content(player, inventory):
     hermes.add_function(actionfuncs.LogText, "Hermes: 'The boat is ready for your divine journey!'")
 
     # =============================================================================
-    # ASSIGN OBJECTS TO ROOMS (using existing syntax)
+    # ASSIGN OBJECTS TO ROOMS 
     # =============================================================================
 
     # Tourist Shop
