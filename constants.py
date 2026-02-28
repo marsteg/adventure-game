@@ -9,6 +9,9 @@ FPS = 60
 # Interaction settings
 INTERACTION_DISTANCE = 80
 
+# Dialog settings
+DIALOG_SKIP_COOLDOWN = 0.15  # seconds - prevents accidental double-clicks while allowing fast clicking
+
 # Colors
 WHITE = (255, 255, 255)
 YELLOW = (255, 255, 0)
