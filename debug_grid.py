@@ -92,9 +92,17 @@ class DebugGrid:
         if mouse_pos and 0 <= mouse_pos[0] < SCREEN_WIDTH and 0 <= mouse_pos[1] < playable_height:
             x, y = mouse_pos
 
-            # Calculate percentages
+            # Calculate percentages for mouse position
             percent_x = (x / SCREEN_WIDTH) * 100
             percent_y = (y / playable_height) * 100
+
+            # Calculate spawn position if player feet were at mouse cursor
+            player_width = 50
+            player_height = 75
+            spawn_from_mouse_x = x - player_width // 2
+            spawn_from_mouse_y = y - player_height
+            spawn_percent_x = (spawn_from_mouse_x / SCREEN_WIDTH) * 100
+            spawn_percent_y = (spawn_from_mouse_y / playable_height) * 100
 
             # Draw crosshair
             pygame.draw.line(screen, GREEN, (x - 15, y), (x + 15, y), 2)
@@ -103,15 +111,18 @@ class DebugGrid:
 
             # Create info text
             info_lines = [
-                f"Position: ({x}, {y})",
+                f"Mouse (Feet): ({x}, {y})",
                 f"Percentage: ({percent_x:.1f}%, {percent_y:.1f}%)",
                 f"",
-                f"at_percentage_width({percent_x:.1f})",
-                f"at_percentage_height({percent_y:.1f})"
+                f"Spawn if feet here: ({spawn_from_mouse_x}, {spawn_from_mouse_y})",
+                f"Percentage: ({spawn_percent_x:.1f}%, {spawn_percent_y:.1f}%)",
+                f"",
+                f"at_percentage_width({spawn_percent_x:.1f})",
+                f"at_percentage_height({spawn_percent_y:.1f})"
             ]
 
             # Draw info box
-            box_width = 280
+            box_width = 320
             box_height = len(info_lines) * 22 + 10
             box_x = min(x + 20, SCREEN_WIDTH - box_width - 10)
             box_y = min(y + 20, playable_height - box_height - 10)
@@ -126,7 +137,12 @@ class DebugGrid:
 
             # Text
             for i, line in enumerate(info_lines):
-                color = YELLOW if "at_percentage" in line else WHITE
+                if "Spawn if feet here" in line:
+                    color = (0, 255, 255)  # Cyan for spawn position
+                elif "at_percentage" in line:
+                    color = YELLOW
+                else:
+                    color = WHITE
                 text = self.hover_info_font.render(line, True, color)
                 screen.blit(text, (box_x + 10, box_y + 5 + i * 22))
 
