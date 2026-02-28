@@ -1,18 +1,10 @@
-# Point&Click Adventure Game Engine
+# Adventure Game
 
-This is an attempt to create a Point&Click Adventure Game Engine in python with [pygame](https://www.pygame.org/)
-You will need the python installed with the pygame library. To see the example game, just run:
-````
+an attempt to create a point and click adventure game in python  with pygame
+You will need the pygame library. Then just run:
 	 python3 main.py
-````
-
-To create your own game, create update game.py with your game specifications.
-
-The Project is also prepared to work with AI Agents. Try letting your AI Agent generate a Game for you ;)
-
 
 ## Features Implemented
-- the game itself gets completely assempled in game.py. Here you define all your Rooms, NPCs, Items, Actions and their Actionfuncs.
 - creation of items, doors, actions and rooms.
 - stashing of items
 - items can now be destroyed on usage or not. if not, they go back to the inventory after usage
@@ -22,14 +14,12 @@ The Project is also prepared to work with AI Agents. Try letting your AI Agent g
 - Actionfuncs are a way to teach an action button tricks. With this theoretically anything can be executed via Actions
 - unlocking an action will also execute it's actionfuncs
 - Save and Loading the Game is now possible! Press 'S' to Save and 'L' to Load
-	- now with menu and support for multiple savefiles
 - Right-Click on NPCs, Doors, Items and Actions gives now a description about them
 	- different descriptions based on the lock state possible
 - Sounds!
 	- Rooms now have background music!
 	- NPCs can have voice, when talking!
 	- actions can play sounds on Activation (when unlocked)
-	- clicking should skip to the next line
 - NPCs	
 	- can give items, when unlockd
 	- can open doors, when unlocked
@@ -37,8 +27,7 @@ The Project is also prepared to work with AI Agents. Try letting your AI Agent g
 	- There are now different ways to take and give items from NPCs
 			- by unlocking them (possible via item, action or dialog)
 - Conversations!
-	- each block of speech has a configurable talking time 
-	- speech can be a single line or an array of lines
+	- each line of speech should have a configurable talking time 
 	- active dialog (dialog state of NPC) answers could change based on:
 			- specific replies chosen (should execute actionfunc)
 			- actions executed (actionfunc to change actve dialog of npc)
@@ -63,15 +52,40 @@ The Project is also prepared to work with AI Agents. Try letting your AI Agent g
 	- They can be triggered via Actionfuncs
 - Walkable Areas!
 	- You can now create a mask for rooms, so players can only walk on the white Areas of the Mask. Black and Transparent Areas are blocked paths.
+	- See [WALKABLE_AREAS_AGENT_GUIDE.md](WALKABLE_AREAS_AGENT_GUIDE.md) for complete documentation
 - Asset Generator
-	- there is now an Asset Generator in the tools folder. It can be used to generate Assets with [Stability AI or huggingface (default)!](https://platform.stability.ai/)
+	- there is now an Asset Generator in the tools folder. It can be used to generate Assets with [Hugging Face (default, FREE unlimited) or Stability AI!](https://huggingface.co)
 	- Check [the docs](tools/README.md)
-		
+
 
 ## Improve Documentation
 - create index
 - properly route through documentation
 
+# Todo List:
+- need to find a clean way to assign and create doors and rooms and assign items (currently in main func)
+	- it would be nice to have the "Game Definition" in a yaml file.
+		- All Items in a Yaml
+		- All Rooms in a Yaml
+		- All NPCs in a Yaml
+		- all Doors in a Yaml
+## Conversations
+	- text currently stays X seconds - clicking should skip to the next line
+	- how to manage it when picking up an item should change dialog choices?
+		- should Items have actions, that get executed on pickup? could change active_dialogs or locked dialogs?
+	- how to have multiple NPCs talk at the same time?
+		- every NPC has now their own dialogbox. The position is still hard-coded.
+			- what is a smart way to find a position?
+				- i want to have it relative to the object but closer to the center of the screen
+			- text should be positioned relative to the character speaking
+	- i partly implemented multiline text and auto-detection of speech length. Needs further thorough testing and improvement though
+## Saving/Loading:
+	- how to save and load the game?
+		- save to yaml
+			- should provide some savename input
+			- support multiple savefiles
+		- load from yaml
+			- select savefile
 ## Player Character
 	- doubleclick on actions, doors, items for faster walking speed
 	- Improve Walking
@@ -79,9 +93,21 @@ The Project is also prepared to work with AI Agents. Try letting your AI Agent g
 		- how to define that area?
 		- improve player walking animation
 
+## inventory
+- items should get ordered / aligned in the inventory
+	- slot system size (currently 20) - what if i have more items? scrolling?
+	- slots currently do not get re-used (probably never properly released)
+
 ## Items
 - I would like to implement an "endless" item, from which the player always pick up one
+	- there is now a test case but somehow the item is only given once.
+- how to manage it when picking up an item should change dialog choices?
+		- should Items have actions, that get executed on pickup? could change active_dialogs or locked dialogs?
+		--> is implemented, requires testing (no test case implemented, yet)
 
+### useful dialog box positions?
+dialbox.rect = pygame.Rect(SCREEN_WIDTH // 5, SCREEN_HEIGHT // 5, SCREEN_WIDTH // 2, 0)
+--> perfect "narrator" position on the top center
 
 # Thanks and Grateful links to external helping tools:
 Background Music from: [Musicfox](https://www.musicfox.com/info/kostenlose-gemafreie-musik/).  

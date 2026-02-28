@@ -52,7 +52,7 @@ class TextCutscene:
     def update(self, dt):
         if self.done:
             return
-        print(self.slides)
+        #print(self.slides)
 
         self.timer += dt
 

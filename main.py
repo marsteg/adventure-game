@@ -5,6 +5,7 @@ from constants import (
     SCREEN_WIDTH, SCREEN_HEIGHT, INVENTORY_HEIGHT, FPS, INTERACTION_DISTANCE,
     BACKGROUND_VOLUME, WHITE, YELLOW, GREEN, PURPLE, at_percentage_width, at_percentage_height
 )
+from debug_grid import debug_grid
 from item import Item
 from inventory import Inventory
 from room import Room
@@ -119,8 +120,10 @@ def main():
 
         # Set player starting position in Tourist Shop
         from constants import at_percentage_width, at_percentage_height
-        daisy.pos = pygame.Vector2(at_percentage_width(player_start_percent[0]), at_percentage_height(player_start_percent[1]))
-        daisy.pos = pygame.Vector2(at_percentage_width(player_start_percent[0]), at_percentage_height(player_start_percent[1]))
+        start_pos = pygame.Vector2(at_percentage_width(player_start_percent[0]), at_percentage_height(player_start_percent[1]))
+        # Validate starting position - ensure feet will be walkable
+        walkable_start = active_room.find_nearest_walkable_spawn(start_pos)
+        daisy.pos = pygame.Vector2(walkable_start)
 
         # Start music
         pygame.mixer.music.load(active_room.music)
@@ -200,12 +203,14 @@ def main():
                 pygame.mixer.music.set_volume(BACKGROUND_VOLUME)
                 pygame.mixer.music.play(-1, 0.0)
 
-            # Safe player positioning
+            # Safe player positioning - validate loaded position with feet check
             player_x = max(0, min(player_pos.get("left", 100), SCREEN_WIDTH - 50))
             player_y = max(0, min(player_pos.get("top", 100), SCREEN_HEIGHT - INVENTORY_HEIGHT - 50))
-            player.sprites()[0].rect.left = player_x
-            player.sprites()[0].rect.top = player_y
-            player.sprites()[0].pos = pygame.Vector2(player_x, player_y)
+            loaded_pos = pygame.Vector2(player_x, player_y)
+            walkable_pos = active_room.find_nearest_walkable_spawn(loaded_pos)
+            player.sprites()[0].rect.left = int(walkable_pos.x)
+            player.sprites()[0].rect.top = int(walkable_pos.y)
+            player.sprites()[0].pos = walkable_pos
 
             # Restore playtime and restart session timer
             playtime_seconds = loaded_playtime
@@ -234,10 +239,15 @@ def main():
     active_timer = 0
 
     def queue_interaction(obj_or_qi):
-        nonlocal pending_interaction, interaction_target, player
+        nonlocal pending_interaction, interaction_target, player, active_room
         pending_interaction = obj_or_qi
         target_obj = obj_or_qi.target if isinstance(obj_or_qi, QueuedInteraction) else obj_or_qi
         interaction_target = pygame.Vector2(target_obj.rect.centerx, target_obj.rect.centery)
+
+        # Find nearest walkable point to the interaction target
+        walkable_target = active_room.find_nearest_walkable(interaction_target)
+        interaction_target = pygame.Vector2(walkable_target)
+
         assert player is not None
         for char in player.sprites():
             char.set_target(interaction_target)
@@ -260,7 +270,10 @@ def main():
                 transition.start_fade(fade_in=False)
                 active_room = obj.target_room
                 active_room.play()
-                daisy.pos = pygame.Vector2(obj.player_target_position)
+                # Validate player spawn position - ensure feet will be walkable
+                target_pos = pygame.Vector2(obj.player_target_position)
+                walkable_spawn = active_room.find_nearest_walkable_spawn(target_pos)
+                daisy.pos = pygame.Vector2(walkable_spawn)
                 daisy.clear_target()
                 transition.start_fade(fade_in=True)
                 # Auto-save on room transition
@@ -656,6 +669,36 @@ def main():
                     if drawable_room == active_room:
                         drawable_room.shine(screen)
 
+            # W key to toggle walkable area visualization
+            if keys[pygame.K_w]:
+                import constants
+                constants.SHOW_WALKABLE_AREA = not constants.SHOW_WALKABLE_AREA
+                status = "ON" if constants.SHOW_WALKABLE_AREA else "OFF"
+                print(f"Walkable area visualization: {status}")
+                pygame.time.wait(200)  # Debounce
+
+            # Draw walkable area overlay if enabled
+            import constants
+            if constants.SHOW_WALKABLE_AREA:
+                active_room.draw_walkable_overlay(screen)
+
+            # G key to toggle debug grid
+            if keys[pygame.K_g]:
+                grid_status = debug_grid.toggle()
+                status = "ON" if grid_status else "OFF"
+                print(f"Debug grid: {status}")
+                pygame.time.wait(200)  # Debounce
+
+            # Draw debug grid if enabled
+            if debug_grid.enabled:
+                # Get player position
+                player_position = None
+                if player and len(player.sprites()) > 0:
+                    pchar = next(iter(player.sprites()))
+                    # Use the center-bottom of player sprite (their "feet")
+                    player_position = (pchar.pos.x + pchar.rect.width // 2, pchar.pos.y + pchar.rect.height)
+                debug_grid.draw(screen, pygame.mouse.get_pos(), player_position)
+
             # New save/load menu system (S and L keys)
             if keys[pygame.K_s]:
                 update_playtime()  # Update playtime before entering save menu
@@ -820,8 +863,10 @@ def main():
                         if not dialog_active and active_click is None:
                             mouse = pygame.mouse.get_pos()
                             if mouse[1] < SCREEN_HEIGHT - INVENTORY_HEIGHT:
+                                # Check if clicked position is walkable, if not find nearest walkable point
+                                walkable_pos = active_room.find_nearest_walkable(mouse)
                                 for char in player.sprites():
-                                    char.set_target(mouse)
+                                    char.set_target(walkable_pos)
 
                         active_click = None
 
@@ -867,11 +912,23 @@ def main():
             # Only update player movement if no dialog is active
             dialog_active = len(DialogBox.dialogboxes) > 0 or answerbox.state is not None
             if not dialog_active:
-                player.update(dt)
+                # Pass active_room to player update for walkable area validation
+                for char in player.sprites():
+                    char.update(dt, active_room)
                 try_execute_pending()
 
             # Draw transition overlay
             transition.render(screen)
+
+            # Draw debug grid on top of everything (if enabled)
+            if debug_grid.enabled:
+                # Get player position
+                player_position = None
+                if player and len(player.sprites()) > 0:
+                    pchar = next(iter(player.sprites()))
+                    # Use the center-bottom of player sprite (their "feet")
+                    player_position = (pchar.pos.x + pchar.rect.width // 2, pchar.pos.y + pchar.rect.height)
+                debug_grid.draw(screen, pygame.mouse.get_pos(), player_position)
 
         dt = clock.tick(FPS)
         pygame.display.flip()
