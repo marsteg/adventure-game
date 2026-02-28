@@ -10,6 +10,7 @@ import argparse
 import yaml
 import json
 import requests
+import random
 from pathlib import Path
 from datetime import datetime
 from typing import Optional, List, Dict
@@ -264,7 +265,7 @@ class AssetGenerator:
         return positive_prompt.strip(), negative_prompt.strip()
 
     def generate_image_huggingface(self, prompt: str, negative_prompt: str, asset_type: str,
-                                   width: int = None, height: int = None) -> Optional[bytes]:
+                                   width: int = None, height: int = None, seed: int = None) -> Optional[bytes]:
         """Generate image using Hugging Face Inference API (FREE!).
 
         Args:
@@ -273,6 +274,7 @@ class AssetGenerator:
             asset_type: Type of asset (for default dimensions)
             width: Override width (None = use config)
             height: Override height (None = use config)
+            seed: Random seed for reproducible generation (None = random)
         """
         if not HF_AVAILABLE:
             print("Error: huggingface_hub not installed.")
@@ -327,12 +329,18 @@ class AssetGenerator:
 
             print(f"Size: {width}x{height}")
 
+            # Generate seed if not provided
+            if seed is None:
+                seed = random.randint(0, 999999)
+            print(f"Seed: {seed}")
+
             # Generate image using SDK
             image = self.hf_client.text_to_image(
                 prompt=full_prompt,
                 model=model,
                 width=width,
                 height=height,
+                seed=seed,
             )
 
             # Convert PIL Image to bytes
@@ -349,7 +357,7 @@ class AssetGenerator:
             return None
 
     def generate_image_stability(self, prompt: str, negative_prompt: str, asset_type: str,
-                                width: int = None, height: int = None) -> Optional[bytes]:
+                                width: int = None, height: int = None, seed: int = None) -> Optional[bytes]:
         """Generate image using Stability AI API (LIMITED FREE TIER).
 
         Args:
@@ -358,6 +366,7 @@ class AssetGenerator:
             asset_type: Type of asset (for default dimensions)
             width: Override width (None = use config)
             height: Override height (None = use config)
+            seed: Random seed for reproducible generation (None = random)
         """
         api_key = os.getenv('STABILITY_API_KEY') or self.config.get('stability_api_key')
         if not api_key or api_key == 'your-api-key-here':
@@ -396,9 +405,15 @@ class AssetGenerator:
             "mode": "text-to-image"
         }
 
+        # Add seed if provided
+        if seed is not None:
+            data["seed"] = seed
+
         print(f"Generating with style: {self.style_config.get('master_style', {}).get('art_style', 'default')}")
         print(f"Provider: Stability AI (Limited free tier)")
         print(f"Size: ~{width}x{height} (aspect ratio: {aspect_ratio})")
+        if seed is not None:
+            print(f"Seed: {seed}")
         print(f"Prompt: {prompt[:100]}..." if len(prompt) > 100 else f"Prompt: {prompt}")
         print(f"Negative: {negative_prompt[:80]}..." if len(negative_prompt) > 80 else f"Negative: {negative_prompt}")
         print("Please wait...")
@@ -420,7 +435,7 @@ class AssetGenerator:
             return None
 
     def generate_image(self, prompt: str, negative_prompt: str, asset_type: str,
-                      width: int = None, height: int = None) -> Optional[bytes]:
+                      width: int = None, height: int = None, seed: int = None) -> Optional[bytes]:
         """Generate image using configured provider.
 
         Args:
@@ -429,13 +444,14 @@ class AssetGenerator:
             asset_type: Type of asset (for default dimensions)
             width: Override width (None = use config)
             height: Override height (None = use config)
+            seed: Random seed for reproducible generation (None = random)
         """
         provider = self.config.get('provider', 'huggingface').lower()
 
         if provider == 'huggingface' or provider == 'hf':
-            return self.generate_image_huggingface(prompt, negative_prompt, asset_type, width, height)
+            return self.generate_image_huggingface(prompt, negative_prompt, asset_type, width, height, seed)
         elif provider == 'stability' or provider == 'stabilityai':
-            return self.generate_image_stability(prompt, negative_prompt, asset_type, width, height)
+            return self.generate_image_stability(prompt, negative_prompt, asset_type, width, height, seed)
         else:
             print(f"Unknown provider: {provider}")
             print("Valid providers: 'huggingface' (default, free) or 'stability'")
@@ -487,16 +503,17 @@ class AssetGenerator:
         return filepath
 
     def generate_asset(self, asset_type: str, description: str, name: str,
-                      remove_bg: bool = None, width: int = None, height: int = None) -> Optional[Path]:
+                      remove_bg: bool = None, width: int = None, height: int = None, seed: int = None) -> Optional[Path]:
         """Generate a single asset.
 
         Args:
-            asset_type: Type of asset (npc, room, item, door)
+            asset_type: Type of asset (npc, room, item, door, action)
             description: Text description of the asset
             name: Filename for the asset
             remove_bg: Override background removal setting (None = use config)
             width: Override width (None = use config default)
             height: Override height (None = use config default)
+            seed: Random seed for reproducible generation (None = random)
         """
         if not self.check_usage_limit():
             return None
@@ -504,8 +521,8 @@ class AssetGenerator:
         # Build prompt with style configuration
         positive_prompt, negative_prompt = self.build_prompt(asset_type, description)
 
-        # Generate image with optional size override
-        image_data = self.generate_image(positive_prompt, negative_prompt, asset_type, width, height)
+        # Generate image with optional size override and seed
+        image_data = self.generate_image(positive_prompt, negative_prompt, asset_type, width, height, seed)
         if not image_data:
             return None
 
@@ -527,10 +544,11 @@ class AssetGenerator:
                              variation_description: str,
                              base_name: str,
                              variation_name: str,
+                             shared_traits: str = "",
                              remove_bg: bool = None,
                              width: int = None,
                              height: int = None) -> tuple[Optional[Path], Optional[Path]]:
-        """Generate two variations of the same asset.
+        """Generate two variations of the same asset with improved consistency.
 
         Args:
             asset_type: Type of asset (npc, room, item, door, action)
@@ -538,6 +556,7 @@ class AssetGenerator:
             variation_description: Description of the variation
             base_name: Filename for base asset
             variation_name: Filename for variation asset
+            shared_traits: Shared characteristics for consistency (composition, angle, etc.)
             remove_bg: Background removal setting
             width: Image width
             height: Image height
@@ -545,17 +564,33 @@ class AssetGenerator:
         Returns:
             tuple: (base_filepath, variation_filepath) or (None, None) if failed
         """
+        # Generate shared seed for consistency
+        seed = random.randint(0, 999999)
+        print(f"\nUsing seed {seed} for consistency between variations...")
+
+        # Add shared traits to both descriptions if provided
+        if shared_traits:
+            base_full = f"{base_description}, {shared_traits}"
+            variation_full = f"{variation_description}, {shared_traits}"
+        else:
+            base_full = base_description
+            variation_full = variation_description
+
         print("\n=== Generating Base Asset ===")
-        base_path = self.generate_asset(asset_type, base_description, base_name,
-                                        remove_bg, width, height)
+        base_path = self.generate_asset(asset_type, base_full, base_name,
+                                        remove_bg, width, height, seed)
 
         if not base_path:
             print("Failed to generate base asset. Aborting.")
             return None, None
 
+        # Add consistency keywords to variation
+        consistency_boost = "maintaining same composition, perspective, and art style"
+        variation_enhanced = f"{variation_full}, {consistency_boost}"
+
         print("\n=== Generating Variation ===")
-        variation_path = self.generate_asset(asset_type, variation_description,
-                                            variation_name, remove_bg, width, height)
+        variation_path = self.generate_asset(asset_type, variation_enhanced,
+                                            variation_name, remove_bg, width, height, seed)
 
         if not variation_path:
             print("Warning: Base asset generated but variation failed.")
@@ -678,6 +713,11 @@ class AssetGenerator:
                     print("Variation description cannot be empty!")
                     continue
 
+                # Ask for shared traits for better consistency
+                print("\n💡 For best consistency, describe shared characteristics:")
+                print("   Examples: 'front view, centered', 'wooden texture', 'same angle'")
+                shared_traits = input("Shared traits (optional, press Enter to skip): ").strip()
+
                 # Get names
                 base_name = input("\nBase name: ").strip()
                 if not base_name:
@@ -712,7 +752,8 @@ class AssetGenerator:
 
                 # Generate both assets
                 self.generate_double_asset(asset_type, base_description, variation_description,
-                                          base_name, variation_name, remove_bg, width, height)
+                                          base_name, variation_name, shared_traits,
+                                          remove_bg, width, height)
 
                 another = input("\nGenerate another asset? (y/n): ").strip().lower()
                 if another != 'y':
