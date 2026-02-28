@@ -691,7 +691,13 @@ def main():
 
             # Draw debug grid if enabled
             if debug_grid.enabled:
-                debug_grid.draw(screen, pygame.mouse.get_pos())
+                # Get player position
+                player_position = None
+                if player and len(player.sprites()) > 0:
+                    pchar = next(iter(player.sprites()))
+                    # Use the center-bottom of player sprite (their "feet")
+                    player_position = (pchar.pos.x + pchar.rect.width // 2, pchar.pos.y + pchar.rect.height)
+                debug_grid.draw(screen, pygame.mouse.get_pos(), player_position)
 
             # New save/load menu system (S and L keys)
             if keys[pygame.K_s]:
@@ -916,7 +922,13 @@ def main():
 
             # Draw debug grid on top of everything (if enabled)
             if debug_grid.enabled:
-                debug_grid.draw(screen, pygame.mouse.get_pos())
+                # Get player position
+                player_position = None
+                if player and len(player.sprites()) > 0:
+                    pchar = next(iter(player.sprites()))
+                    # Use the center-bottom of player sprite (their "feet")
+                    player_position = (pchar.pos.x + pchar.rect.width // 2, pchar.pos.y + pchar.rect.height)
+                debug_grid.draw(screen, pygame.mouse.get_pos(), player_position)
 
         dt = clock.tick(FPS)
         pygame.display.flip()

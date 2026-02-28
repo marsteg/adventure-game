@@ -52,7 +52,7 @@ def create_game_content(player, inventory):
     # =============================================================================
 
     # Tourist Brochure - Gives hint about temple
-    brochure = Item(200, 350, 40, 30, "assets/items/paper.png", "Tourist Brochure", True)
+    brochure = Item(115, 585, 40, 30, "assets/items/paper.png", "Tourist Brochure", True)
     brochure.add_description("A colorful brochure about ancient Greek sites", "assets/sounds/items/herb_locked.wav")
 
     # Golden Olive Branch - First mythical item needed
@@ -76,7 +76,7 @@ def create_game_content(player, inventory):
     # =============================================================================
 
     # Shopkeeper NPC - Starting character who gives quest
-    shopkeeper = NPC(400, 200, 80, 120, "assets/npcs/janitor.png", "Dimitri", False, None, WHITE, "assets/dialogs/shopkeeper.yaml")
+    shopkeeper = NPC(463, 396, 80, 120, "assets/npcs/janitor.png", "Dimitri", False, None, WHITE, "assets/dialogs/shopkeeper.yaml")
 
     # Oracle NPC - Gives cryptic but helpful advice
     oracle = NPC(500, 180, 100, 140, "assets/npcs/librarian.png", "Oracle of Delphi", False, None, PURPLE, "assets/dialogs/oracle.yaml")
@@ -92,7 +92,7 @@ def create_game_content(player, inventory):
     # =============================================================================
 
     # Ancient Vase - The item Luke will accidentally break
-    ancient_vase = Action(600, 300, 60, 80, "assets/actions/button.png", "Ancient Vase", False, None)
+    ancient_vase = Action(406, 601, 20, 70, "assets/actions/button.png", "Ancient Vase", False, None)
     ancient_vase.add_description("A priceless ancient Greek vase", "Oh no! You broke it!", "assets/sounds/actions/button1_locked.wav", "assets/sounds/actions/button2_unlocked.wav")
 
     # Ancient Puzzle Box - Requires brochure to solve
@@ -113,7 +113,7 @@ def create_game_content(player, inventory):
     # =============================================================================
 
     # Door to Temple (initially locked until vase is broken)
-    temple_door = Door(750, 250, 100, 150, "assets/doors/door1.png", "Temple Entrance", ancient_temple, (100, 400), True, ancient_vase)
+    temple_door = Door(520, 405, 100, 150, None, "Temple Entrance", ancient_temple, (100, 400), True, ancient_vase)
     temple_door.add_description("A passage to the ancient temple. Locked until something dramatic happens.", "To the Ancient Temple!", "assets/sounds/doors/room1door1_locked.wav", "assets/sounds/doors/room1door1_unlocked.wav")
 
     # Door to Underworld (unlocked by puzzle box)
@@ -125,7 +125,7 @@ def create_game_content(player, inventory):
     olympus_door.add_description("The gateway to Mount Olympus", "To the realm of the gods!", "assets/sounds/doors/room1door1_locked.wav", "assets/sounds/doors/room1door1_unlocked.wav")
 
     # Return doors
-    shop_return = Door(50, 350, 80, 120, "assets/doors/door1.png", "Shop Return", tourist_shop, (700, 350), False, None)
+    shop_return = Door(50, 350, 80, 120, "assets/doors/door1.png", "Shop Return", tourist_shop, (540, 500), False, None)
     shop_return.add_description("", "Back to the tourist shop", "assets/sounds/doors/room2door2_unlocked.wav", "assets/sounds/doors/room2door2_unlocked.wav")
 
     temple_return = Door(50, 300, 80, 120, "assets/doors/door1.png", "Temple Return", ancient_temple, (650, 400), False, None)
