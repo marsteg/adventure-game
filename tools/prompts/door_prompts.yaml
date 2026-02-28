@@ -1,0 +1,44 @@
+style_guide: "detailed door illustration, front view, architectural element, game asset, clear and recognizable"
+
+templates:
+  - name: "wooden_door"
+    description: "Simple wooden door"
+    prompt: "wooden door with metal hardware, medieval style, front view"
+
+  - name: "metal_door"
+    description: "Metal or iron door"
+    prompt: "heavy metal door with rivets, iron reinforced, front view"
+
+  - name: "ornate_door"
+    description: "Decorated fancy door"
+    prompt: "ornate door with decorative carvings, elegant design, front view"
+
+  - name: "dungeon_door"
+    description: "Prison or dungeon door"
+    prompt: "dungeon cell door with bars, dark and heavy, front view"
+
+  - name: "magic_door"
+    description: "Magical or mystical door"
+    prompt: "magical door with glowing runes, mystical energy, front view"
+
+  - name: "castle_door"
+    description: "Castle main door"
+    prompt: "large castle door with metal bands, grand entrance, front view"
+
+  - name: "secret_door"
+    description: "Hidden door"
+    prompt: "secret door disguised as wall, hidden entrance, front view"
+
+  - name: "vault_door"
+    description: "Safe or vault door"
+    prompt: "vault door with combination lock, secure entrance, front view"
+
+  - name: "garden_gate"
+    description: "Garden gate"
+    prompt: "decorative garden gate with wrought iron, ornamental, front view"
+
+  - name: "trap_door"
+    description: "Floor trap door"
+    prompt: "wooden trap door in floor, hatch entrance, top-down view"
+
+negative_prompts: "people, open door, perspective view, text, watermark, blurry, low quality"

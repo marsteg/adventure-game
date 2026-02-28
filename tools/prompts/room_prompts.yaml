@@ -1,0 +1,52 @@
+style_guide: "detailed room interior background art, atmospheric lighting, point and click adventure game style, slightly dark mysterious atmosphere, rich colors, game background"
+
+templates:
+  - name: "library"
+    description: "Library room with books"
+    prompt: "interior of a library with bookshelves, reading desk, atmospheric lighting"
+
+  - name: "bedroom"
+    description: "Bedroom interior"
+    prompt: "cozy bedroom interior with bed, furniture, warm lighting"
+
+  - name: "hallway"
+    description: "Corridor or hallway"
+    prompt: "long hallway with doors, atmospheric lighting, mysterious"
+
+  - name: "throne_room"
+    description: "Royal throne room"
+    prompt: "grand throne room with ornate throne, pillars, royal atmosphere"
+
+  - name: "dungeon"
+    description: "Dark dungeon or prison"
+    prompt: "dark dungeon interior, stone walls, chains, torches, mysterious"
+
+  - name: "laboratory"
+    description: "Science or magic laboratory"
+    prompt: "laboratory interior with tables, equipment, bottles, mysterious"
+
+  - name: "shop"
+    description: "Shop interior"
+    prompt: "shop interior with shelves, counter, goods on display"
+
+  - name: "tavern"
+    description: "Tavern or inn"
+    prompt: "tavern interior with tables, bar counter, warm lighting"
+
+  - name: "garden"
+    description: "Garden or courtyard"
+    prompt: "garden or courtyard with plants, paths, peaceful atmosphere"
+
+  - name: "cave"
+    description: "Cave interior"
+    prompt: "cave interior with rock formations, mysterious lighting, atmospheric"
+
+  - name: "castle_hall"
+    description: "Castle main hall"
+    prompt: "castle main hall interior, stone architecture, banners, grand"
+
+  - name: "secret_chamber"
+    description: "Hidden secret room"
+    prompt: "secret chamber with mystical elements, hidden room atmosphere"
+
+negative_prompts: "people, characters, text, watermark, blurry, low quality, modern elements"

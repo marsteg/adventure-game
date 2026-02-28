@@ -1,0 +1,44 @@
+style_guide: "cartoon style illustration, full body character, clean lines, cel-shaded, adventure game character, standing pose, front-facing view"
+
+templates:
+  - name: "friendly_npc"
+    description: "Generic friendly NPC"
+    prompt: "friendly character with welcoming expression, full body"
+
+  - name: "shopkeeper"
+    description: "Shop or merchant character"
+    prompt: "shopkeeper character with apron, friendly merchant, full body"
+
+  - name: "guard"
+    description: "Guard or security character"
+    prompt: "guard character in uniform, standing at attention, full body"
+
+  - name: "wizard"
+    description: "Magical or wizard character"
+    prompt: "wizard character with robes and staff, mystical appearance, full body"
+
+  - name: "villager"
+    description: "Common villager"
+    prompt: "villager in simple clothes, everyday person, full body"
+
+  - name: "noble"
+    description: "Noble or wealthy character"
+    prompt: "noble character in fancy clothes, elegant appearance, full body"
+
+  - name: "creature"
+    description: "Fantasy creature or monster"
+    prompt: "fantasy creature, mythical beast, full body, not too scary"
+
+  - name: "child"
+    description: "Child character"
+    prompt: "young child character, innocent appearance, full body"
+
+  - name: "elder"
+    description: "Elderly character"
+    prompt: "elderly character, wise appearance, full body"
+
+  - name: "worker"
+    description: "Worker or laborer"
+    prompt: "worker character with tools or work clothes, full body"
+
+negative_prompts: "multiple characters, text, watermark, signature, blurry, distorted, bad anatomy, floating limbs"

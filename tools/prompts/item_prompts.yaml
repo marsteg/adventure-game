@@ -1,0 +1,64 @@
+style_guide: "game item icon, clean detailed illustration, single object, centered composition, clear and recognizable, adventure game item style"
+
+templates:
+  - name: "key"
+    description: "Key for unlocking"
+    prompt: "ornate key, detailed metalwork, game item"
+
+  - name: "potion"
+    description: "Potion bottle"
+    prompt: "potion bottle with colored liquid, glass bottle, game item"
+
+  - name: "book"
+    description: "Book or tome"
+    prompt: "old book or tome, leather cover, game item"
+
+  - name: "gem"
+    description: "Gemstone or crystal"
+    prompt: "glowing gemstone, precious crystal, magical, game item"
+
+  - name: "scroll"
+    description: "Scroll or parchment"
+    prompt: "ancient scroll or parchment, rolled paper, game item"
+
+  - name: "amulet"
+    description: "Amulet or pendant"
+    prompt: "magical amulet or pendant, jewelry, game item"
+
+  - name: "sword"
+    description: "Sword weapon"
+    prompt: "medieval sword, detailed blade, game item"
+
+  - name: "shield"
+    description: "Shield"
+    prompt: "medieval shield with emblem, protective gear, game item"
+
+  - name: "coin"
+    description: "Coin or currency"
+    prompt: "gold coin with detailed engraving, currency, game item"
+
+  - name: "herb"
+    description: "Plant or herb"
+    prompt: "herb or magical plant, botanical, game item"
+
+  - name: "tool"
+    description: "Tool or utility item"
+    prompt: "useful tool or utility item, detailed, game item"
+
+  - name: "artifact"
+    description: "Mysterious artifact"
+    prompt: "mysterious ancient artifact, magical item, glowing, game item"
+
+  - name: "letter"
+    description: "Letter or note"
+    prompt: "letter or note, paper document, game item"
+
+  - name: "compass"
+    description: "Compass or navigation tool"
+    prompt: "ornate compass, navigation device, game item"
+
+  - name: "lantern"
+    description: "Lantern or light source"
+    prompt: "old lantern with light, portable light source, game item"
+
+negative_prompts: "multiple items, background, people, text, watermark, blurry, low quality"
