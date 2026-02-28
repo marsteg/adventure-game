@@ -27,8 +27,14 @@ class DebugGrid:
         self.enabled = not self.enabled
         return self.enabled
 
-    def draw(self, screen, mouse_pos=None):
-        """Draw the grid overlay."""
+    def draw(self, screen, mouse_pos=None, player_pos=None):
+        """Draw the grid overlay.
+
+        Args:
+            screen: pygame screen surface
+            mouse_pos: current mouse position tuple (x, y)
+            player_pos: current player position tuple (x, y) - optional
+        """
         if not self.enabled:
             return
 
@@ -123,6 +129,68 @@ class DebugGrid:
                 color = YELLOW if "at_percentage" in line else WHITE
                 text = self.hover_info_font.render(line, True, color)
                 screen.blit(text, (box_x + 10, box_y + 5 + i * 22))
+
+        # Draw player position indicator
+        if player_pos:
+            px, py = int(player_pos[0]), int(player_pos[1])
+
+            # Only draw if player is in playable area
+            if 0 <= px < SCREEN_WIDTH and 0 <= py < playable_height:
+                # Calculate percentages
+                player_percent_x = (px / SCREEN_WIDTH) * 100
+                player_percent_y = (py / playable_height) * 100
+
+                # Draw player marker (blue circle with cross)
+                from constants import BLUE
+                pygame.draw.circle(screen, BLUE, (px, py), 8, 3)
+                pygame.draw.line(screen, BLUE, (px - 12, py), (px + 12, py), 3)
+                pygame.draw.line(screen, BLUE, (px, py - 12), (px, py + 12), 3)
+
+                # Draw label above player
+                player_label = f"PLAYER ({px}, {py})"
+                label_surf = self.font_large.render(player_label, True, BLUE)
+                label_rect = label_surf.get_rect()
+
+                # Position label above player marker
+                label_x = max(5, min(px - label_rect.width // 2, SCREEN_WIDTH - label_rect.width - 5))
+                label_y = max(5, py - 25)
+
+                # Background for label
+                label_bg = pygame.Surface((label_rect.width + 6, label_rect.height + 4), pygame.SRCALPHA)
+                label_bg.fill((0, 0, 0, 200))
+                screen.blit(label_bg, (label_x - 3, label_y - 2))
+
+                # Border
+                pygame.draw.rect(screen, BLUE, (label_x - 3, label_y - 2, label_rect.width + 6, label_rect.height + 4), 1)
+
+                # Label text
+                screen.blit(label_surf, (label_x, label_y))
+
+                # Draw player info box in top-right corner
+                player_info_lines = [
+                    "PLAYER POSITION:",
+                    f"Pixels: ({px}, {py})",
+                    f"Percent: ({player_percent_x:.1f}%, {player_percent_y:.1f}%)",
+                ]
+
+                info_box_width = 250
+                info_box_height = len(player_info_lines) * 20 + 10
+                info_box_x = SCREEN_WIDTH - info_box_width - 10
+                info_box_y = 10
+
+                # Background
+                player_info_bg = pygame.Surface((info_box_width, info_box_height), pygame.SRCALPHA)
+                player_info_bg.fill((0, 0, 0, 200))
+                screen.blit(player_info_bg, (info_box_x, info_box_y))
+
+                # Border
+                pygame.draw.rect(screen, BLUE, (info_box_x, info_box_y, info_box_width, info_box_height), 2)
+
+                # Text
+                for i, line in enumerate(player_info_lines):
+                    color = BLUE if i == 0 else WHITE
+                    text = self.font_large.render(line, True, color)
+                    screen.blit(text, (info_box_x + 10, info_box_y + 5 + i * 20))
 
         # Draw help text
         help_lines = [
