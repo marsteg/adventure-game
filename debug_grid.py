@@ -132,45 +132,88 @@ class DebugGrid:
 
         # Draw player position indicator
         if player_pos:
-            px, py = int(player_pos[0]), int(player_pos[1])
+            # player_pos is the feet position (center-bottom)
+            feet_x, feet_y = int(player_pos[0]), int(player_pos[1])
 
             # Only draw if player is in playable area
-            if 0 <= px < SCREEN_WIDTH and 0 <= py < playable_height:
-                # Calculate percentages
-                player_percent_x = (px / SCREEN_WIDTH) * 100
-                player_percent_y = (py / playable_height) * 100
+            if 0 <= feet_x < SCREEN_WIDTH and 0 <= feet_y < playable_height:
+                # Calculate percentages for feet
+                feet_percent_x = (feet_x / SCREEN_WIDTH) * 100
+                feet_percent_y = (feet_y / playable_height) * 100
 
-                # Draw player marker (blue circle with cross)
+                # Draw feet marker (blue circle with cross)
                 from constants import BLUE
-                pygame.draw.circle(screen, BLUE, (px, py), 8, 3)
-                pygame.draw.line(screen, BLUE, (px - 12, py), (px + 12, py), 3)
-                pygame.draw.line(screen, BLUE, (px, py - 12), (px, py + 12), 3)
+                pygame.draw.circle(screen, BLUE, (feet_x, feet_y), 8, 3)
+                pygame.draw.line(screen, BLUE, (feet_x - 12, feet_y), (feet_x + 12, feet_y), 3)
+                pygame.draw.line(screen, BLUE, (feet_x, feet_y - 12), (feet_x, feet_y + 12), 3)
 
-                # Draw label above player
-                player_label = f"PLAYER ({px}, {py})"
-                label_surf = self.font_large.render(player_label, True, BLUE)
-                label_rect = label_surf.get_rect()
+                # Draw label for feet position
+                feet_label = f"FEET ({feet_x}, {feet_y})"
+                feet_label_surf = self.font_large.render(feet_label, True, BLUE)
+                feet_label_rect = feet_label_surf.get_rect()
 
-                # Position label above player marker
-                label_x = max(5, min(px - label_rect.width // 2, SCREEN_WIDTH - label_rect.width - 5))
-                label_y = max(5, py - 25)
+                # Position label above feet marker
+                feet_label_x = max(5, min(feet_x - feet_label_rect.width // 2, SCREEN_WIDTH - feet_label_rect.width - 5))
+                feet_label_y = max(5, feet_y - 25)
 
                 # Background for label
-                label_bg = pygame.Surface((label_rect.width + 6, label_rect.height + 4), pygame.SRCALPHA)
-                label_bg.fill((0, 0, 0, 200))
-                screen.blit(label_bg, (label_x - 3, label_y - 2))
+                feet_label_bg = pygame.Surface((feet_label_rect.width + 6, feet_label_rect.height + 4), pygame.SRCALPHA)
+                feet_label_bg.fill((0, 0, 0, 200))
+                screen.blit(feet_label_bg, (feet_label_x - 3, feet_label_y - 2))
 
                 # Border
-                pygame.draw.rect(screen, BLUE, (label_x - 3, label_y - 2, label_rect.width + 6, label_rect.height + 4), 1)
+                pygame.draw.rect(screen, BLUE, (feet_label_x - 3, feet_label_y - 2, feet_label_rect.width + 6, feet_label_rect.height + 4), 1)
 
                 # Label text
-                screen.blit(label_surf, (label_x, label_y))
+                screen.blit(feet_label_surf, (feet_label_x, feet_label_y))
+
+                # Calculate spawn point (top-left) from feet position
+                # Assuming player size from main.py: width=50, height=75
+                player_width = 50
+                player_height = 75
+                spawn_x = feet_x - player_width // 2
+                spawn_y = feet_y - player_height
+
+                # Draw spawn point marker (cyan square)
+                from constants import PURPLE
+                spawn_color = (0, 255, 255)  # Cyan
+                pygame.draw.rect(screen, spawn_color, (spawn_x - 4, spawn_y - 4, 8, 8), 2)
+                pygame.draw.line(screen, spawn_color, (spawn_x - 8, spawn_y), (spawn_x + 8, spawn_y), 2)
+                pygame.draw.line(screen, spawn_color, (spawn_x, spawn_y - 8), (spawn_x, spawn_y + 8), 2)
+
+                # Draw line connecting spawn to feet
+                pygame.draw.line(screen, (100, 100, 255), (spawn_x, spawn_y), (feet_x, feet_y), 1)
+
+                # Draw label for spawn position
+                spawn_label = f"SPAWN ({spawn_x}, {spawn_y})"
+                spawn_label_surf = self.font.render(spawn_label, True, spawn_color)
+                spawn_label_rect = spawn_label_surf.get_rect()
+
+                # Position label above spawn marker
+                spawn_label_x = max(5, min(spawn_x - spawn_label_rect.width // 2, SCREEN_WIDTH - spawn_label_rect.width - 5))
+                spawn_label_y = max(5, spawn_y - 20)
+
+                # Background for label
+                spawn_label_bg = pygame.Surface((spawn_label_rect.width + 4, spawn_label_rect.height + 2), pygame.SRCALPHA)
+                spawn_label_bg.fill((0, 0, 0, 200))
+                screen.blit(spawn_label_bg, (spawn_label_x - 2, spawn_label_y - 1))
+
+                # Border
+                pygame.draw.rect(screen, spawn_color, (spawn_label_x - 2, spawn_label_y - 1, spawn_label_rect.width + 4, spawn_label_rect.height + 2), 1)
+
+                # Label text
+                screen.blit(spawn_label_surf, (spawn_label_x, spawn_label_y))
 
                 # Draw player info box in top-right corner
+                spawn_percent_x = (spawn_x / SCREEN_WIDTH) * 100
+                spawn_percent_y = (spawn_y / playable_height) * 100
+
                 player_info_lines = [
                     "PLAYER POSITION:",
-                    f"Pixels: ({px}, {py})",
-                    f"Percent: ({player_percent_x:.1f}%, {player_percent_y:.1f}%)",
+                    f"Spawn: ({spawn_x}, {spawn_y})",
+                    f"       ({spawn_percent_x:.1f}%, {spawn_percent_y:.1f}%)",
+                    f"Feet:  ({feet_x}, {feet_y})",
+                    f"       ({feet_percent_x:.1f}%, {feet_percent_y:.1f}%)",
                 ]
 
                 info_box_width = 250
@@ -188,7 +231,14 @@ class DebugGrid:
 
                 # Text
                 for i, line in enumerate(player_info_lines):
-                    color = BLUE if i == 0 else WHITE
+                    if i == 0:
+                        color = BLUE
+                    elif "Spawn" in line:
+                        color = spawn_color
+                    elif "Feet" in line:
+                        color = BLUE
+                    else:
+                        color = WHITE
                     text = self.font_large.render(line, True, color)
                     screen.blit(text, (info_box_x + 10, info_box_y + 5 + i * 20))
 

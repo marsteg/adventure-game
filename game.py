@@ -125,7 +125,7 @@ def create_game_content(player, inventory):
     olympus_door.add_description("The gateway to Mount Olympus", "To the realm of the gods!", "assets/sounds/doors/room1door1_locked.wav", "assets/sounds/doors/room1door1_unlocked.wav")
 
     # Return doors
-    shop_return = Door(50, 350, 80, 120, "assets/doors/door1.png", "Shop Return", tourist_shop, (540, 500), False, None)
+    shop_return = Door(50, 350, 80, 120, "assets/doors/door1.png", "Shop Return", tourist_shop, (544, 499), False, None)
     shop_return.add_description("", "Back to the tourist shop", "assets/sounds/doors/room2door2_unlocked.wav", "assets/sounds/doors/room2door2_unlocked.wav")
 
     temple_return = Door(50, 300, 80, 120, "assets/doors/door1.png", "Temple Return", ancient_temple, (650, 400), False, None)
