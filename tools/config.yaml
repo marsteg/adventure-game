@@ -1,0 +1,19 @@
+# Stability AI API Configuration
+# Get your free API key at: https://platform.stability.ai/
+
+stability_api_key: "your-api-key-here"
+
+# Monthly generation limit (free tier = 25)
+monthly_limit: 25
+
+# Model settings
+model: "sd3"  # Stable Diffusion 3.5 Large
+
+# Default settings
+defaults:
+  aspect_ratio: "1:1"
+  output_format: "png"
+  remove_background_npcs: true
+  remove_background_items: true
+  remove_background_rooms: false
+  remove_background_doors: false

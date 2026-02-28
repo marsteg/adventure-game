@@ -23,26 +23,46 @@ except ImportError:
     Image = None
     io = None
 
-import warnings
-warnings.filterwarnings('ignore')
+# Check NumPy version before attempting rembg import to prevent segfault
+try:
+    import numpy as np
+    numpy_version = tuple(map(int, np.__version__.split('.')[:2]))
+    if numpy_version[0] >= 2:
+        print("=" * 70)
+        print("ERROR: NumPy 2.x detected - incompatible with rembg/onnxruntime")
+        print("=" * 70)
+        print()
+        print("Background removal requires NumPy 1.x to avoid crashes.")
+        print()
+        print("To fix this, run:")
+        print("  pip install 'numpy<2'")
+        print("  pip install rembg")
+        print()
+        print("Then restart this tool.")
+        print("=" * 70)
+        sys.exit(1)
+except ImportError:
+    print("Warning: NumPy not installed. Installing dependencies...")
+    print("Run: pip install -r tools/requirements.txt")
+    sys.exit(1)
 
-# Suppress stderr during rembg import (numpy compatibility warnings)
-import contextlib
-with open(os.devnull, 'w') as devnull:
-    with contextlib.redirect_stderr(devnull):
-        try:
-            from rembg import remove
-            REMBG_AVAILABLE = True
-        except (ImportError, SystemError, AttributeError, Exception) as e:
-            REMBG_AVAILABLE = False
+# Now safe to import rembg
+try:
+    from PIL import Image
+    import io
+except ImportError:
+    print("Warning: PIL not available. Install with: pip install Pillow")
+    Image = None
+    io = None
 
-if not REMBG_AVAILABLE:
-    print("Note: Background removal (rembg) is disabled.")
-    print("      The tool will still work for generating images!")
-    print("      To enable background removal:")
-    print("        1. pip install 'numpy<2'")
-    print("        2. pip install rembg")
-    print()
+try:
+    from rembg import remove
+    REMBG_AVAILABLE = True
+    print("✓ Background removal enabled")
+except ImportError:
+    print("Warning: rembg not available. Background removal disabled.")
+    print("Install with: pip install rembg")
+    REMBG_AVAILABLE = False
 
 
 class AssetGenerator:
@@ -55,10 +75,12 @@ class AssetGenerator:
         'door': 'assets/doors'
     }
 
-    def __init__(self, config_path: str = "tools/config.yaml"):
+    def __init__(self, config_path: str = "tools/config.yaml", style_config_path: str = "tools/style_config.yaml"):
         """Initialize the asset generator."""
         self.config_path = Path(config_path)
+        self.style_config_path = Path(style_config_path)
         self.config = self._load_config()
+        self.style_config = self._load_style_config()
         self.prompts = self._load_prompts()
         self.usage_file = Path("tools/.usage_tracker.json")
         self.usage = self._load_usage()
@@ -71,6 +93,16 @@ class AssetGenerator:
             sys.exit(1)
 
         with open(self.config_path, 'r') as f:
+            return yaml.safe_load(f)
+
+    def _load_style_config(self) -> Dict:
+        """Load style configuration from YAML file."""
+        if not self.style_config_path.exists():
+            print(f"Warning: Style config not found at {self.style_config_path}")
+            print("Using default styles. Create style_config.yaml for custom styles.")
+            return {"master_style": {}, "enhancement": {}}
+
+        with open(self.style_config_path, 'r') as f:
             return yaml.safe_load(f)
 
     def _load_prompts(self) -> Dict:
@@ -124,20 +156,88 @@ class AssetGenerator:
             return False
         return True
 
-    def build_prompt(self, asset_type: str, description: str) -> str:
-        """Build a complete prompt for the asset type."""
-        style_guide = self.prompts.get(asset_type, {}).get('style_guide', '')
+    def build_prompt(self, asset_type: str, description: str) -> tuple[str, str]:
+        """Build a complete prompt for the asset type with negative prompt.
 
+        Returns:
+            tuple: (positive_prompt, negative_prompt)
+        """
+        # Get master style configuration
+        master_style = self.style_config.get('master_style', {})
+        art_style = master_style.get('art_style', '')
+        detail_level = master_style.get('detail_level', '')
+        color_style = master_style.get('color_style', '')
+        master_additional = master_style.get('additional', '')
+
+        # Get asset-specific style overrides
+        asset_config = self.style_config.get(asset_type + 's', {})  # 'npcs', 'rooms', etc.
+        asset_style = asset_config.get('style', '')
+        asset_additional = asset_config.get('additional', '')
+
+        # Get quality boosters
+        enhancement = self.style_config.get('enhancement', {})
+        quality_boosters = enhancement.get('quality_boosters', [])
+        quality_str = ', '.join(quality_boosters) if quality_boosters else ''
+
+        # Build positive prompt
+        prompt_parts = [description]
+
+        # Add asset-specific style
+        if asset_style:
+            prompt_parts.append(asset_style)
+
+        # Add master style
+        if art_style:
+            prompt_parts.append(art_style)
+        if detail_level:
+            prompt_parts.append(detail_level)
+        if color_style:
+            prompt_parts.append(color_style)
+
+        # Add quality boosters
+        if quality_str:
+            prompt_parts.append(quality_str)
+
+        # Add additional notes
+        if asset_additional:
+            prompt_parts.append(asset_additional)
+        if master_additional:
+            prompt_parts.append(master_additional)
+
+        # Background handling
         if asset_type == 'npc' or asset_type == 'item':
-            # NPCs and items need transparent backgrounds
-            bg_instruction = ", transparent background, isolated on white"
-        else:
-            bg_instruction = ""
+            prompt_parts.append("transparent background, isolated on white")
 
-        full_prompt = f"{description}, {style_guide}{bg_instruction}"
-        return full_prompt.strip()
+        positive_prompt = ', '.join(prompt_parts)
 
-    def generate_image_stability(self, prompt: str, asset_type: str) -> Optional[bytes]:
+        # Build negative prompt
+        negative_parts = []
+
+        # Master negative keywords (most important!)
+        master_negatives = master_style.get('negative_keywords', '')
+        if master_negatives:
+            negative_parts.append(master_negatives)
+
+        # Asset-specific negatives
+        asset_negatives = asset_config.get('negative', '')
+        if asset_negatives:
+            negative_parts.append(asset_negatives)
+
+        # Universal negatives from enhancement config
+        universal_negatives = enhancement.get('universal_negatives', [])
+        if universal_negatives:
+            negative_parts.extend(universal_negatives)
+
+        # Legacy negative prompt from old config (for backwards compatibility)
+        legacy_negative = self.prompts.get(asset_type, {}).get('negative_prompts', '')
+        if legacy_negative:
+            negative_parts.append(legacy_negative)
+
+        negative_prompt = ', '.join(negative_parts)
+
+        return positive_prompt.strip(), negative_prompt.strip()
+
+    def generate_image_stability(self, prompt: str, negative_prompt: str, asset_type: str) -> Optional[bytes]:
         """Generate image using Stability AI API."""
         api_key = self.config.get('stability_api_key')
         if not api_key or api_key == 'your-api-key-here':
@@ -153,9 +253,6 @@ class AssetGenerator:
             "accept": "image/*"
         }
 
-        # Negative prompt for better quality
-        negative_prompt = "blurry, low quality, distorted, disfigured, ugly, bad anatomy"
-
         data = {
             "prompt": prompt,
             "negative_prompt": negative_prompt,
@@ -164,7 +261,9 @@ class AssetGenerator:
             "mode": "text-to-image"
         }
 
-        print(f"Generating image with prompt: {prompt}")
+        print(f"Generating with style: {self.style_config.get('master_style', {}).get('art_style', 'default')}")
+        print(f"Prompt: {prompt[:100]}..." if len(prompt) > 100 else f"Prompt: {prompt}")
+        print(f"Negative: {negative_prompt[:80]}..." if len(negative_prompt) > 80 else f"Negative: {negative_prompt}")
         print("Please wait...")
 
         try:
@@ -234,11 +333,11 @@ class AssetGenerator:
         if not self.check_usage_limit():
             return None
 
-        # Build prompt
-        prompt = self.build_prompt(asset_type, description)
+        # Build prompt with style configuration
+        positive_prompt, negative_prompt = self.build_prompt(asset_type, description)
 
         # Generate image
-        image_data = self.generate_image_stability(prompt, asset_type)
+        image_data = self.generate_image_stability(positive_prompt, negative_prompt, asset_type)
         if not image_data:
             return None
 

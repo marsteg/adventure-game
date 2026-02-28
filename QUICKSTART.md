@@ -2,22 +2,42 @@
 
 ## ✅ Fixed NumPy Issue!
 
-The tool now works perfectly even with the NumPy compatibility issue. Background removal is optional.
+The tool now checks for NumPy compatibility and guides you to fix it if needed.
 
-## Setup (30 seconds)
+## Setup (2 minutes)
 
-1. **Get Free API Key**
+### 1. **Fix Dependencies**
+   ```bash
+   pip install 'numpy<2'
+   pip install -r tools/requirements.txt
+   ```
+
+### 2. **Get Free API Key**
    - Go to: https://platform.stability.ai/
    - Sign up (free)
    - Get API key (25 images/month free)
 
-2. **Configure**
+### 3. **Configure API**
    ```bash
    cp tools/config.yaml.example tools/config.yaml
    nano tools/config.yaml  # Add your API key
    ```
 
-3. **Done!** You're ready to generate assets.
+### 4. **Configure Your Game's Art Style** ⭐ NEW!
+   ```bash
+   cp tools/style_config.yaml.example tools/style_config.yaml
+   nano tools/style_config.yaml  # Customize for your game
+   ```
+
+   **This is VERY important!** The style config controls:
+   - ✅ 2D vs 3D style (avoid 3D renders)
+   - ✅ Cartoon vs realistic
+   - ✅ Color palette
+   - ✅ Level of detail
+
+   Edit `master_style.negative_keywords` to exclude unwanted styles like "3D render, CGI, photorealistic"
+
+### 5. **Done!** You're ready to generate assets.
 
 ## Usage
 
@@ -28,14 +48,11 @@ python3 tools/asset_generator.py --interactive
 
 ### Command Line
 ```bash
-# Generate NPC
-python3 tools/asset_generator.py npc "friendly wizard with staff" wizard
+# Generate NPC with your style
+python3 tools/asset_generator.py npc "zombie character" zombie
 
 # Generate Room
 python3 tools/asset_generator.py room "dark mysterious cave" cave_dark
-
-# Generate Item
-python3 tools/asset_generator.py item "golden key" key_gold
 
 # Check usage
 python3 tools/asset_generator.py --check-usage
@@ -50,11 +67,43 @@ python3 tools/asset_generator.py --check-usage
 ✅ Interactive mode
 ✅ Command-line mode
 ✅ Template system
+✅ Centralized style configuration
+✅ Negative prompts to avoid unwanted styles
 
-⚠️ Background removal disabled (optional feature)
-   - Tool works perfectly without it!
-   - Only needed for NPCs/items
+⚠️ Background removal requires NumPy 1.x
    - To enable: `pip install 'numpy<2' && pip install rembg`
+
+## Fixing Style Issues
+
+### Problem: "My zombie looks 3D rendered instead of cartoon!"
+
+**Solution:** Edit `tools/style_config.yaml`
+
+1. Update `master_style.negative_keywords`:
+   ```yaml
+   negative_keywords: "3D render, photorealistic, realistic, cinema4d, unreal engine, 3D animated, CGI, octane render, ray tracing, volumetric lighting, Pixar style"
+   ```
+
+2. Strengthen your positive style:
+   ```yaml
+   art_style: "2D cartoon illustration, hand-drawn style, flat colors, cel-shaded, bold outlines"
+   detail_level: "simple, clean lines, NOT 3D rendered, NOT photorealistic"
+   ```
+
+3. Add reference games:
+   ```yaml
+   additional: "similar to Monkey Island, Day of the Tentacle, hand-painted adventure game"
+   ```
+
+### The Power of Negative Prompts
+
+Negative keywords are CRITICAL! They tell the AI what to avoid:
+- "3D render" → prevents CGI look
+- "photorealistic" → prevents realistic style
+- "octane render, ray tracing" → prevents modern 3D rendering
+- "Pixar style, Disney 3D" → prevents 3D animation look
+
+**Always specify what you DON'T want!**
 
 ## Example Workflow
 

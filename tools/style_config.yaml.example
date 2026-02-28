@@ -1,0 +1,57 @@
+# Example Style Configuration - Copy this to style_config.yaml and customize
+
+# For a 2D cartoon adventure game like your current assets:
+master_style:
+  art_style: "2D cartoon illustration, hand-drawn style, flat colors, cel-shaded"
+  detail_level: "simple, clean lines, not photorealistic, not 3D rendered"
+  color_style: "vibrant colors, bold outlines, adventure game aesthetic"
+  negative_keywords: "3D render, photorealistic, realistic, cinema4d, unreal engine, 3D animated, CGI, octane render, ray tracing, volumetric lighting, depth of field, Pixar style, Disney 3D"
+  additional: "similar to classic point-and-click adventure games like Monkey Island or Day of the Tentacle"
+
+npcs:
+  style: "full body character sprite, front view, standing pose, 2D game character"
+  negative: "side view, multiple poses, action pose, dynamic pose, 3D model"
+  additional: "simple character design, clear silhouette, flat shading"
+
+rooms:
+  style: "interior background scene, wide angle view, 2D game background art"
+  negative: "character in scene, portrait orientation, close-up, 3D environment"
+  additional: "atmospheric, detailed environment, clear depth, painted background"
+
+items:
+  style: "2D game item icon, single object, centered, clear and recognizable"
+  negative: "multiple objects, scene, background elements, text, UI elements, 3D object"
+  additional: "inventory item style, easily identifiable, flat icon"
+
+doors:
+  style: "front-facing door, architectural element, straight-on view, 2D sprite"
+  negative: "perspective view, open door, angled view, 3D model"
+  additional: "clear and centered, game asset style, flat rendering"
+
+enhancement:
+  style_weight: 0.9
+  quality_boosters:
+    - "high quality"
+    - "clean artwork"
+    - "professional game art"
+    - "2D illustration"
+  universal_negatives:
+    - "blurry"
+    - "low quality"
+    - "distorted"
+    - "watermark"
+    - "signature"
+    - "text"
+    - "logo"
+    - "amateur"
+    - "photograph"
+    - "photo"
+
+reference_style_notes: |
+  Think: Classic LucasArts adventure games (Monkey Island, Day of the Tentacle)
+  - Bold black outlines
+  - Flat cel-shading
+  - Cartoon proportions
+  - Clear readable shapes
+  - Hand-painted look
+  NOT: Modern 3D games, realistic renders, Pixar/Disney 3D animation, CGI

@@ -284,26 +284,34 @@ Edit `tools/config.yaml` and replace `your-api-key-here` with your actual API ke
 2. Adjust the `style_guide` field
 3. Add more specific style keywords to match your game
 
+### "NumPy 2.x detected" Error
+
+If you see this error, the tool detected NumPy 2.x which is incompatible with the background removal library (rembg/onnxruntime).
+
+**Quick Fix:**
+```bash
+pip install 'numpy<2'
+pip install rembg
+```
+
+Or run the setup script which handles this automatically:
+```bash
+./setup_asset_generator.sh
+```
+
+**Why this happens:**
+The `onnxruntime` library (used by rembg for AI-powered background removal) hasn't been updated for NumPy 2.x yet and will cause crashes.
+
 ### Background Not Removed
 
-The tool works perfectly without background removal! It will generate images with backgrounds included.
+If background removal doesn't work:
 
-**To enable background removal (optional):**
-
-1. Fix NumPy compatibility:
-   ```bash
-   pip install 'numpy<2'
-   ```
-
-2. Install rembg:
-   ```bash
-   pip install rembg
-   ```
-
+1. Make sure you have NumPy 1.x installed (see above)
+2. Check if `rembg` is installed: `pip install rembg`
 3. For rooms/doors, background removal is disabled by default (you want the background!)
-4. Use `--no-bg-removal` flag to disable for NPCs/items if needed
+4. Use `--no-bg-removal` flag to skip background removal for any asset type
 
-**Note:** Background removal is only useful for NPCs and items. The tool generates images either way!
+**Note:** Background removal is automatic for NPCs and items, but optional for rooms and doors.
 
 ## File Structure
 
