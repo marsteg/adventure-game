@@ -23,13 +23,26 @@ except ImportError:
     Image = None
     io = None
 
-try:
-    from rembg import remove
-    REMBG_AVAILABLE = True
-except ImportError:
-    print("Warning: rembg not available. Background removal disabled.")
-    print("Install with: pip install rembg")
-    REMBG_AVAILABLE = False
+import warnings
+warnings.filterwarnings('ignore')
+
+# Suppress stderr during rembg import (numpy compatibility warnings)
+import contextlib
+with open(os.devnull, 'w') as devnull:
+    with contextlib.redirect_stderr(devnull):
+        try:
+            from rembg import remove
+            REMBG_AVAILABLE = True
+        except (ImportError, SystemError, AttributeError, Exception) as e:
+            REMBG_AVAILABLE = False
+
+if not REMBG_AVAILABLE:
+    print("Note: Background removal (rembg) is disabled.")
+    print("      The tool will still work for generating images!")
+    print("      To enable background removal:")
+    print("        1. pip install 'numpy<2'")
+    print("        2. pip install rembg")
+    print()
 
 
 class AssetGenerator:

@@ -286,9 +286,24 @@ Edit `tools/config.yaml` and replace `your-api-key-here` with your actual API ke
 
 ### Background Not Removed
 
-1. Check if `rembg` is installed: `pip install rembg`
-2. For rooms/doors, background removal is disabled by default
-3. Use `--no-bg-removal` to disable for NPCs/items
+The tool works perfectly without background removal! It will generate images with backgrounds included.
+
+**To enable background removal (optional):**
+
+1. Fix NumPy compatibility:
+   ```bash
+   pip install 'numpy<2'
+   ```
+
+2. Install rembg:
+   ```bash
+   pip install rembg
+   ```
+
+3. For rooms/doors, background removal is disabled by default (you want the background!)
+4. Use `--no-bg-removal` flag to disable for NPCs/items if needed
+
+**Note:** Background removal is only useful for NPCs and items. The tool generates images either way!
 
 ## File Structure
 
