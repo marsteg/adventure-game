@@ -48,7 +48,7 @@ class Player(pygame.sprite.Sprite):
     def draw(self, screen):
         screen.blit(self.image, self.rect)
 
-    def update(self, dt):
+    def update(self, dt, room=None):
         # Animate walking
         self.current_sprite += 0.1
         if self.current_sprite >= len(self.rightsprites):
@@ -70,7 +70,22 @@ class Player(pygame.sprite.Sprite):
             self.pos = self.target.copy()
         elif move_length > 0:
             move.normalize_ip()
-            self.pos += move * self.speed
+            new_pos = self.pos + move * self.speed
+
+            # Validate new position is walkable if room has a mask
+            if room and room.walkable_mask:
+                # Check the center-bottom of the player sprite (their "feet")
+                feet_x = int(new_pos.x + self.rect.width // 2)
+                feet_y = int(new_pos.y + self.rect.height)
+
+                if room.is_walkable((feet_x, feet_y)):
+                    self.pos = new_pos
+                else:
+                    # Hit a wall - stop moving
+                    self.target = self.pos.copy()
+            else:
+                # No mask or no room provided - move freely (backward compatible)
+                self.pos = new_pos
 
         self.rect.topleft = (int(self.pos.x), int(self.pos.y))
 

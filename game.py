@@ -30,7 +30,7 @@ def create_game_content(player, inventory):
     # =============================================================================
     # ROOM 1: GREEK TOURIST SHOP
     # =============================================================================
-    tourist_shop = Room(player, "assets/rooms/TitleScreen.png", "Tourist Shop", "assets/sounds/background/Talkline7.wav")
+    tourist_shop = Room(player, "assets/rooms/TitleScreen.png", "Tourist Shop", "assets/sounds/background/Talkline7.wav", walkable_mask="assets/rooms/TitleScreen_mask.png")
 
     # =============================================================================
     # ROOM 2: ANCIENT TEMPLE
