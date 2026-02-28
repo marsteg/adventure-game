@@ -234,10 +234,15 @@ def main():
     active_timer = 0
 
     def queue_interaction(obj_or_qi):
-        nonlocal pending_interaction, interaction_target, player
+        nonlocal pending_interaction, interaction_target, player, active_room
         pending_interaction = obj_or_qi
         target_obj = obj_or_qi.target if isinstance(obj_or_qi, QueuedInteraction) else obj_or_qi
         interaction_target = pygame.Vector2(target_obj.rect.centerx, target_obj.rect.centery)
+
+        # Find nearest walkable point to the interaction target
+        walkable_target = active_room.find_nearest_walkable(interaction_target)
+        interaction_target = pygame.Vector2(walkable_target)
+
         assert player is not None
         for char in player.sprites():
             char.set_target(interaction_target)
@@ -656,6 +661,19 @@ def main():
                     if drawable_room == active_room:
                         drawable_room.shine(screen)
 
+            # W key to toggle walkable area visualization
+            if keys[pygame.K_w]:
+                import constants
+                constants.SHOW_WALKABLE_AREA = not constants.SHOW_WALKABLE_AREA
+                status = "ON" if constants.SHOW_WALKABLE_AREA else "OFF"
+                print(f"Walkable area visualization: {status}")
+                pygame.time.wait(200)  # Debounce
+
+            # Draw walkable area overlay if enabled
+            import constants
+            if constants.SHOW_WALKABLE_AREA:
+                active_room.draw_walkable_overlay(screen)
+
             # New save/load menu system (S and L keys)
             if keys[pygame.K_s]:
                 update_playtime()  # Update playtime before entering save menu
@@ -820,8 +838,10 @@ def main():
                         if not dialog_active and active_click is None:
                             mouse = pygame.mouse.get_pos()
                             if mouse[1] < SCREEN_HEIGHT - INVENTORY_HEIGHT:
+                                # Check if clicked position is walkable, if not find nearest walkable point
+                                walkable_pos = active_room.find_nearest_walkable(mouse)
                                 for char in player.sprites():
-                                    char.set_target(mouse)
+                                    char.set_target(walkable_pos)
 
                         active_click = None
 
