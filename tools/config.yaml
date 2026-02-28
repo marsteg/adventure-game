@@ -1,0 +1,19 @@
+# Image Generation Provider Configuration
+provider: "huggingface"
+
+# Hugging Face Model (FLUX is fast and high quality)
+huggingface_model: "black-forest-labs/FLUX.1-schnell"
+
+# Image dimensions per asset type
+dimensions:
+  npc: [1024, 1024]      # for characters
+  item: [1024, 1024]     # for items
+  door: [1024, 1024]       # for doors (adjust if needed)
+  room: [1920, 1080]     # for rooms (could use [1920, 1080] for widescreen backgrounds)
+
+# Background removal per asset type
+remove_background:
+  npc: true              # Remove background for NPCs
+  item: true             # Remove background for items
+  door: false            # Keep background for doors
+  room: false            # Keep background for rooms

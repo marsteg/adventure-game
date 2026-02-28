@@ -1,0 +1,97 @@
+# Global Style Configuration for Asset Generator
+# This file defines the visual style for ALL generated assets in your game
+
+# ============================================================================
+# MASTER STYLE DEFINITION
+# ============================================================================
+# This is applied to EVERY asset generated. Be as specific as possible!
+
+master_style:
+  # Primary style descriptors (choose what fits your game)
+  art_style: "2D cartoon illustration, hand-drawn style, flat colors, cel-shaded"
+
+  # Detail level
+  detail_level: "simple, clean lines, not photorealistic, not 3D rendered"
+
+  # Color palette guidance
+  color_style: "vibrant colors, bold outlines, adventure game aesthetic"
+
+  # What to AVOID (very important for consistency!)
+  negative_keywords: "3D render, photorealistic, realistic, cinema4d, unreal engine, 3D animated, CGI, octane render, ray tracing, volumetric lighting, depth of field"
+
+  # Additional style notes
+  additional: "similar to classic point-and-click adventure games like Monkey Island or Day of the Tentacle"
+
+# ============================================================================
+# ASSET-SPECIFIC STYLE OVERRIDES
+# ============================================================================
+# Fine-tune style for specific asset types while keeping master style
+
+npcs:
+  style: "full body character sprite, front view, standing pose"
+  negative: "side view, multiple poses, action pose, dynamic pose"
+  additional: "simple character design, clear silhouette"
+
+rooms:
+  style: "interior background scene, wide angle view, game background art"
+  negative: "character in scene, portrait orientation, close-up"
+  additional: "atmospheric, detailed environment, clear depth"
+
+items:
+  style: "game item icon, single object, centered, clear and recognizable"
+  negative: "multiple objects, scene, background elements, text, UI elements"
+  additional: "inventory item style, easily identifiable"
+
+doors:
+  style: "front-facing door, architectural element, straight-on view"
+  negative: "perspective view, open door, angled view"
+  additional: "clear and centered, game asset style"
+
+# ============================================================================
+# PROMPT ENHANCEMENT SETTINGS
+# ============================================================================
+
+enhancement:
+  # Strength of style enforcement (0.0 to 1.0)
+  # Higher = more strict adherence to style
+  style_weight: 0.9
+
+  # Add these quality boosters to all prompts
+  quality_boosters:
+    - "high quality"
+    - "clean artwork"
+    - "professional game art"
+
+  # Always exclude these from generated images
+  universal_negatives:
+    - "blurry"
+    - "low quality"
+    - "distorted"
+    - "watermark"
+    - "signature"
+    - "text"
+    - "logo"
+    - "amateur"
+
+# ============================================================================
+# REFERENCE EXAMPLES (Optional)
+# ============================================================================
+# If you have example images that match your desired style, note them here
+# The tool can reference these in prompts
+
+reference_style_notes: |
+  Think: Classic LucasArts adventure games
+  - Bold outlines
+  - Flat cel-shading
+  - Cartoon proportions
+  - Clear readable shapes
+  NOT: Modern 3D games, realistic renders, Pixar-style 3D animation
+
+# ============================================================================
+# TIPS FOR CUSTOMIZATION
+# ============================================================================
+# 1. Be VERY specific in master_style.art_style
+# 2. Use master_style.negative_keywords to exclude unwanted styles
+# 3. Add reference game names in additional fields
+# 4. Experiment with style_weight if results aren't matching
+# 5. Update this file anytime you want to change your game's look

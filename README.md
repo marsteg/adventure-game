@@ -47,10 +47,22 @@ You will need the pygame library. Then just run:
 - Introduced a Player. At the moment it simply spawns and can be send to a destination
 	- The Player has now a left and right walking animation
 - There is now a small Text Area that displays the objectname of whatever you are pointing at
-		
+- The Inventory is now centered
+- Cutscenes! There is now the possibility to have Text-based Cutscenes for intros or short explanations of story.
+	- They can be triggered via Actionfuncs
+- Walkable Areas!
+	- You can now create a mask for rooms, so players can only walk on the white Areas of the Mask. Black and Transparent Areas are blocked paths.
+	- See [WALKABLE_AREAS_AGENT_GUIDE.md](WALKABLE_AREAS_AGENT_GUIDE.md) for complete documentation
+- Asset Generator
+	- there is now an Asset Generator in the tools folder. It can be used to generate Assets with [Hugging Face (default, FREE unlimited) or Stability AI!](https://huggingface.co)
+	- Check [the docs](tools/README.md)
 
 
-# Todo List: 
+## Improve Documentation
+- create index
+- properly route through documentation
+
+# Todo List:
 - need to find a clean way to assign and create doors and rooms and assign items (currently in main func)
 	- it would be nice to have the "Game Definition" in a yaml file.
 		- All Items in a Yaml
@@ -98,7 +110,7 @@ dialbox.rect = pygame.Rect(SCREEN_WIDTH // 5, SCREEN_HEIGHT // 5, SCREEN_WIDTH /
 --> perfect "narrator" position on the top center
 
 # Thanks and Grateful links to external helping tools:
-Background Music from: https://www.musicfox.com/info/kostenlose-gemafreie-musik/
+Background Music from: [Musicfox](https://www.musicfox.com/info/kostenlose-gemafreie-musik/).  
 Sound Effeces from:
 freesound.org
 	- Brickhario (unlocking doors)

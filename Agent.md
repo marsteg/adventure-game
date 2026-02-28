@@ -1232,17 +1232,133 @@ self.slides = [
 
 ## Asset Creation Notes
 
-**⚠️ LIMITATION**: Claude Code cannot generate images or audio files.
+### AI-Powered Asset Generator Tool
 
-### Asset Requirements
-- **Images**: Room backgrounds (1024x768), character sprites, items, actions
+**✅ USE THIS**: The repository includes a dedicated asset generator tool at `tools/asset_generator.py` that creates game assets using AI image generation.
+
+#### Asset Requirements
+- **Images**: Room backgrounds (1024x768), character sprites, items, actions, doors
 - **Audio**: Background music, dialog voice files, sound effects (WAV format)
-- **Sources**: AI generators, stock art, commission artists, or create your own
+
+#### Using the Asset Generator
+
+**For image assets (NPCs, rooms, items, doors):**
+```bash
+# Interactive mode (recommended)
+python tools/asset_generator.py --interactive
+
+# Command-line mode
+python tools/asset_generator.py npc "elderly wizard with purple robes" wizard
+python tools/asset_generator.py room "dark mysterious library" library
+python tools/asset_generator.py item "golden key with ruby" key_gold
+python tools/asset_generator.py door "wooden castle door" door_castle
+
+# With custom size
+python tools/asset_generator.py room "tavern interior" tavern --width 1920 --height 1080
+```
+
+**Features:**
+- ✅ **FREE Unlimited Generation** - Uses Hugging Face API (no credit limits)
+- ✅ **Consistent Style** - Centralized style config ensures all assets match
+- ✅ **Automatic Dimensions** - Correct sizes per asset type (configurable)
+- ✅ **Transparent Backgrounds** - NPCs and items automatically get transparent backgrounds
+- ✅ **Quick & Easy** - Generate assets in seconds
+
+**Setup:** See `tools/README.md` for complete instructions. Quick setup:
+1. Install: `pip install -r tools/requirements.txt`
+2. Get free token: https://huggingface.co/settings/tokens
+3. Configure: Create `.env` file with `HF_TOKEN=your_token`
+4. **Configure style (REQUIRED)**: Edit `tools/style_config.yaml` to match the user's desired art style
+5. Generate: `python tools/asset_generator.py --interactive`
+
+**⚠️ CRITICAL: Style Configuration Before Generating Assets**
+
+**ALWAYS configure style BEFORE generating any assets!** The style configuration determines the visual consistency of ALL generated assets.
+
+**Agent Workflow:**
+1. **Ask user about visual style** (use "Minimum Required Information" section above)
+2. **Update `tools/style_config.yaml`** based on user's art direction preferences
+3. **Generate test asset** to verify style matches expectations
+4. **Iterate on style config** if needed before generating all assets
+
+**How to Configure Style:**
+
+```bash
+# 1. Copy template if not exists
+cp tools/style_config.yaml.example tools/style_config.yaml
+
+# 2. Edit the file
+nano tools/style_config.yaml
+```
+
+**Key fields to update based on user's visual style:**
+
+```yaml
+master_style:
+  # Update this to match user's art direction
+  art_style: "2D cartoon illustration, hand-drawn style, flat colors"
+
+  # CRITICAL: Add negative keywords to exclude unwanted styles
+  # Example: If user wants "pixel art", exclude "smooth, 3D, photorealistic"
+  # Example: If user wants "cartoon", exclude "3D render, CGI, realistic"
+  negative_keywords: "3D render, photorealistic, CGI, Pixar, Disney 3D"
+
+  # Match user's color preferences
+  color_style: "vibrant colors, bold outlines"
+
+  # Reference similar games if helpful
+  additional: "similar to Monkey Island, Day of the Tentacle"
+```
+
+**Example Style Configurations:**
+
+For **"comic book style"** user request:
+```yaml
+master_style:
+  art_style: "comic book illustration, ink and color, bold linework"
+  negative_keywords: "3D render, photograph, realistic lighting, CGI"
+  color_style: "vibrant colors, dramatic shading"
+  additional: "graphic novel style, hand-drawn comics"
+```
+
+For **"pixel art retro"** user request:
+```yaml
+master_style:
+  art_style: "pixel art, 16-bit style, retro game sprites"
+  negative_keywords: "smooth, anti-aliased, high resolution, 3D, realistic, photorealistic"
+  color_style: "limited color palette, chunky pixels"
+  additional: "similar to classic SNES games"
+```
+
+For **"realistic mysterious"** user request:
+```yaml
+master_style:
+  art_style: "detailed illustration, atmospheric, dramatic lighting"
+  negative_keywords: "cartoon, comic, anime, childish, flat colors"
+  color_style: "dark tones, moody atmosphere, realistic shadows"
+  additional: "serious tone, detailed environments"
+```
+
+**Testing Style Configuration:**
+```bash
+# Generate a test asset first
+python tools/asset_generator.py npc "test character" test_npc
+
+# Check if it matches user's visual style preference
+# If not, update style_config.yaml and regenerate
+```
+
+**Audio Assets:**
+- **Voice Acting**: Use text-to-speech services or record your own
+- **Music/SFX**: Use royalty-free sources (Freesound, OpenGameArt, etc.)
 
 ### Development Strategy
-1. **Prototype**: Use existing engine assets as placeholders
-2. **Replace**: Source final assets before release
-3. **Test**: Verify all assets load correctly
+1. **Configure Style**: Update `tools/style_config.yaml` based on user's visual style preference
+2. **Generate Test Asset**: Create one asset to verify style matches user's expectations
+3. **Use Asset Generator**: Create all image assets (NPCs, rooms, items, doors) with the tool
+4. **Source Audio**: Find or create voice lines, music, and sound effects separately
+5. **Test**: Verify all assets load correctly and match your art style
+6. **Iterate**: Adjust `style_config.yaml` if assets don't match, regenerate as needed
 
 ---
 
