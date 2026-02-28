@@ -24,6 +24,9 @@ PURPLE = (160, 32, 240)
 # Audio settings
 BACKGROUND_VOLUME = 0.1
 
+# Debug settings
+SHOW_WALKABLE_AREA = False  # Toggle with W key
+
 
 def at_percentage_width(percentage):
     """Calculate a position as percentage of screen width."""
