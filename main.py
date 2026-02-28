@@ -3,7 +3,8 @@ import time
 
 from constants import (
     SCREEN_WIDTH, SCREEN_HEIGHT, INVENTORY_HEIGHT, FPS, INTERACTION_DISTANCE,
-    BACKGROUND_VOLUME, WHITE, YELLOW, GREEN, PURPLE, at_percentage_width, at_percentage_height
+    BACKGROUND_VOLUME, WHITE, YELLOW, GREEN, PURPLE, at_percentage_width, at_percentage_height,
+    DIALOG_SKIP_COOLDOWN
 )
 from debug_grid import debug_grid
 from item import Item
@@ -353,6 +354,9 @@ def main():
         """Draw a styled hover tooltip."""
         if text:
             tooltip_renderer.render(surface, text, pos)
+
+    # Dialog skip tracking
+    last_dialog_skip_time = 0
 
     # Main game loop
     run = True
@@ -732,16 +736,53 @@ def main():
             for event in events:
                 if event.type == pygame.MOUSEBUTTONDOWN:
                     if event.button == 1:  # Left mouse button
-                        # Check if we should skip current voice line
+                        # Check if we should skip current dialog line
                         dialog_active = len(DialogBox.dialogboxes) > 0
-                        if dialog_active and VoiceManager.is_voice_playing():
-                            # Skip current voice and advance dialog
+                        current_time = time.time()
+
+                        # Skip on ANY click during dialog, unless answers are showing or in cooldown
+                        if dialog_active and answerbox.state is None:
+                            # Check cooldown to prevent accidental double-clicks
+                            if current_time - last_dialog_skip_time < DIALOG_SKIP_COOLDOWN:
+                                continue  # Still in cooldown, ignore this click
+
+                            # Stop any playing voice
                             VoiceManager.stop_current_voice()
-                            # Force timer expiration to advance to next dialog/line
+
+                            # Check if we're on the last line of the dialog
                             for dialbox in DialogBox.dialogboxes:
                                 if dialbox.room == active_room:
-                                    dialbox.timer = time.time() - active_timer - 1
-                            continue  # Skip normal click processing when skipping voice
+                                    speaker = dialbox.state
+                                    is_last_line = False
+
+                                    # Determine if this is the last line
+                                    if isinstance(speaker, NPC):
+                                        line = speaker.dialog[speaker.active_dialog]["line"]
+                                        if isinstance(line, list):
+                                            # Multi-line dialog: check if we're on the last line
+                                            is_last_line = (speaker.dialogline >= len(line) - 1)
+                                        else:
+                                            # Single line dialog: always last line
+                                            is_last_line = True
+                                    else:
+                                        # Non-NPC dialog: always last line
+                                        is_last_line = True
+
+                                    if is_last_line:
+                                        # Last line: close dialog immediately
+                                        if isinstance(speaker, NPC):
+                                            speaker.dialogline = 0
+                                        dialbox.state = None
+                                        active_talker = None
+                                        dialbox.kill()
+                                    else:
+                                        # Not last line: force timer expiration to advance
+                                        dialbox.timer = time.time() - active_timer - 1
+
+                                    # Update last skip time to start cooldown
+                                    last_dialog_skip_time = current_time
+
+                            continue  # Skip normal click processing when skipping dialog
 
                     if event.button in (1, 3):
                         active_click = None  # Reset click tracking
