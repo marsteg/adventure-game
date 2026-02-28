@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 """
 Asset Generator for Point & Click Adventure Game Engine
-Generates game assets (NPCs, Rooms, Items, Doors) using AI image generation.
+Generates game assets (NPCs, Rooms, Items, Doors, Actions) using AI image generation.
 """
 
 import os
@@ -87,7 +87,8 @@ class AssetGenerator:
         'npc': 'assets/npcs',
         'room': 'assets/rooms',
         'item': 'assets/items',
-        'door': 'assets/doors'
+        'door': 'assets/doors',
+        'action': 'assets/actions'
     }
 
     def __init__(self, config_path: str = "tools/config.yaml", style_config_path: str = "tools/style_config.yaml"):
@@ -235,7 +236,7 @@ class AssetGenerator:
             prompt_parts.append(master_additional)
 
         # Background handling
-        if asset_type == 'npc' or asset_type == 'item':
+        if asset_type in ['npc', 'item', 'action']:
             prompt_parts.append("transparent background, isolated on white")
 
         positive_prompt = ', '.join(prompt_parts)
@@ -512,7 +513,7 @@ class AssetGenerator:
         if remove_bg is None:
             # Check config for this asset type
             bg_config = self.config.get('remove_background', {})
-            remove_bg = bg_config.get(asset_type, asset_type in ['npc', 'item'])
+            remove_bg = bg_config.get(asset_type, asset_type in ['npc', 'item', 'action'])
 
         if remove_bg:
             image_data = self.remove_background(image_data)
@@ -562,6 +563,16 @@ class AssetGenerator:
                 ('dungeon_door', 'Prison cell door with bars'),
                 ('magic_door', 'Mystical door with runes'),
             ],
+            'action': [
+                ('lever', 'Mechanical lever or switch'),
+                ('button', 'Push button or pressure plate'),
+                ('statue', 'Interactive statue or monument'),
+                ('chest', 'Treasure chest or container'),
+                ('fountain', 'Decorative fountain'),
+                ('altar', 'Ritual altar or shrine'),
+                ('telescope', 'Viewing telescope or spyglass'),
+                ('throne', 'Royal throne or seat'),
+            ],
         }
 
         if asset_type:
@@ -584,11 +595,11 @@ class AssetGenerator:
             print("\nAsset Types:")
             for i, atype in enumerate(self.ASSET_TYPES.keys(), 1):
                 print(f"  {i}. {atype.upper()}")
-            print("  5. Exit")
+            print(f"  {len(self.ASSET_TYPES) + 1}. Exit")
 
-            choice = input("\nSelect asset type (1-5): ").strip()
+            choice = input(f"\nSelect asset type (1-{len(self.ASSET_TYPES) + 1}): ").strip()
 
-            if choice == '5':
+            if choice == str(len(self.ASSET_TYPES) + 1):
                 print("Goodbye!")
                 break
 
@@ -625,6 +636,10 @@ class AssetGenerator:
             if asset_type in ['room', 'door']:
                 bg_choice = input("Remove background? (y/n, default=n): ").strip().lower()
                 remove_bg = bg_choice == 'y'
+            elif asset_type in ['npc', 'item', 'action']:
+                bg_choice = input("Remove background? (y/n, default=y): ").strip().lower()
+                if bg_choice == 'n':
+                    remove_bg = False
 
             print(f"\nGenerating {asset_type}...")
             self.generate_asset(asset_type, description, name, remove_bg, width, height)
@@ -650,6 +665,9 @@ Examples:
   # Generate an item
   python tools/asset_generator.py item "golden key with ornate design" key_ornate
 
+  # Generate an action object
+  python tools/asset_generator.py action "ancient stone lever" lever
+
   # Interactive mode (asks for size)
   python tools/asset_generator.py --interactive
 
@@ -658,7 +676,7 @@ Examples:
         """
     )
 
-    parser.add_argument('asset_type', nargs='?', choices=['npc', 'room', 'item', 'door'],
+    parser.add_argument('asset_type', nargs='?', choices=['npc', 'room', 'item', 'door', 'action'],
                        help='Type of asset to generate')
     parser.add_argument('description', nargs='?', help='Description of the asset')
     parser.add_argument('name', nargs='?', help='Name for the asset file')
