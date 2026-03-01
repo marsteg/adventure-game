@@ -166,20 +166,20 @@ def main():
             slot_number: Slot number to save to
             thumbnail_override: Optional pre-captured thumbnail surface
         """
-        nonlocal playtime_seconds
+        nonlocal playtime_seconds, title
         update_playtime()
         # Use provided thumbnail or capture current screen
         thumbnail = thumbnail_override if thumbnail_override else capture_thumbnail()
-        success = SaveStateToSlot(active_room, inventory, player, slot_number, playtime_seconds, thumbnail)
+        success = SaveStateToSlot(title, active_room, inventory, player, slot_number, playtime_seconds, thumbnail)
         if success:
             print(f"Game saved to slot {slot_number} (Playtime: {playtime_seconds}s)")
         return success
 
     def perform_load(slot_number):
         """Load game from specified slot and update playtime."""
-        nonlocal inventory, active_room, playtime_seconds, session_start_time, last_room_for_autosave
+        nonlocal inventory, active_room, playtime_seconds, session_start_time, last_room_for_autosave, title
 
-        loaded_room, new_inventory, player_pos, loaded_playtime = LoadStateFromSlot(slot_number)
+        loaded_room, new_inventory, player_pos, loaded_playtime = LoadStateFromSlot(slot_number, title)
 
         if loaded_room and new_inventory:
             # Clear current inventory state

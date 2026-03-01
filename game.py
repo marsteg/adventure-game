@@ -1,4 +1,4 @@
-# Lucky Luke's Olympic Blunders - Game Content
+# Lucky Dude's Olympic Blunders - Game Content
 # Compatible with the existing main.py structure
 
 from constants import WHITE, YELLOW, PURPLE
@@ -11,7 +11,7 @@ from door import Door
 from textcutscene import TextCutscene
 
 def get_metadata():
-    title = "Lucky Luke's Olympic Blunders"
+    title = "Lucky Dude's Olympic Blunders"
     player_start_position_percent = (23, 77)  # x and y starting position of player in percentage of screen width/height (0.3 means 30% across the screen)
     return title, player_start_position_percent
 
@@ -28,7 +28,7 @@ def get_player_config():
 
 def create_game_content(player, inventory):
     """
-    Creates Lucky Luke game content using existing engine patterns
+    Creates Lucky Dude game content using existing engine patterns
     Returns: (rooms_dict, starting_room, intro)
     """
 
@@ -79,7 +79,7 @@ def create_game_content(player, inventory):
 
     # Ambrosia - Final reward item
     ambrosia = Item(300, 250, 50, 40, "assets/items/ambrosia.png", "Divine Ambrosia", True)
-    ambrosia.add_description("Food of the gods - Luke's reward for his 'heroic' journey", "assets/sounds/items/hay_locked.wav")
+    ambrosia.add_description("Food of the gods - Dude's reward for his 'heroic' journey", "assets/sounds/items/hay_locked.wav")
 
     # =============================================================================
     # NPCs (Define before Actions so they can be used as keys)
@@ -101,7 +101,7 @@ def create_game_content(player, inventory):
     # ACTIONS (NPCs defined above can now be used as keys)
     # =============================================================================
 
-    # Ancient Vase - The item Luke will accidentally break
+    # Ancient Vase - The item Dude will accidentally break
     ancient_vase = Action(406, 601, 70, 70, "assets/actions/ancient_vase.png", "Ancient Vase", False, None)
     ancient_vase.add_description("A priceless ancient Greek vase", "A priceless ancient Greek vase", "assets/sounds/actions/button1_locked.wav", "assets/sounds/actions/button2_unlocked.wav")
 
@@ -116,7 +116,7 @@ def create_game_content(player, inventory):
 
     # Golden Throne - Easter egg action
     throne = Action(450, 250, 100, 120, "assets/actions/throne.png", "Zeus's Throne", False, None)
-    throne.add_description("You probably shouldn't sit on Zeus's throne...", "Luke accidentally sits down - lightning flashes but nothing bad happens!", "assets/sounds/actions/button1_locked.wav", "assets/sounds/actions/button2_unlocked.wav")
+    throne.add_description("You probably shouldn't sit on Zeus's throne...", "Dude accidentally sits down - lightning flashes but nothing bad happens!", "assets/sounds/actions/button1_locked.wav", "assets/sounds/actions/button2_unlocked.wav")
 
 
     # =============================================================================
@@ -147,7 +147,7 @@ def create_game_content(player, inventory):
     # =============================================================================
 
     # Ancient Vase functions
-    ancient_vase.add_function(actionfuncs.LogText, "Luke accidentally bumps the vase!")
+    ancient_vase.add_function(actionfuncs.LogText, "Dude accidentally bumps the vase!")
     ancient_vase.add_function(actionfuncs.PlaySound, "assets/sounds/actions/grunz.wav")
     ancient_vase.add_function(actionfuncs.ChangePicture, ancient_vase, "assets/actions/ancient_vase_broken.png", "assets/actions/ancient_vase.png", None)
     ancient_vase.add_function(actionfuncs.UnlockDoor, ancient_vase, temple_door)
@@ -165,7 +165,7 @@ def create_game_content(player, inventory):
     puzzle_box.add_function(actionfuncs.PlayTextCutScene, "assets/textcutscenes/puzzle_solved.yaml")
 
     # Boat functions
-    boat.add_function(actionfuncs.LogText, "Luke trips getting in but somehow lands perfectly!")
+    boat.add_function(actionfuncs.LogText, "Dude trips getting in but somehow lands perfectly!")
     boat.add_function(actionfuncs.PlaySound, "assets/sounds/actions/grunz.wav")
     boat.add_function(actionfuncs.UnlockDoor, boat, olympus_door)
 

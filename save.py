@@ -12,7 +12,7 @@ from player import Player
 from debug import debug_inventory_state, debug_save_data, debug_load_process, debug_room_items, debug
 
 
-def SaveState(active_room, inventory, player, filename):
+def SaveState(title, active_room, inventory, player, filename):
     """Save the current game state to a YAML file with improved format."""
     debug.log(f"Starting save operation to {filename}")
     debug_inventory_state(inventory, "Before Save")
@@ -20,7 +20,7 @@ def SaveState(active_room, inventory, player, filename):
     # Create save data with versioning and metadata
     savedata = {
         "save_version": "2.0",
-        "game_content_hash": "lucky_luke_olympic_blunders",
+        "game_content_hash": title,
         "rooms": {},
         "inventory": {},
         "active_room": active_room.name
@@ -107,7 +107,7 @@ def SaveState(active_room, inventory, player, filename):
         print(f"Error serializing game state: {e}")
 
 
-def validate_save_compatibility(data):
+def validate_save_compatibility(data, title):
     """Validate save file compatibility with current game"""
     # Check save version
     save_version = data.get("save_version", "1.0")
@@ -123,7 +123,7 @@ def validate_save_compatibility(data):
 
     # Check game content compatibility
     game_hash = data.get("game_content_hash", "unknown")
-    current_hash = "lucky_luke_olympic_blunders"
+    current_hash = title
 
     if save_version == "2.0" and game_hash != current_hash:
         print(f"Warning: Save content hash '{game_hash}' differs from current '{current_hash}'")
@@ -131,7 +131,7 @@ def validate_save_compatibility(data):
     return True, "Compatible"
 
 
-def LoadState(filename):
+def LoadState(filename, title):
     """Load a game state from a YAML file with validation."""
     debug.log(f"Starting load operation from {filename}")
 
@@ -161,7 +161,7 @@ def LoadState(filename):
     debug_save_data(data, "Loaded from File")
 
     # Validate compatibility
-    is_compatible, message = validate_save_compatibility(data)
+    is_compatible, message = validate_save_compatibility(data, title)
     if not is_compatible:
         debug.log(f"Compatibility validation failed: {message}", "ERROR")
         print(f"Save file incompatible: {message}")
@@ -330,10 +330,11 @@ def get_slot_thumbnail_filename(slot_number):
     return f"saves/save_slot_{slot_number}.png"
 
 
-def SaveStateToSlot(active_room, inventory, player, slot_number, playtime_seconds=0, thumbnail_surface=None):
+def SaveStateToSlot(title, active_room, inventory, player, slot_number, playtime_seconds=0, thumbnail_surface=None):
     """Save the current game state to a specific slot with metadata and thumbnail.
 
     Args:
+        title: Game title (used for content hash)
         active_room: Current active room
         inventory: Current inventory state
         player: Player sprite group
@@ -360,7 +361,7 @@ def SaveStateToSlot(active_room, inventory, player, slot_number, playtime_second
     # Create save data with versioning and metadata
     savedata = {
         "save_version": "2.1",  # Updated version for slot system
-        "game_content_hash": "lucky_luke_olympic_blunders",
+        "game_content_hash": title,
         "metadata": metadata,
         "rooms": {},
         "inventory": {},
@@ -461,7 +462,7 @@ def SaveStateToSlot(active_room, inventory, player, slot_number, playtime_second
         return False
 
 
-def LoadStateFromSlot(slot_number):
+def LoadStateFromSlot(slot_number, title):
     """Load a game state from a specific slot.
 
     Returns:
@@ -496,7 +497,7 @@ def LoadStateFromSlot(slot_number):
     debug_save_data(data, "Loaded from File")
 
     # Validate compatibility
-    is_compatible, message = validate_save_compatibility(data)
+    is_compatible, message = validate_save_compatibility(data, title)
     if not is_compatible:
         debug.log(f"Compatibility validation failed: {message}", "ERROR")
         print(f"Save file incompatible: {message}")
