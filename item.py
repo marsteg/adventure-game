@@ -119,13 +119,19 @@ class Item(RectShape):
 
     def talk_description(self, room):
         dialbox = DialogBox(room, time.time())
-        #dialbox.state = self
+        dialbox.state = self
         dialbox.room = room
 
         print("Item Describe Talking: ", self.name, "dialog:", self.description_text)
+
+        # Calculate duration from sound file
+        from dialogbox import get_sound_duration
+        dialbox.dialog_duration = get_sound_duration(self.description_sound)
+
         # Store text for new renderer
         dialbox.dialog_text = self.description_text
         dialbox.speaker_name = ""
+        dialbox.speaking_npc = self  # Add reference for positioning
 
     def describe(self, room):
         print("Item right-clicked: ", self.name)

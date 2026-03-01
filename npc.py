@@ -81,6 +81,23 @@ class NPC(RectShape):
             with open(self.dialogfile, 'r') as file:
                 dialog = yaml.safe_load(file)
                 print("Dialog loaded: ", dialog)
+
+                # Validate that description exists, if not create a default
+                if "description" not in dialog:
+                    print(f"Warning: No 'description' section in {self.dialogfile} for NPC {self.name}")
+                    print(f"Creating default description...")
+                    # Create a default description
+                    dialog["description"] = {
+                        "locked": {
+                            "line": f"{self.name} doesn't want to talk right now.",
+                            "sound": "assets/sounds/dialogs/default_locked.wav"
+                        },
+                        "unlocked": {
+                            "line": f"{self.name} looks friendly.",
+                            "sound": "assets/sounds/dialogs/default_unlocked.wav"
+                        }
+                    }
+
                 return dialog
         except FileNotFoundError:
             print(f"Dialog file not found: {self.dialogfile}")
@@ -120,10 +137,17 @@ class NPC(RectShape):
 
         if self.locked:
             line = self.dialog["description"]["locked"]["line"]
+            sound_file = self.dialog["description"]["locked"]["sound"]
         else:
             line = self.dialog["description"]["unlocked"]["line"]
+            sound_file = self.dialog["description"]["unlocked"]["sound"]
 
         print("Describe Talking: ", self.name, "dialog:", line)
+
+        # Calculate duration from sound file
+        from dialogbox import get_sound_duration
+        dialbox.dialog_duration = get_sound_duration(sound_file)
+
         # Store text for new renderer
         dialbox.dialog_text = line
         dialbox.speaker_name = ""

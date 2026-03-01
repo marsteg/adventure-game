@@ -99,13 +99,21 @@ class Action(RectShape):
 
         if self.locked:
             line = self.description_text_locked
+            sound_file = self.description_sound_locked
         else:
             line = self.description_text_unlocked
+            sound_file = self.description_sound_unlocked
 
         print("Action Describe Talking: ", self.name, "dialog:", line)
+
+        # Calculate duration from sound file
+        from dialogbox import get_sound_duration
+        dialbox.dialog_duration = get_sound_duration(sound_file)
+
         # Store text for new renderer
         dialbox.dialog_text = line
         dialbox.speaker_name = ""
+        dialbox.speaking_npc = self  # Add reference for positioning and rendering
 
     def describe(self, room):
         print("Action right-clicked: ", self.name)

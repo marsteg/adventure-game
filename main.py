@@ -601,29 +601,36 @@ def main():
                         continue
 
                     speaker = dialbox.state
-                    if isinstance(speaker, NPC):
-                        line = speaker.dialog[speaker.active_dialog]["line"]
-                        if isinstance(line, list):
-                            speaker.dialogline += 1
-                            if speaker.dialogline >= len(line):
-                                # Array completed - end dialog
-                                speaker.dialogline = 0
+                    if isinstance(speaker, NPC) and hasattr(speaker, 'dialog') and hasattr(speaker, 'active_dialog'):
+                        try:
+                            line = speaker.dialog[speaker.active_dialog]["line"]
+                            if isinstance(line, list):
+                                speaker.dialogline += 1
+                                if speaker.dialogline >= len(line):
+                                    # Array completed - end dialog
+                                    speaker.dialogline = 0
+                                    VoiceManager.stop_current_voice()
+                                    dialbox.state = None
+                                    active_talker = None
+                                    dialbox.kill()
+                                elif speaker.dialogline < len(line):
+                                    # Continue with next line in array
+                                    speaker.talk(active_room, inventory, answerbox)
+                                    continue  # Don't kill dialog, continue with next line
+                            else:
+                                # Single line completed
                                 VoiceManager.stop_current_voice()
                                 dialbox.state = None
                                 active_talker = None
                                 dialbox.kill()
-                            elif speaker.dialogline < len(line):
-                                # Continue with next line in array
-                                speaker.talk(active_room, inventory, answerbox)
-                                continue  # Don't kill dialog, continue with next line
-                        else:
-                            # Single line completed
+                        except (KeyError, AttributeError):
+                            # If we can't access dialog structure, just close the dialog
                             VoiceManager.stop_current_voice()
                             dialbox.state = None
                             active_talker = None
                             dialbox.kill()
                     else:
-                        # Non-NPC dialog completed
+                        # Non-NPC dialog (Action, Item, Player, "describe") completed
                         VoiceManager.stop_current_voice()
                         dialbox.state = None
                         active_talker = None
@@ -756,21 +763,26 @@ def main():
                                     is_last_line = False
 
                                     # Determine if this is the last line
-                                    if isinstance(speaker, NPC):
-                                        line = speaker.dialog[speaker.active_dialog]["line"]
-                                        if isinstance(line, list):
-                                            # Multi-line dialog: check if we're on the last line
-                                            is_last_line = (speaker.dialogline >= len(line) - 1)
-                                        else:
-                                            # Single line dialog: always last line
+                                    # Only NPCs have multi-line dialogs with the dialog/active_dialog structure
+                                    if isinstance(speaker, NPC) and hasattr(speaker, 'dialog') and hasattr(speaker, 'active_dialog'):
+                                        try:
+                                            line = speaker.dialog[speaker.active_dialog]["line"]
+                                            if isinstance(line, list):
+                                                # Multi-line dialog: check if we're on the last line
+                                                is_last_line = (speaker.dialogline >= len(line) - 1)
+                                            else:
+                                                # Single line dialog: always last line
+                                                is_last_line = True
+                                        except (KeyError, AttributeError):
+                                            # If we can't access dialog structure, treat as last line
                                             is_last_line = True
                                     else:
-                                        # Non-NPC dialog: always last line
+                                        # Non-NPC dialog (Action, Item, Player, "describe"): always last line
                                         is_last_line = True
 
                                     if is_last_line:
                                         # Last line: close dialog immediately
-                                        if isinstance(speaker, NPC):
+                                        if isinstance(speaker, NPC) and hasattr(speaker, 'dialogline'):
                                             speaker.dialogline = 0
                                         dialbox.state = None
                                         active_talker = None

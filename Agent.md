@@ -249,6 +249,127 @@ door.add_description("Locked message", "Unlocked message",
 room_name.doors[door.name] = door
 ```
 
+## ⚠️ MANDATORY: Object Descriptions
+
+**ALL interactive objects (NPCs, Items, Actions, Doors) MUST have descriptions for right-click interactions.**
+
+### Why Descriptions are Required
+
+When players **right-click** on any object, the game displays a description with voice/text. This is a core game mechanic that provides:
+- Context and storytelling
+- Hints for puzzles
+- Character personality
+- World-building details
+
+**Without descriptions, the game will crash on right-click!**
+
+### Description Requirements by Object Type
+
+#### 1. Items
+```python
+# Items require add_description() call
+item = Item(x, y, w, h, "image.png", "Item Name")
+item.add_description(
+    "This is an ancient artifact.",  # Description text
+    "assets/sounds/items/artifact.wav"  # Voice file
+)
+```
+
+**Required:**
+- Description text (shown in dialog box)
+- Voice file path (played when right-clicked)
+
+#### 2. Actions
+```python
+# Actions require locked and unlocked descriptions
+action = Action(x, y, w, h, "image.png", "Action Name",
+               locked=True,
+               key=unlock_key,
+               description_locked="It's sealed shut.",
+               description_unlocked="The mechanism is ready to use.")
+
+# Add voice files for both states
+action.add_description(
+    "It's sealed shut.",  # Locked description
+    "assets/sounds/actions/locked.wav",  # Locked voice
+    "The mechanism is ready to use.",  # Unlocked description
+    "assets/sounds/actions/unlocked.wav"  # Unlocked voice
+)
+```
+
+**Required:**
+- `description_locked` parameter (text for locked state)
+- `description_unlocked` parameter (text for unlocked state)
+- Voice files for both locked and unlocked states via `add_description()`
+
+#### 3. Doors
+```python
+# Doors require add_description() call
+door = Door(x, y, w, h, "image.png", "Door Name",
+           target_room, (x, y), locked=True, key=key_item)
+
+door.add_description(
+    "The door is locked.",  # Locked message
+    "The door is now open.",  # Unlocked message
+    "assets/sounds/doors/locked.wav",  # Locked voice
+    "assets/sounds/doors/unlocked.wav"  # Unlocked voice
+)
+```
+
+**Required:**
+- Locked description text
+- Unlocked description text
+- Voice file for locked state
+- Voice file for unlocked state
+
+#### 4. NPCs
+```python
+# NPCs require a "description" section in their YAML dialog file
+npc = NPC(x, y, w, h, "npc.png", "NPC Name",
+         locked=False, key=None, speech_color=WHITE,
+         dialog_file="assets/dialogs/npc.yaml")
+```
+
+**Required in YAML file:**
+```yaml
+# npc.yaml
+description:
+  locked:
+    line: "They don't want to talk right now."
+    sound: "assets/sounds/dialogs/npc_locked.wav"
+  unlocked:
+    line: "They look friendly and approachable."
+    sound: "assets/sounds/dialogs/npc_unlocked.wav"
+
+start:
+  line: "Hello! How can I help you?"
+  speaker: "NPC Name"
+  sound: "assets/sounds/dialogs/greeting.wav"
+  # ... rest of dialog
+```
+
+**If missing:** The engine will automatically create a default description using `default_locked.wav` and `default_unlocked.wav` sound files, with generic text like "{NPC Name} doesn't want to talk right now."
+
+### Voice File Guidelines
+
+- **Format**: WAV files recommended
+- **Location**: Organize by type (`assets/sounds/items/`, `assets/sounds/actions/`, etc.)
+- **Duration**: Engine auto-calculates from WAV file duration
+- **Fallback**: If file not found, uses 3-second default duration
+
+### Testing Descriptions
+
+**Always test right-click on every object:**
+1. Right-click each Item → Should show description text + play voice
+2. Right-click each Action (locked/unlocked) → Should show appropriate description
+3. Right-click each NPC → Should show description from YAML
+4. Right-click each Door (locked/unlocked) → Should show appropriate description
+
+**Common Errors:**
+- Missing `add_description()` call → Game crashes on right-click
+- Missing voice files → Silent dialog, uses 3-second default duration
+- Missing NPC "description" in YAML → Uses auto-generated default
+
 ## Walkable Areas System
 
 ### Overview
