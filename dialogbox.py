@@ -37,6 +37,20 @@ class VoiceManager:
         """Check if a voice line is currently playing."""
         return cls.current_channel and cls.current_channel.get_busy()
 
+    @classmethod
+    def pause_voice(cls):
+        """Pause the currently playing voice."""
+        if cls.current_channel and cls.current_channel.get_busy():
+            cls.current_channel.pause()
+            print("Voice paused")
+
+    @classmethod
+    def unpause_voice(cls):
+        """Unpause the currently playing voice."""
+        if cls.current_channel:
+            cls.current_channel.unpause()
+            print("Voice unpaused")
+
 
 class DialogBox(pygame.sprite.Sprite):
     """A text box that displays dialog on screen using the new UI renderer."""
