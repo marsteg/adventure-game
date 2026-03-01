@@ -210,7 +210,7 @@ class NPC(RectShape):
         # Check if the dialog unlocks something
         if self.dialog[self.active_dialog].get("unlock") is True:
             print("Calling unlock function")
-            self.unlock(self.key, inventory)
+            self.unlock(self.key)
 
         # Check if dialog has an exit
         exit_data = self.dialog[self.active_dialog].get("exit", {})
