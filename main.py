@@ -52,8 +52,9 @@ def main():
 
     clock = pygame.time.Clock()
     dt = 0
-    from game import get_metadata
+    from game import get_metadata, get_player_config
     title, player_start_percent = get_metadata()
+    player_sprite, player_name = get_player_config()
     pygame.display.set_caption(title)
 
     # Game state
@@ -70,8 +71,8 @@ def main():
     #player = None
     active_room = None
     rooms = {}
-    daisy = Player(at_percentage_width(20), at_percentage_height(80), 50, 75, "assets/player/daisy_waiting.png", "player")
-    player = pygame.sprite.Group(daisy)
+    player_char = Player(at_percentage_width(20), at_percentage_height(80), 50, 75, player_sprite, player_name)
+    player = pygame.sprite.Group(player_char)
 
     # Playtime tracking
     playtime_seconds = 0
@@ -124,7 +125,7 @@ def main():
         start_pos = pygame.Vector2(at_percentage_width(player_start_percent[0]), at_percentage_height(player_start_percent[1]))
         # Validate starting position - ensure feet will be walkable
         walkable_start = active_room.find_nearest_walkable_spawn(start_pos)
-        daisy.pos = pygame.Vector2(walkable_start)
+        player_char.pos = pygame.Vector2(walkable_start)
 
         # Start music
         pygame.mixer.music.load(active_room.music)
@@ -274,8 +275,8 @@ def main():
                 # Validate player spawn position - ensure feet will be walkable
                 target_pos = pygame.Vector2(obj.player_target_position)
                 walkable_spawn = active_room.find_nearest_walkable_spawn(target_pos)
-                daisy.pos = pygame.Vector2(walkable_spawn)
-                daisy.clear_target()
+                player_char.pos = pygame.Vector2(walkable_spawn)
+                player_char.clear_target()
                 transition.start_fade(fade_in=True)
                 # Auto-save on room transition
                 check_and_perform_autosave()
