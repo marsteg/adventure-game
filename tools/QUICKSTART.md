@@ -1,16 +1,15 @@
-# Quick Start Guide - Asset Generator
+# Asset Generator Tool
 
-## ✅ Fixed NumPy Issue!
+AI-powered asset generation tool for the Point & Click Adventure Game Engine. Generate NPCs, rooms, items, and doors using Hugging Face's free unlimited API with consistent, customizable art styles.
 
-The tool now checks for NumPy compatibility and guides you to fix it if needed.
+## Setup 
 
-## Setup (2 minutes)
-
-### 1. **Fix Dependencies**
+### 1. **Install Dependencies**
    ```bash
    pip install 'numpy<2'
    pip install -r tools/requirements.txt
    ```
+**Key dependencies:** `huggingface_hub`, `python-dotenv`, `Pillow`, `PyYAML`, `rembg` (for background removal)
 
 ### 2. **Get Free API Key**
    - Go to: https://huggingface.co/settings/tokens
@@ -30,7 +29,7 @@ The tool now checks for NumPy compatibility and guides you to fix it if needed.
    huggingface_api_key: "hf_your_token_here"
    ```
 
-### 4. **Configure Your Game's Art Style** ⭐ NEW!
+### 4. **Configure Your Game's Art Style** 
    ```bash
    cp tools/style_config.yaml.example tools/style_config.yaml
    nano tools/style_config.yaml  # Customize for your game
@@ -64,54 +63,6 @@ python3 tools/asset_generator.py room "dark mysterious cave" cave_dark
 # Check usage
 python3 tools/asset_generator.py --check-usage
 ```
-
-## What Works Now
-
-✅ Image generation (Hugging Face - FREE & UNLIMITED!)
-✅ Automatic file naming
-✅ Saves to correct folders
-✅ Usage tracking
-✅ Interactive mode
-✅ Command-line mode
-✅ Template system
-✅ Centralized style configuration
-✅ Negative prompts to avoid unwanted styles
-✅ Provider switching (Hugging Face or Stability AI)
-
-⚠️ Background removal requires NumPy 1.x
-   - To enable: `pip install 'numpy<2' && pip install rembg`
-
-## Fixing Style Issues
-
-### Problem: "My zombie looks 3D rendered instead of cartoon!"
-
-**Solution:** Edit `tools/style_config.yaml`
-
-1. Update `master_style.negative_keywords`:
-   ```yaml
-   negative_keywords: "3D render, photorealistic, realistic, cinema4d, unreal engine, 3D animated, CGI, octane render, ray tracing, volumetric lighting, Pixar style"
-   ```
-
-2. Strengthen your positive style:
-   ```yaml
-   art_style: "2D cartoon illustration, hand-drawn style, flat colors, cel-shaded, bold outlines"
-   detail_level: "simple, clean lines, NOT 3D rendered, NOT photorealistic"
-   ```
-
-3. Add reference games:
-   ```yaml
-   additional: "similar to Monkey Island, Day of the Tentacle, hand-painted adventure game"
-   ```
-
-### The Power of Negative Prompts
-
-Negative keywords are CRITICAL! They tell the AI what to avoid:
-- "3D render" → prevents CGI look
-- "photorealistic" → prevents realistic style
-- "octane render, ray tracing" → prevents modern 3D rendering
-- "Pixar style, Disney 3D" → prevents 3D animation look
-
-**Always specify what you DON'T want!**
 
 ## Example Workflow
 

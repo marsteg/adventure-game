@@ -16,50 +16,7 @@ AI-powered asset generation tool for the Point & Click Adventure Game Engine. Ge
 
 ## Quick Start
 
-### 1. Install Dependencies
-
-```bash
-pip install -r tools/requirements.txt
-```
-
-**Key dependencies:** `huggingface_hub`, `python-dotenv`, `Pillow`, `PyYAML`, `rembg` (for background removal)
-
-### 2. Get Free API Token
-
-Visit: **https://huggingface.co/settings/tokens**
-
-1. Sign up (no credit card required!)
-2. Click "New token" → Select "Read" access
-3. Copy your token (starts with `hf_...`)
-
-### 3. Configure API
-
-```bash
-# Create .env file
-cp .env.example .env
-nano .env
-```
-
-Add your token:
-```
-HF_TOKEN=hf_your_token_here
-```
-
-### 4. Configure Your Game Settings
-
-```bash
-# Copy config template
-cp tools/config.yaml.example tools/config.yaml
-
-# Copy style template
-cp tools/style_config.yaml.example tools/style_config.yaml
-```
-
-### 5. Start Generating!
-
-```bash
-python tools/asset_generator.py --interactive
-```
+[Quick Start Guide](QUICKSTART.md)
 
 ---
 

@@ -1,0 +1,94 @@
+save_version: '2.0'
+game_content_hash: lucky_luke_olympic_blunders
+rooms:
+  Tourist Shop:
+    doors:
+      Temple Entrance:
+        locked: false
+    actions:
+      Ancient Vase:
+        locked: false
+        state: assets/actions/button2.png
+        imagepath: assets/actions/button2.png
+    items: {}
+    npcs:
+      Dimitri:
+        active_dialog: start
+        locked: false
+  Ancient Temple:
+    doors:
+      Shop Return:
+        locked: false
+      Underworld Passage:
+        locked: false
+    actions:
+      Ancient Puzzle Box:
+        locked: false
+        state: ''
+        imagepath: assets/actions/button2.png
+    items: {}
+    npcs:
+      Oracle of Delphi:
+        active_dialog: start
+        locked: false
+  Underworld Entrance:
+    doors:
+      Temple Return:
+        locked: false
+      Olympus Gateway:
+        locked: true
+    actions:
+      Charon's Boat:
+        locked: true
+        state: ''
+        imagepath: assets/actions/greenplant.png
+    items:
+      Pomegranate of Persephone:
+        stashed: false
+        allow_destroy: false
+    npcs:
+      Hermes:
+        active_dialog: start
+        locked: true
+  Mount Olympus:
+    doors: {}
+    actions:
+      Zeus's Throne:
+        locked: false
+        state: ''
+        imagepath: assets/actions/button.png
+    items:
+      Divine Ambrosia:
+        stashed: false
+        allow_destroy: false
+    npcs:
+      Zeus:
+        active_dialog: start
+        locked: false
+inventory:
+  slots:
+    '0':
+      item_name: Tourist Brochure
+      allow_destroy: false
+      self_destruct: true
+      imagepath: assets/items/paper.png
+      width: 42
+      height: 42
+    '1':
+      item_name: Silver Coin
+      allow_destroy: false
+      self_destruct: true
+      imagepath: assets/items/crystal_key.png
+      width: 42
+      height: 42
+    '2':
+      item_name: Golden Olive Branch
+      allow_destroy: false
+      self_destruct: true
+      imagepath: assets/items/ancient_scroll.png
+      width: 42
+      height: 42
+active_room: Underworld Entrance
+player:
+  left: 843
+  top: 446

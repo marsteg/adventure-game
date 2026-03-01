@@ -1,22 +1,6 @@
-# Hugging Face Integration Complete! 🎉
+# Hugging Face Integration 
 
-## What Changed
-
-**Hugging Face Inference API is now the default image generation provider** - giving you truly FREE and UNLIMITED image generation!
-
-## Why This Change?
-
-### The Problem with Stability AI
-- **Misleading free tier**: Advertised as "25 credits/month"
-- **Reality**: Each image costs ~8 credits = only 3 images per month
-- **Not sustainable** for game development
-
-### The Solution: Hugging Face
-- **Truly FREE**: No hidden credit costs
-- **Unlimited**: Generate as many images as you need
-- **No credit card required**: Just sign up and get an API token
-- **Same quality**: Uses Stable Diffusion XL model
-
+**Hugging Face Inference API is now the default image generation provider** 
 ## What You Need to Do
 
 ### 1. Get a Free Hugging Face API Token
