@@ -46,6 +46,9 @@ You will need the pygame library. Then just run:
 							- trigger next speech line or exit dialog
 - Introduced a Player. At the moment it simply spawns and can be send to a destination
 	- The Player has now a left and right walking animation
+	- Double-click on Items, NPCs, Actions, or Doors to walk at 2x speed
+		- Speed automatically resets when destination is reached
+		- Clicking on empty walkable space cancels fast walk and queued interactions
 - There is now a small Text Area that displays the objectname of whatever you are pointing at
 - The Inventory is now centered
 - Cutscenes! There is now the possibility to have Text-based Cutscenes for intros or short explanations of story.
@@ -69,10 +72,7 @@ You will need the pygame library. Then just run:
 	- text currently stays X seconds - clicking should skip to the next line
 
 ## Player Character
-	- doubleclick on actions, doors, items for faster walking speed
 	- Improve Walking
-		- requires a walkable area as clickable area per room
-		- how to define that area?
 		- improve player walking animation
 
 ## inventory

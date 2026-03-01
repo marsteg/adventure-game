@@ -4,7 +4,7 @@ import time
 from constants import (
     SCREEN_WIDTH, SCREEN_HEIGHT, INVENTORY_HEIGHT, FPS, INTERACTION_DISTANCE,
     BACKGROUND_VOLUME, WHITE, YELLOW, GREEN, PURPLE, at_percentage_width, at_percentage_height,
-    DIALOG_SKIP_COOLDOWN
+    DIALOG_SKIP_COOLDOWN, DOUBLE_CLICK_THRESHOLD
 )
 from debug_grid import debug_grid
 from item import Item
@@ -239,8 +239,10 @@ def main():
     active_click = None
     active_talker = None
     active_timer = 0
+    last_click_time = 0
+    last_click_target = None
 
-    def queue_interaction(obj_or_qi):
+    def queue_interaction(obj_or_qi, fast_walk=False):
         nonlocal pending_interaction, interaction_target, player, active_room
         pending_interaction = obj_or_qi
         target_obj = obj_or_qi.target if isinstance(obj_or_qi, QueuedInteraction) else obj_or_qi
@@ -252,9 +254,11 @@ def main():
 
         assert player is not None
         for char in player.sprites():
+            if fast_walk:
+                char.enable_fast_walk()
             char.set_target(interaction_target)
         name = getattr(target_obj, "name", repr(target_obj))
-        print(f"Queued interaction with {name}")
+        print(f"Queued {'FAST ' if fast_walk else ''}interaction with {name}")
 
         pchar = next(iter(player.sprites()))
         if (pchar.pos - interaction_target).length() <= INTERACTION_DISTANCE:
@@ -316,26 +320,26 @@ def main():
             else:
                 execute_base_interaction(qi)
 
-    def queue_unlock_door(door, item):
+    def queue_unlock_door(door, item, fast_walk=False):
         def _do():
             if door.locked:
                 door.unlock(item)
             item.kill(inventory, Room.rooms)
-        queue_interaction(QueuedInteraction(door, _do, description=f"Unlock {door.name} with {item.name}"))
+        queue_interaction(QueuedInteraction(door, _do, description=f"Unlock {door.name} with {item.name}"), fast_walk=fast_walk)
 
-    def queue_unlock_action(action, item):
+    def queue_unlock_action(action, item, fast_walk=False):
         def _do():
             if action.locked:
                 action.unlock(item)
             item.kill(inventory, Room.rooms)
-        queue_interaction(QueuedInteraction(action, _do, description=f"Use {item.name} on {action.name}"))
+        queue_interaction(QueuedInteraction(action, _do, description=f"Use {item.name} on {action.name}"), fast_walk=fast_walk)
 
-    def queue_unlock_npc(npc, item):
+    def queue_unlock_npc(npc, item, fast_walk=False):
         def _do():
             if npc.locked:
                 npc.unlock(item, inventory)
             item.kill(inventory, Room.rooms)
-        queue_interaction(QueuedInteraction(npc, _do, description=f"Give {item.name} to {npc.name}"))
+        queue_interaction(QueuedInteraction(npc, _do, description=f"Give {item.name} to {npc.name}"), fast_walk=fast_walk)
 
     def draw_styled_inventory(surface, inventory_obj, hover_pos, dragged_item=None):
         """Draw the styled inventory."""
@@ -890,6 +894,18 @@ def main():
 
                         # Use active_click to execute action (ensures click start and end match)
                         if active_click is not None:
+                            # Detect double-click
+                            current_time = time.time()
+                            is_double_click = False
+
+                            if (active_click == last_click_target and
+                                current_time - last_click_time < DOUBLE_CLICK_THRESHOLD):
+                                is_double_click = True
+
+                            # Update click tracking
+                            last_click_time = current_time
+                            last_click_target = active_click
+
                             if answerbox.state is not None and isinstance(active_click, Answer):
                                 if active_click.rect.collidepoint(event.pos):
                                     active_talker = active_click.npc
@@ -897,19 +913,19 @@ def main():
 
                             elif isinstance(active_click, Door):
                                 if active_click.rect.collidepoint(event.pos):
-                                    queue_interaction(active_click)
+                                    queue_interaction(active_click, fast_walk=is_double_click)
 
                             elif isinstance(active_click, Action):
                                 if active_click.rect.collidepoint(event.pos):
-                                    queue_interaction(active_click)
+                                    queue_interaction(active_click, fast_walk=is_double_click)
 
                             elif isinstance(active_click, NPC):
                                 if active_click.rect.collidepoint(event.pos):
-                                    queue_interaction(active_click)
+                                    queue_interaction(active_click, fast_walk=is_double_click)
 
                             elif isinstance(active_click, Item) and active_click in active_room.items.values():
                                 if active_click.rect.collidepoint(event.pos):
-                                    queue_interaction(active_click)
+                                    queue_interaction(active_click, fast_walk=is_double_click)
 
                         # Move player to clicked position (if not in inventory area AND no dialog active)
                         # Don't move if: dialog box is showing, answer box is active, or we clicked something
@@ -920,7 +936,9 @@ def main():
                                 # Check if clicked position is walkable, if not find nearest walkable point
                                 walkable_pos = active_room.find_nearest_walkable(mouse)
                                 for char in player.sprites():
+                                    char.disable_fast_walk()  # Reset to normal speed for ground clicks
                                     char.set_target(walkable_pos)
+                                pending_interaction = None  # Cancel any queued interaction
 
                         active_click = None
 

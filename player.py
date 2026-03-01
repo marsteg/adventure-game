@@ -19,7 +19,9 @@ class Player(pygame.sprite.Sprite):
         self.rect = pygame.Rect(left, top, width, height)
         self.defaultimage = load_image(image, width, height)
         self.name = name
-        self.speed = 5
+        self.base_speed = 5
+        self.speed = self.base_speed
+        self.fast_walk_active = False
         self.target = self.pos.copy()
 
         # Load walking animation sprites
@@ -44,6 +46,18 @@ class Player(pygame.sprite.Sprite):
     def clear_target(self):
         """Stop the player's movement."""
         self.target = self.pos.copy()
+        self.disable_fast_walk()
+
+    def enable_fast_walk(self):
+        """Temporarily double the walking speed for double-click."""
+        from constants import FAST_WALK_MULTIPLIER
+        self.fast_walk_active = True
+        self.speed = self.base_speed * FAST_WALK_MULTIPLIER
+
+    def disable_fast_walk(self):
+        """Reset walking speed to normal."""
+        self.fast_walk_active = False
+        self.speed = self.base_speed
 
     def draw(self, screen):
         screen.blit(self.image, self.rect)
@@ -68,6 +82,7 @@ class Player(pygame.sprite.Sprite):
 
         if move_length < self.speed:
             self.pos = self.target.copy()
+            self.disable_fast_walk()  # Reset speed when destination reached
         elif move_length > 0:
             move.normalize_ip()
             new_pos = self.pos + move * self.speed
