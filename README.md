@@ -69,26 +69,23 @@ You will need the pygame library. Then just run:
 - create index
 - properly route through documentation
 
-# Sound
-- When the Game Menu is entered, the Music and Dialog should be paused
-- When Clicking on New Game - any prior sound should be stopped
-
 ## Player Character
-	- Improve Walking
-		- improve player walking animation
+- Improve Walking
+	- improve player walking animation
 
 ## inventory
 - slot system size (currently 20) - what if i have more items? scrolling?
 
 ## Items
-- I would like to implement an "endless" item, from which the player always pick up one
+- I would like to implement an "endless" item, from which the player always picks up one
 	- there is now a test case but somehow the item is only given once.
 - how to manage it when picking up an item should change dialog choices?
 		- should Items have actions, that get executed on pickup? could change active_dialogs or locked dialogs?
 		--> is implemented, requires testing (no test case implemented, yet)
 
 ## Asset Generation
-- we need to revisit the Dual-Item Feature to use an image2image API on huggingface
+- we need to revisit the Dual-Item Feature to use an image2image model
+
 
 # Thanks and Grateful links to external helping tools:
 Background Music from: [Musicfox](https://www.musicfox.com/info/kostenlose-gemafreie-musik/).  

@@ -12,7 +12,7 @@ from textcutscene import TextCutscene
 
 def get_metadata():
     title = "Lucky Dude's Olympic Blunders"
-    player_start_position_percent = (23, 77)  # x and y starting position of player in percentage of screen width/height (0.3 means 30% across the screen)
+    player_start_position_percent = (22.4, 82.9)  # x and y starting position of player in percentage of screen width/height (0.3 means 30% across the screen)
     return title, player_start_position_percent
 
 
