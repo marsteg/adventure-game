@@ -28,6 +28,11 @@ doors:
   negative: "perspective view, open door, angled view, 3D model"
   additional: "clear and centered, game asset style, flat rendering"
 
+actions:
+  style: "interactive object in background, single object, centered, clear and recognizable"
+  negative: "multiple objects, scene, background elements, text, UI elements"
+  additional: "Object in Background style, easily identifiable"
+
 enhancement:
   style_weight: 0.9
   quality_boosters:

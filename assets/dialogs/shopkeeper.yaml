@@ -1,4 +1,15 @@
+description:
+  locked:
+    line: "A nervous looking shopkeeper. Probably has some interesting items for sale. Maybe some gossip too."
+    sound: "assets/sounds/dialogs/wolfboy-description-locked.wav"
+    duration: 3
+  unlocked:
+    line: "I should probably leave him alone now..."
+    sound: "assets/sounds/dialogs/wolfboy-description-unlocked.wav"
+    duration: 3
 # Dimitri the Shopkeeper Dialog - Funny Greek shop owner
+
+
 start:
   line: "Welcome to Dimitri's Authentic Greek Trinkets! Everything is definitely, maybe authentic!"
   speaker: "Dimitri"

@@ -56,6 +56,15 @@ def UnlockAction(key_action, unlocked_action):
     unlocked_action.unlock(key_action)
     print(f"Action position: {unlocked_action.position}")
 
+def UnlockNPC(key, npc):
+    """Unlock an NPC using an action as the key."""
+    if npc.key != key:
+        print("Wrong key for this NPC")
+        return
+    print(f"NPC unlocking (was locked: {npc.locked})")
+    npc.unlock(key)  # NPCs don't use inventory, so we pass None
+    print(f"NPC position: {npc.position}")
+
 def AllowDestroy(item):
     """Mark an item as destroyable."""
     item.allow_destroy = True
@@ -88,6 +97,20 @@ def ActionChangeDialog(npc, dialog):
     """Change an NPC's active dialog state."""
     npc.active_dialog = dialog
     print(f"NPC '{npc.name}' (ID: {npc.id}) dialog changed to: {dialog}")
+
+def ActionChangeDescription(action, new_desc, new_sound=None):
+    """Change an action's unlocked description text and optionally the sound file.
+
+    Args:
+        action: The Action object to modify
+        new_desc: New description text for the unlocked state
+        new_sound: Optional new sound file path. If None, keeps existing sound.
+    """
+    action.description_text_unlocked = new_desc
+    if new_sound:
+        action.description_sound_unlocked = new_sound
+    print(f"Action '{action.name}' (ID: {action.id}) unlocked description changed to: {new_desc}")
+
 
 def PlayTextCutScene(yaml_path):
     """Play a Text based slide-show cutscene during gameplay"""

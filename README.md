@@ -58,34 +58,16 @@ You will need the pygame library. Then just run:
 	- Check [the docs](tools/README.md)
 
 
+
+# Todo List:
+
 ## Improve Documentation
 - create index
 - properly route through documentation
 
-# Todo List:
-- need to find a clean way to assign and create doors and rooms and assign items (currently in main func)
-	- it would be nice to have the "Game Definition" in a yaml file.
-		- All Items in a Yaml
-		- All Rooms in a Yaml
-		- All NPCs in a Yaml
-		- all Doors in a Yaml
 ## Conversations
 	- text currently stays X seconds - clicking should skip to the next line
-	- how to manage it when picking up an item should change dialog choices?
-		- should Items have actions, that get executed on pickup? could change active_dialogs or locked dialogs?
-	- how to have multiple NPCs talk at the same time?
-		- every NPC has now their own dialogbox. The position is still hard-coded.
-			- what is a smart way to find a position?
-				- i want to have it relative to the object but closer to the center of the screen
-			- text should be positioned relative to the character speaking
-	- i partly implemented multiline text and auto-detection of speech length. Needs further thorough testing and improvement though
-## Saving/Loading:
-	- how to save and load the game?
-		- save to yaml
-			- should provide some savename input
-			- support multiple savefiles
-		- load from yaml
-			- select savefile
+
 ## Player Character
 	- doubleclick on actions, doors, items for faster walking speed
 	- Improve Walking
@@ -96,7 +78,6 @@ You will need the pygame library. Then just run:
 ## inventory
 - items should get ordered / aligned in the inventory
 	- slot system size (currently 20) - what if i have more items? scrolling?
-	- slots currently do not get re-used (probably never properly released)
 
 ## Items
 - I would like to implement an "endless" item, from which the player always pick up one
@@ -105,9 +86,6 @@ You will need the pygame library. Then just run:
 		- should Items have actions, that get executed on pickup? could change active_dialogs or locked dialogs?
 		--> is implemented, requires testing (no test case implemented, yet)
 
-### useful dialog box positions?
-dialbox.rect = pygame.Rect(SCREEN_WIDTH // 5, SCREEN_HEIGHT // 5, SCREEN_WIDTH // 2, 0)
---> perfect "narrator" position on the top center
 
 # Thanks and Grateful links to external helping tools:
 Background Music from: [Musicfox](https://www.musicfox.com/info/kostenlose-gemafreie-musik/).  

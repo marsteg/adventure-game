@@ -34,7 +34,7 @@ npcs:
 
 rooms:
   style: "interior background scene, wide angle view, game background art"
-  negative: "character in scene, portrait orientation, close-up"
+  negative: "character in scene, portrait orientation, close-up, character in foreground"
   additional: "atmospheric, detailed environment, clear depth"
 
 items:
@@ -43,9 +43,14 @@ items:
   additional: "inventory item style, easily identifiable"
 
 doors:
-  style: "front-facing door, architectural element, straight-on view"
-  negative: "perspective view, open door, angled view"
+  style: "front-facing door, architectural element, view-from-angle"
+  negative: "perspective view, open door, front view"
   additional: "clear and centered, game asset style"
+
+actions:
+  style: "interactive object in background, single object, centered, clear and recognizable"
+  negative: "multiple objects, scene, background elements, text, UI elements"
+  additional: "Object in Background style, easily identifiable"
 
 # ============================================================================
 # PROMPT ENHANCEMENT SETTINGS

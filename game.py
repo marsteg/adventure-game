@@ -35,7 +35,7 @@ def create_game_content(player, inventory):
     # =============================================================================
     # ROOM 2: ANCIENT TEMPLE
     # =============================================================================
-    ancient_temple = Room(player, "assets/rooms/RektorOffice.png", "Ancient Temple", "assets/sounds/background/Albatros.wav")
+    ancient_temple = Room(player, "assets/rooms/ancient_temple.png", "Ancient Temple", "assets/sounds/background/Albatros.wav")
 
     # =============================================================================
     # ROOM 3: UNDERWORLD ENTRANCE
@@ -45,7 +45,7 @@ def create_game_content(player, inventory):
     # =============================================================================
     # ROOM 4: MOUNT OLYMPUS
     # =============================================================================
-    mount_olympus = Room(player, "assets/rooms/MainHall.png", "Mount Olympus", "assets/sounds/background/dancing_street.wav")
+    mount_olympus = Room(player, "assets/rooms/olympus.png", "Mount Olympus", "assets/sounds/background/dancing_street.wav")
 
     # =============================================================================
     # ITEMS
@@ -56,55 +56,56 @@ def create_game_content(player, inventory):
     brochure.add_description("A colorful brochure about ancient Greek sites", "assets/sounds/items/herb_locked.wav")
 
     # Golden Olive Branch - First mythical item needed
-    olive_branch = Item(300, 250, 50, 60, "assets/items/ancient_scroll.png", "Golden Olive Branch", True)
+    olive_branch = Item(300, 250, 50, 60, "assets/items/olive_branch.png", "Golden Olive Branch", True)
     olive_branch.add_description("A shimmering branch from Athena's sacred tree", "assets/sounds/items/missile_locked.wav")
 
     # Silver Coin - Given by puzzle box, needed for Hermes
-    silver_coin = Item(0, 0, 30, 30, "assets/items/crystal_key.png", "Silver Coin", True)
+    silver_coin = Item(0, 0, 30, 30, "assets/items/silver_coin.png", "Silver Coin", True)
     silver_coin.add_description("An ancient drachma, still gleaming", "assets/sounds/items/missile2_locked.wav")
 
     # Pomegranate of Persephone - Second mythical item
-    pomegranate = Item(150, 350, 45, 55, "assets/items/muckmuck_share.png", "Pomegranate of Persephone", True)
+    pomegranate = Item(150, 350, 45, 55, "assets/items/pomegranate.png", "Pomegranate of Persephone", True)
     pomegranate.add_description("A magical fruit that glows with underworld power", "assets/sounds/items/herb_locked.wav")
 
     # Ambrosia - Final reward item
-    ambrosia = Item(300, 250, 50, 40, "assets/items/hay.png", "Divine Ambrosia", True)
+    ambrosia = Item(300, 250, 50, 40, "assets/items/ambrosia.png", "Divine Ambrosia", True)
     ambrosia.add_description("Food of the gods - Luke's reward for his 'heroic' journey", "assets/sounds/items/hay_locked.wav")
 
     # =============================================================================
     # NPCs (Define before Actions so they can be used as keys)
     # =============================================================================
 
-    # Shopkeeper NPC - Starting character who gives quest
-    shopkeeper = NPC(463, 396, 80, 120, "assets/npcs/janitor.png", "Dimitri", False, None, WHITE, "assets/dialogs/shopkeeper.yaml")
+# Shopkeeper NPC - Starting character who gives quest
+    
 
     # Oracle NPC - Gives cryptic but helpful advice
-    oracle = NPC(500, 180, 100, 140, "assets/npcs/librarian.png", "Oracle of Delphi", False, None, PURPLE, "assets/dialogs/oracle.yaml")
+    oracle = NPC(500, 180, 100, 140, "assets/npcs/oracle.png", "Oracle of Delphi", False, None, PURPLE, "assets/dialogs/oracle.yaml")
 
     # Hermes NPC - Messenger god who helps for a price
-    hermes = NPC(400, 200, 90, 130, "assets/npcs/lupin.png", "Hermes", True, silver_coin, YELLOW, "assets/dialogs/hermes.yaml")
+    hermes = NPC(400, 200, 90, 130, "assets/npcs/hermes.png", "Hermes", True, silver_coin, YELLOW, "assets/dialogs/hermes.yaml")
 
     # Zeus NPC - Final boss/character who resolves the story
-    zeus = NPC(500, 150, 120, 180, "assets/npcs/muckmuck_cool.png", "Zeus", False, None, YELLOW, "assets/dialogs/zeus.yaml")
+    zeus = NPC(500, 150, 120, 180, "assets/npcs/zeus.png", "Zeus", False, None, YELLOW, "assets/dialogs/zeus.yaml")
 
     # =============================================================================
     # ACTIONS (NPCs defined above can now be used as keys)
     # =============================================================================
 
     # Ancient Vase - The item Luke will accidentally break
-    ancient_vase = Action(406, 601, 20, 70, "assets/actions/button.png", "Ancient Vase", False, None)
-    ancient_vase.add_description("A priceless ancient Greek vase", "Oh no! You broke it!", "assets/sounds/actions/button1_locked.wav", "assets/sounds/actions/button2_unlocked.wav")
+    ancient_vase = Action(406, 601, 70, 70, "assets/actions/ancient_vase.png", "Ancient Vase", False, None)
+    ancient_vase.add_description("A priceless ancient Greek vase", "A priceless ancient Greek vase", "assets/sounds/actions/button1_locked.wav", "assets/sounds/actions/button2_unlocked.wav")
 
+    shopkeeper = NPC(463, 396, 80, 120, "assets/npcs/shopkeeper.png", "Dimitri", True, ancient_vase, WHITE, "assets/dialogs/shopkeeper.yaml")
     # Ancient Puzzle Box - Requires brochure to solve
-    puzzle_box = Action(700, 300, 70, 70, "assets/actions/button2.png", "Ancient Puzzle Box", True, brochure)
+    puzzle_box = Action(700, 300, 70, 70, "assets/actions/puzzle_box.png", "Ancient Puzzle Box", True, brochure)
     puzzle_box.add_description("A mysterious box with Greek symbols. You need instructions.", "Following the brochure, you solve the puzzle!", "assets/sounds/actions/button1_locked.wav", "assets/sounds/actions/button2_unlocked.wav")
 
     # Charon's Boat - Action to get to Olympus (unlocked by Hermes)
-    boat = Action(600, 350, 120, 80, "assets/actions/greenplant.png", "Charon's Boat", True, hermes)
+    boat = Action(600, 350, 120, 80, "assets/actions/charon_boat.png", "Charon's Boat", True, hermes)
     boat.add_description("Charon won't let you aboard without proper payment", "All aboard for Mount Olympus!", "assets/sounds/actions/button1_locked.wav", "assets/sounds/actions/button2_unlocked.wav")
 
     # Golden Throne - Easter egg action
-    throne = Action(450, 250, 100, 120, "assets/actions/button.png", "Zeus's Throne", False, None)
+    throne = Action(450, 250, 100, 120, "assets/actions/throne.png", "Zeus's Throne", False, None)
     throne.add_description("You probably shouldn't sit on Zeus's throne...", "Luke accidentally sits down - lightning flashes but nothing bad happens!", "assets/sounds/actions/button1_locked.wav", "assets/sounds/actions/button2_unlocked.wav")
 
 
@@ -117,18 +118,18 @@ def create_game_content(player, inventory):
     temple_door.add_description("A passage to the ancient temple. Locked until something dramatic happens.", "To the Ancient Temple!", "assets/sounds/doors/room1door1_locked.wav", "assets/sounds/doors/room1door1_unlocked.wav")
 
     # Door to Underworld (unlocked by puzzle box)
-    underworld_door = Door(650, 400, 80, 100, "assets/doors/door1.png", "Underworld Passage", underworld_entrance, (200, 300), True, puzzle_box)
+    underworld_door = Door(650, 400, 80, 100, "assets/doors/ancient_temple_door.png", "Underworld Passage", underworld_entrance, (200, 300), True, puzzle_box)
     underworld_door.add_description("A mystical passage opened by solving the puzzle", "Into the Underworld!", "assets/sounds/doors/room1door1_locked.wav", "assets/sounds/doors/room1door1_unlocked.wav")
 
     # Door to Olympus (unlocked by boat action)
-    olympus_door = Door(700, 300, 80, 100, "assets/doors/door1.png", "Olympus Gateway", mount_olympus, (300, 400), True, boat)
+    olympus_door = Door(700, 300, 80, 100, "assets/doors/olympus_door.png", "Olympus Gateway", mount_olympus, (300, 400), True, boat)
     olympus_door.add_description("The gateway to Mount Olympus", "To the realm of the gods!", "assets/sounds/doors/room1door1_locked.wav", "assets/sounds/doors/room1door1_unlocked.wav")
 
     # Return doors
-    shop_return = Door(50, 350, 80, 120, "assets/doors/door1.png", "Shop Return", tourist_shop, (504, 490), False, None)
+    shop_return = Door(50, 350, 80, 120, "assets/doors/ancient_temple_door.png", "Shop Return", tourist_shop, (504, 490), False, None)
     shop_return.add_description("", "Back to the tourist shop", "assets/sounds/doors/room2door2_unlocked.wav", "assets/sounds/doors/room2door2_unlocked.wav")
 
-    temple_return = Door(50, 300, 80, 120, "assets/doors/door1.png", "Temple Return", ancient_temple, (650, 400), False, None)
+    temple_return = Door(50, 300, 80, 120, "assets/doors/ancient_temple_door.png", "Temple Return", ancient_temple, (650, 400), False, None)
     temple_return.add_description("", "Back to the temple", "assets/sounds/doors/room2door2_unlocked.wav", "assets/sounds/doors/room2door2_unlocked.wav")
 
     # =============================================================================
@@ -138,8 +139,11 @@ def create_game_content(player, inventory):
     # Ancient Vase functions
     ancient_vase.add_function(actionfuncs.LogText, "Luke accidentally bumps the vase!")
     ancient_vase.add_function(actionfuncs.PlaySound, "assets/sounds/actions/grunz.wav")
-    ancient_vase.add_function(actionfuncs.ChangePicture, ancient_vase, "assets/actions/button2.png", "assets/actions/button.png", None)
+    ancient_vase.add_function(actionfuncs.ChangePicture, ancient_vase, "assets/actions/ancient_vase_broken.png", "assets/actions/ancient_vase.png", None)
     ancient_vase.add_function(actionfuncs.UnlockDoor, ancient_vase, temple_door)
+    ancient_vase.add_function(actionfuncs.ActionChangeDialog, shopkeeper, "vase_broken")
+    ancient_vase.add_function(actionfuncs.UnlockNPC, ancient_vase, shopkeeper)
+    ancient_vase.add_function(actionfuncs.ActionChangeDescription, ancient_vase, "The vase is shattered into pieces. Oops!")
 
 
     # Puzzle Box functions

@@ -86,6 +86,7 @@ class Door(RectShape):
         # Store text for new renderer
         dialbox.dialog_text = line
         dialbox.speaker_name = ""
+        dialbox.speaking_npc = self  # Add reference for positioning and rendering
 
     def describe(self, room):
         print("Door right-clicked: ", self.name)
