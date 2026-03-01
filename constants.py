@@ -9,6 +9,10 @@ FPS = 60
 # Interaction settings
 INTERACTION_DISTANCE = 80
 
+# Double-click settings
+DOUBLE_CLICK_THRESHOLD = 0.3  # seconds - time window to detect double-click
+FAST_WALK_MULTIPLIER = 2.0  # speed multiplier for double-click fast walk
+
 # Dialog settings
 DIALOG_SKIP_COOLDOWN = 0.15  # seconds - prevents accidental double-clicks while allowing fast clicking
 
