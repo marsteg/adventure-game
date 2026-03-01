@@ -383,6 +383,10 @@ def main():
             menu.draw(screen)
 
             if action == "start_game":
+                # Stop any paused music/dialog from previous game
+                pygame.mixer.music.stop()
+                VoiceManager.stop_current_voice()
+
                 # Initialize game content first
                 updatable, active_room, intro = init_game()
 
@@ -399,7 +403,9 @@ def main():
                 game_state = GameState.SAVE_MENU
                 save_menu = SaveLoadMenu(mode="save")
             elif action == "resume":
-                # Resume gameplay from in-game menu
+                # Resume gameplay from in-game menu - unpause music and dialog
+                pygame.mixer.music.unpause()
+                VoiceManager.unpause_voice()
                 game_state = GameState.PLAYING
                 session_start_time = time.time()  # Restart timer
                 menu = MainMenu(title, in_game=False)  # Reset menu for next time
@@ -737,15 +743,19 @@ def main():
                 debug_enabled = toggle_debug()
                 print(f"Debug logging {'ON' if debug_enabled else 'OFF'}")
 
-            if keys[pygame.K_ESCAPE]:
-                # Open in-game menu (pause game)
-                update_playtime()
-                game_state = GameState.MENU
-                menu = MainMenu(title, in_game=True)  # In-game menu
-                session_start_time = None  # Pause timer
-
             # Mouse event handling
             for event in events:
+                # Handle ESC key to open in-game menu (use KEYDOWN event to avoid conflicts)
+                if event.type == pygame.KEYDOWN:
+                    if event.key == pygame.K_ESCAPE:
+                        # Open in-game menu (pause game) - pause music and dialog
+                        update_playtime()
+                        pygame.mixer.music.pause()
+                        VoiceManager.pause_voice()
+                        game_state = GameState.MENU
+                        menu = MainMenu(title, in_game=True)  # In-game menu
+                        session_start_time = None  # Pause timer
+                        continue  # Skip processing other events this frame
                 if event.type == pygame.MOUSEBUTTONDOWN:
                     if event.button == 1:  # Left mouse button
                         # Check if we should skip current dialog line
