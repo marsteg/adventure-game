@@ -68,8 +68,9 @@ AI-powered asset generation tool for the Point & Click Adventure Game Engine. Ge
 **NPC Dialog Audio**
 - Generates WAV audio files for all dialog lines in a character's YAML file
 - Reads from: `assets/dialogs/<character>.yaml`
-- Output: `assets/sounds/dialogs/<character>-<dialog-id>.wav`
+- Output: `assets/sounds/dialogs/<character>_<dialog-id>.wav` (or uses path from YAML)
 - Supports character-specific voice configuration
+- Combines array dialogs into single audio file
 - Multiple TTS providers for different quality/performance tradeoffs
 
 ---
@@ -209,8 +210,9 @@ python tools/asset_generator.py --generate-audio librarian
 This will:
 1. Read `assets/dialogs/librarian.yaml`
 2. Extract all dialog text (description lines, dialog nodes)
-3. Generate audio files for each line
-4. Save to `assets/sounds/dialogs/librarian-*.wav`
+3. Combine array dialogs into single audio
+4. Generate audio files for each node
+5. Save using YAML paths or generate as `librarian_*.wav`
 
 **Example output:**
 ```

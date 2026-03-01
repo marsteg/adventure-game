@@ -24,7 +24,7 @@ remove_background:
 #   - speecht5: Microsoft SpeechT5 (pip install, ~500MB, CPU-friendly, good quality)
 #   - xtts: Coqui XTTS-v2 (pip install TTS, ~2GB, GPU recommended, excellent quality, voice cloning)
 #   - kugelaudio: KugelAudio (git clone required, ~13GB, GPU only, highest quality)
-audio_provider: "xtts"
+audio_provider: "speecht5"
 
 # Audio settings per provider
 audio_settings:

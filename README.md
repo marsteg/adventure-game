@@ -57,7 +57,8 @@ You will need the pygame library. Then just run:
 	- You can now create a mask for rooms, so players can only walk on the white Areas of the Mask. Black and Transparent Areas are blocked paths.
 	- See [WALKABLE_AREAS_AGENT_GUIDE.md](WALKABLE_AREAS_AGENT_GUIDE.md) for complete documentation
 - Asset Generator
-	- there is now an Asset Generator in the tools folder. It can be used to generate Assets with [Hugging Face (default, FREE unlimited) or Stability AI!](https://huggingface.co)
+	- there is now an Asset Generator in the tools folder. It can generate visual assets (NPCs, rooms, items, doors) with [Hugging Face (default, FREE unlimited) or Stability AI!](https://huggingface.co)
+	- it can also generate audio files for NPC dialogs using text-to-speech (SpeechT5, XTTS, KugelAudio)
 	- Check [the docs](tools/README.md)
 
 
@@ -87,7 +88,6 @@ You will need the pygame library. Then just run:
 		--> is implemented, requires testing (no test case implemented, yet)
 
 ## Asset Generation
-- we want to add a text-to-speech provider, so we can generate the audio files
 - we need to revisit the Dual-Item Feature to use an image2image API on huggingface
 
 # Thanks and Grateful links to external helping tools:
