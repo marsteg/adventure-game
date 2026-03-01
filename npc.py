@@ -173,13 +173,17 @@ class NPC(RectShape):
         dialbox = DialogBox(room, time.time())
         dialbox.state = self
         dialbox.room = room
-        self.speak()
 
         # Find the speaker (might be a different NPC)
         speaker = self._find_speaker(room)
 
         line = speaker.dialog[self.active_dialog]["line"]
+
+        # Only play audio on the FIRST line of an array dialog
         if isinstance(line, list):
+            # Array of lines - only speak on first line
+            if self.dialogline == 0:
+                self.speak()
             # Setup for array of lines
             dialbox.total_lines = len(line)
             dialbox.total_duration = speaker.dialog[self.active_dialog].get("duration", 3)
@@ -189,7 +193,8 @@ class NPC(RectShape):
             dialbox.dialog_duration = dialbox.line_duration  # Use per-line duration
             line = line[self.dialogline]
         else:
-            # Single line - use existing behavior
+            # Single line - always speak
+            self.speak()
             dialbox.auto_advance = False
             dialbox.line_duration = speaker.dialog[self.active_dialog].get("duration", 3)
             dialbox.dialog_duration = dialbox.line_duration  # Use full duration

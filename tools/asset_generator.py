@@ -967,13 +967,14 @@ class AssetGenerator:
             traceback.print_exc()
             return None
 
-    def save_audio(self, audio_data: bytes, character_name: str, dialog_id: str) -> Optional[Path]:
+    def save_audio(self, audio_data: bytes, character_name: str, dialog_id: str, existing_path: Optional[str] = None) -> Optional[Path]:
         """Save audio file to dialogs directory.
 
         Args:
             audio_data: WAV audio bytes
             character_name: Character name (e.g., 'librarian')
             dialog_id: Dialog node ID (e.g., 'start', 'description-locked')
+            existing_path: Existing sound path from YAML (if any)
 
         Returns:
             Path to saved file or None
@@ -981,19 +982,25 @@ class AssetGenerator:
         audio_dir = Path("assets/sounds/dialogs")
         audio_dir.mkdir(parents=True, exist_ok=True)
 
-        # Clean names
-        clean_character = character_name.lower().replace(' ', '_').replace('-', '_')
-        clean_dialog = dialog_id.lower().replace(' ', '_')
+        # If existing path is provided, use it
+        if existing_path:
+            filepath = Path(existing_path)
+            # Ensure parent directory exists
+            filepath.parent.mkdir(parents=True, exist_ok=True)
+        else:
+            # Generate new filename with underscore separator
+            clean_character = character_name.lower().replace(' ', '_').replace('-', '_')
+            clean_dialog = dialog_id.lower().replace(' ', '_').replace('-', '_')
 
-        filename = f"{clean_character}-{clean_dialog}.wav"
-        filepath = audio_dir / filename
-
-        # Handle duplicates (add counter)
-        counter = 1
-        while filepath.exists():
-            filename = f"{clean_character}-{clean_dialog}_{counter}.wav"
+            filename = f"{clean_character}_{clean_dialog}.wav"
             filepath = audio_dir / filename
-            counter += 1
+
+            # Handle duplicates (add counter) only for generated filenames
+            counter = 1
+            while filepath.exists():
+                filename = f"{clean_character}_{clean_dialog}_{counter}.wav"
+                filepath = audio_dir / filename
+                counter += 1
 
         try:
             with open(filepath, 'wb') as f:
@@ -1005,18 +1012,22 @@ class AssetGenerator:
             print(f"Error saving audio: {e}")
             return None
 
-    def parse_dialog_yaml(self, yaml_path: Path) -> Dict[str, List[tuple[str, str]]]:
+    def parse_dialog_yaml(self, yaml_path: Path) -> Dict[str, List[tuple[str, str, Optional[str]]]]:
         """Parse dialog YAML and extract all text that needs audio.
 
         Args:
             yaml_path: Path to dialog YAML file
 
         Returns:
-            Dict mapping dialog_id to list of (text, suggested_filename) tuples
-            Example: {
-                'description-locked': [('The librarian...', 'librarian-description-locked')],
-                'start': [('Ah, Death\'s daughter...', 'librarian-start')]
-            }
+            Dict mapping dialog_id to list of (text, suggested_filename, existing_sound_path) tuples
+
+            For single line dialogs:
+                'start': [('Hello there', 'librarian_start', None)]
+
+            For array dialogs (multiple lines combined into one):
+                'start': [('Line 1 ... Line 2 ... Line 3', 'zeus_start', 'assets/sounds/dialogs/zeus-start.wav')]
+
+            Note: Array lines are combined with ' ... ' separator for natural TTS pauses
         """
         with open(yaml_path, 'r') as f:
             dialog_data = yaml.safe_load(f)
@@ -1037,16 +1048,18 @@ class AssetGenerator:
             # Locked description
             if 'locked' in desc and 'line' in desc['locked']:
                 line = desc['locked']['line']
+                sound_path = desc['locked'].get('sound')
                 if line and line.strip():
                     dialog_id = 'description-locked'
-                    texts_to_generate[dialog_id] = [(line, f"{character_name}-{dialog_id}")]
+                    texts_to_generate[dialog_id] = [(line, f"{character_name}_{dialog_id}", sound_path)]
 
             # Unlocked description
             if 'unlocked' in desc and 'line' in desc['unlocked']:
                 line = desc['unlocked']['line']
+                sound_path = desc['unlocked'].get('sound')
                 if line and line.strip():
                     dialog_id = 'description-unlocked'
-                    texts_to_generate[dialog_id] = [(line, f"{character_name}-{dialog_id}")]
+                    texts_to_generate[dialog_id] = [(line, f"{character_name}_{dialog_id}", sound_path)]
 
         # Process dialog nodes
         for node_id, node_data in dialog_data.items():
@@ -1057,18 +1070,18 @@ class AssetGenerator:
             # Check if this is a dialog node (has 'line' key)
             if isinstance(node_data, dict) and 'line' in node_data:
                 line = node_data['line']
+                sound_path = node_data.get('sound')
 
                 # Handle both single strings and arrays
                 if isinstance(line, str):
                     if line and line.strip():
-                        texts_to_generate[node_id] = [(line, f"{character_name}-{node_id}")]
+                        texts_to_generate[node_id] = [(line, f"{character_name}_{node_id}", sound_path)]
                 elif isinstance(line, list):
-                    # Array of lines - generate separate files
-                    valid_lines = [(text, f"{character_name}-{node_id}-{idx}")
-                                   for idx, text in enumerate(line)
-                                   if text and text.strip()]
-                    if valid_lines:
-                        texts_to_generate[node_id] = valid_lines
+                    # Array of lines - combine into single text with pauses for natural speech
+                    # Join lines with ellipsis for TTS to add natural pauses between sentences
+                    combined_text = " ... ".join(text.strip() for text in line if text and text.strip())
+                    if combined_text:
+                        texts_to_generate[node_id] = [(combined_text, f"{character_name}_{node_id}", sound_path)]
 
         return texts_to_generate
 
@@ -1118,15 +1131,15 @@ class AssetGenerator:
         failed_count = 0
 
         for node_id, lines in texts.items():
-            for text, suggested_filename in lines:
+            for text, suggested_filename, existing_path in lines:
                 print(f"\n[{generated_count + failed_count + 1}/{total_lines}] Generating: {node_id}")
 
                 # Generate audio with character-specific voice
                 audio_data = self.generate_audio(text, character_name, suggested_filename)
 
                 if audio_data:
-                    # Save audio
-                    filepath = self.save_audio(audio_data, character_name, node_id)
+                    # Save audio (use existing path from YAML if available)
+                    filepath = self.save_audio(audio_data, character_name, node_id, existing_path)
                     if filepath:
                         generated_count += 1
                     else:

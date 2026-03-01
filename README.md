@@ -65,19 +65,17 @@ You will need the pygame library. Then just run:
 - create index
 - properly route through documentation
 
-## Conversations
-	- text currently stays X seconds - clicking should skip to the next line
+# Sound
+- When the Game Menu is entered, the Music and Dialog should be paused
+- When Clicking on New Game - any prior sound should be stopped
 
 ## Player Character
 	- doubleclick on actions, doors, items for faster walking speed
 	- Improve Walking
-		- requires a walkable area as clickable area per room
-		- how to define that area?
 		- improve player walking animation
 
 ## inventory
-- items should get ordered / aligned in the inventory
-	- slot system size (currently 20) - what if i have more items? scrolling?
+- slot system size (currently 20) - what if i have more items? scrolling?
 
 ## Items
 - I would like to implement an "endless" item, from which the player always pick up one
@@ -86,6 +84,9 @@ You will need the pygame library. Then just run:
 		- should Items have actions, that get executed on pickup? could change active_dialogs or locked dialogs?
 		--> is implemented, requires testing (no test case implemented, yet)
 
+## Asset Generation
+- we want to add a text-to-speech provider, so we can generate the audio files
+- we need to revisit the Dual-Item Feature to use an image2image API on huggingface
 
 # Thanks and Grateful links to external helping tools:
 Background Music from: [Musicfox](https://www.musicfox.com/info/kostenlose-gemafreie-musik/).  
