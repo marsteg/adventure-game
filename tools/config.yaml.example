@@ -29,3 +29,36 @@ remove_background:
   item: true             # Remove background for items (transparent)
   door: false            # Keep background for doors
   room: false            # Keep background for rooms
+
+# Audio Generation Provider Configuration
+# Supported providers:
+#   - speecht5: Microsoft SpeechT5 (pip install, ~500MB, CPU-friendly, good quality)
+#   - xtts: Coqui XTTS-v2 (pip install TTS, ~2GB, GPU recommended, excellent quality, voice cloning)
+#   - kugelaudio: KugelAudio (git clone required, ~13GB, GPU only, highest quality)
+audio_provider: "speecht5"
+
+# Audio settings per provider
+audio_settings:
+  # SpeechT5 settings (microsoft/speecht5_tts)
+  speecht5:
+    model: "microsoft/speecht5_tts"
+    vocoder: "microsoft/speecht5_hifigan"
+    speaker_embeddings: "Slt"  # Default speaker voice
+    sample_rate: 16000
+
+  # XTTS-v2 settings (Coqui TTS)
+  xtts:
+    model: "tts_models/multilingual/multi-dataset/xtts_v2"
+    language: "en"
+    sample_rate: 24000
+    temperature: 0.7
+    length_penalty: 1.0
+    repetition_penalty: 5.0
+    speaker_wav: null  # Optional: path to reference voice sample for cloning
+
+  # KugelAudio settings (requires git clone)
+  kugelaudio:
+    voice: "default"
+    cfg_scale: 3.0
+    max_new_tokens: 2048
+    sample_rate: 24000

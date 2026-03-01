@@ -1,0 +1,208 @@
+# Voice Configuration for Characters
+# Maps character names to voice settings for each TTS provider
+#
+# For SpeechT5: Use speaker_id (0-7325 from CMU Arctic dataset)
+#   Common options:
+#     - 7306: Female, neutral
+#     - 3575: Male, deeper
+#     - 1088: Female, younger
+#     - 5142: Male, older
+#
+# For XTTS: Use speaker_wav path for voice cloning, or text description
+#   - speaker_wav: Path to 6-30 second reference audio
+#   - description: Text description of voice (fallback)
+#
+# For KugelAudio: Use voice preset
+#   - Options: "default", "warm", "clear"
+
+characters:
+  librarian:
+    description: "Mature female librarian, mysterious, slightly sarcastic tone"
+    speecht5:
+      speaker_id: 7306  # Neutral female
+    xtts:
+      speaker_wav: None # Could add reference audio here
+      description: "mature woman, mysterious, librarian"
+    kugelaudio:
+      voice: "default"
+
+  zeus:
+    description: "Powerful male god, booming voice, amused and authoritative"
+    speecht5:
+      speaker_id: 5142  # Older male
+    xtts:
+      speaker_wav: "assets/sounds/default-voices/ben.wav"  # Could add reference audio here
+      description: "powerful male, deep voice, god-like authority"
+    kugelaudio:
+      voice: "default"
+
+  chef_gronk:
+    description: "Gruff male chef, working-class accent"
+    speecht5:
+      speaker_id: 3575  # Deeper male
+    xtts:
+      speaker_wav: null
+      description: "gruff male, chef, working class"
+    kugelaudio:
+      voice: "default"
+
+  oracle:
+    description: "Mystical female oracle, ethereal and wise"
+    speecht5:
+      speaker_id: 1088  # Younger female
+    xtts:
+      speaker_wav: null
+      description: "mystical female, oracle, wise and ethereal"
+    kugelaudio:
+      voice: "clear"
+
+  hermes:
+    description: "Quick-speaking male messenger, energetic"
+    speecht5:
+      speaker_id: 3575
+    xtts:
+      speaker_wav: null
+      description: "young male, energetic, quick speaking"
+    kugelaudio:
+      voice: "default"
+
+  shopkeeper:
+    description: "Nervous male shopkeeper, Greek accent implied"
+    speecht5:
+      speaker_id: 3575
+    xtts:
+      speaker_wav: null
+      description: "nervous male, shopkeeper, slightly anxious"
+    kugelaudio:
+      voice: "default"
+
+  dean_malvora:
+    description: "Authoritative male dean, formal and imposing"
+    speecht5:
+      speaker_id: 5142
+    xtts:
+      speaker_wav: null
+      description: "authoritative male, dean, formal and imposing"
+    kugelaudio:
+      voice: "default"
+
+  ghost_professor:
+    description: "Elderly male professor ghost, academic and patient"
+    speecht5:
+      speaker_id: 5142
+    xtts:
+      speaker_wav: null
+      description: "elderly male, professor, academic and patient"
+    kugelaudio:
+      voice: "default"
+
+  ghost_timmy:
+    description: "Young boy ghost, playful and innocent"
+    speecht5:
+      speaker_id: 1088  # Younger voice
+    xtts:
+      speaker_wav: null
+      description: "young boy, ghost, playful and innocent"
+    kugelaudio:
+      voice: "clear"
+
+  coach_bull:
+    description: "Athletic male coach, motivational and energetic"
+    speecht5:
+      speaker_id: 3575
+    xtts:
+      speaker_wav: null
+      description: "athletic male, coach, energetic and motivational"
+    kugelaudio:
+      voice: "default"
+
+  janitor:
+    description: "Older male janitor, conspiratorial, seen-it-all tone"
+    speecht5:
+      speaker_id: 5142  # Older male, weary
+    xtts:
+      speaker_wav: null
+      description: "older male, janitor, weary, conspiratorial"
+    kugelaudio:
+      voice: "default"
+
+  muckmuck:
+    description: "Friendly male bartender, casual and welcoming"
+    speecht5:
+      speaker_id: 3575  # Medium male
+    xtts:
+      speaker_wav: null
+      description: "friendly male, bartender, casual and welcoming"
+    kugelaudio:
+      voice: "default"
+
+  planty:
+    description: "Sentient plant, wise and slightly condescending, gender-neutral"
+    speecht5:
+      speaker_id: 7306  # Neutral, could work for plant
+    xtts:
+      speaker_wav: null
+      description: "wise plant, gender-neutral, slightly condescending"
+    kugelaudio:
+      voice: "clear"
+
+  sir_portrait:
+    description: "Elderly aristocratic male portrait, formal and dramatic"
+    speecht5:
+      speaker_id: 5142  # Older male
+    xtts:
+      speaker_wav: null
+      description: "elderly aristocrat, formal, dramatic and theatrical"
+    kugelaudio:
+      voice: "default"
+
+  tick_tock:
+    description: "Mechanical golem, loud robotic voice, speaking in caps"
+    speecht5:
+      speaker_id: 3575  # Medium male, will work for robotic
+    xtts:
+      speaker_wav: null
+      description: "mechanical golem, robotic, loud and punctual"
+    kugelaudio:
+      voice: "default"
+
+  vampire_victoria:
+    description: "Teenage female vampire, eternally 17, slightly ominous"
+    speecht5:
+      speaker_id: 1088  # Younger female
+    xtts:
+      speaker_wav: null
+      description: "teenage female vampire, eternally young, slightly ominous"
+    kugelaudio:
+      voice: "clear"
+
+  wolfboy:
+    description: "Young male werewolf student, casual and laid-back"
+    speecht5:
+      speaker_id: 3575  # Medium male
+    xtts:
+      speaker_wav: null
+      description: "young male werewolf, casual, laid-back student"
+    kugelaudio:
+      voice: "default"
+
+  wolfboy2:
+    description: "Young male werewolf student, slightly vain about appearance"
+    speecht5:
+      speaker_id: 3575  # Medium male, similar to wolfboy
+    xtts:
+      speaker_wav: null
+      description: "young male werewolf, vain, fashion-conscious"
+    kugelaudio:
+      voice: "default"
+
+  # Default voice for characters not listed
+  default:
+    description: "Generic neutral voice"
+    speecht5:
+      speaker_id: 7306
+    xtts:
+      speaker_wav: null
+      description: "neutral voice"
+    kugelaudio:
+      voice: "default"

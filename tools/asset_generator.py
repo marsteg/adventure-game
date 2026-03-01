@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 """
 Asset Generator for Point & Click Adventure Game Engine
-Generates game assets (NPCs, Rooms, Items, Doors, Actions) using AI image generation.
+Generates game assets (NPCs, Rooms, Items, Doors) and audio using AI.
 """
 
 import os
@@ -15,6 +15,12 @@ from pathlib import Path
 from datetime import datetime
 from typing import Optional, List, Dict
 import base64
+import warnings
+
+# Suppress known harmless warnings from TTS and transformers libraries
+warnings.filterwarnings('ignore', category=FutureWarning, module='transformers')
+warnings.filterwarnings('ignore', category=FutureWarning, module='TTS')
+warnings.filterwarnings('ignore', message='.*torch.load.*weights_only.*')
 
 # Load environment variables
 try:
@@ -88,16 +94,24 @@ class AssetGenerator:
         'npc': 'assets/npcs',
         'room': 'assets/rooms',
         'item': 'assets/items',
-        'door': 'assets/doors',
-        'action': 'assets/actions'
+        'door': 'assets/doors'
     }
+
+    # Interactive mode menu items (shown after asset types)
+    MENU_ITEMS = [
+        'DOUBLE-ASSET',
+        'AUDIO-FILES',
+        'Exit'
+    ]
 
     def __init__(self, config_path: str = "tools/config.yaml", style_config_path: str = "tools/style_config.yaml"):
         """Initialize the asset generator."""
         self.config_path = Path(config_path)
         self.style_config_path = Path(style_config_path)
+        self.voice_config_path = Path("tools/voice_config.yaml")
         self.config = self._load_config()
         self.style_config = self._load_style_config()
+        self.voice_config = self._load_voice_config()
         self.usage_file = Path("tools/.usage_tracker.json")
         self.usage = self._load_usage()
 
@@ -140,6 +154,41 @@ class AssetGenerator:
         with open(self.style_config_path, 'r') as f:
             return yaml.safe_load(f)
 
+    def _load_voice_config(self) -> Dict:
+        """Load voice configuration for characters."""
+        if not self.voice_config_path.exists():
+            print(f"Warning: Voice config not found at {self.voice_config_path}")
+            print("Using default voices. Create voice_config.yaml to customize character voices.")
+            return {"characters": {"default": {}}}
+
+        with open(self.voice_config_path, 'r') as f:
+            return yaml.safe_load(f)
+
+    def _get_voice_settings(self, character_name: str, provider: str) -> Dict:
+        """Get voice settings for a specific character and provider.
+
+        Args:
+            character_name: Character name (e.g., 'librarian', 'zeus')
+            provider: TTS provider name (e.g., 'speecht5', 'xtts', 'kugelaudio')
+
+        Returns:
+            Dict with provider-specific voice settings
+        """
+        characters = self.voice_config.get('characters', {})
+
+        # Try to find character-specific settings
+        char_config = characters.get(character_name, characters.get('default', {}))
+
+        # Get provider-specific settings
+        provider_settings = char_config.get(provider, {})
+
+        # Fall back to default if character not found
+        if not provider_settings and character_name != 'default':
+            default_config = characters.get('default', {})
+            provider_settings = default_config.get(provider, {})
+
+        return provider_settings
+
     def _load_usage(self) -> Dict:
         """Load usage tracker."""
         if self.usage_file.exists():
@@ -161,6 +210,21 @@ class AssetGenerator:
         """Increment usage counter."""
         self.usage["count"] += 1
         self._save_usage()
+
+    def _should_remove_background(self, asset_type: str) -> bool:
+        """Check if background should be removed for this asset type.
+
+        Args:
+            asset_type: Type of asset (npc, room, item, door)
+
+        Returns:
+            bool: True if background should be removed
+        """
+        # Get from config, with default fallback
+        bg_config = self.config.get('remove_background', {})
+        # NPCs and items default to True, rooms and doors default to False
+        default = asset_type in ['npc', 'item']
+        return bg_config.get(asset_type, default)
 
     def check_usage_limit(self) -> bool:
         """Check if usage limit is reached."""
@@ -236,8 +300,8 @@ class AssetGenerator:
         if master_additional:
             prompt_parts.append(master_additional)
 
-        # Background handling
-        if asset_type in ['npc', 'item', 'action']:
+        # Background handling - add transparent background hint for assets that will have bg removed
+        if self._should_remove_background(asset_type):
             prompt_parts.append("transparent background, isolated on white")
 
         positive_prompt = ', '.join(prompt_parts)
@@ -481,6 +545,602 @@ class AssetGenerator:
             print(f"Error removing background: {e}")
             return image_data
 
+    def generate_audio(self, text: str, character_name: str = None, filename_hint: str = "") -> Optional[bytes]:
+        """Generate audio using configured provider.
+
+        Args:
+            text: Text to convert to speech
+            character_name: Character name for voice customization (e.g., 'librarian')
+            filename_hint: Hint for usage tracking (e.g., "librarian-start")
+
+        Returns:
+            bytes: WAV audio data or None if failed
+        """
+        provider = self.config.get('audio_provider', 'speecht5').lower()
+
+        if provider == 'speecht5':
+            return self.generate_audio_speecht5(text, character_name, filename_hint)
+        elif provider == 'xtts':
+            return self.generate_audio_xtts(text, character_name, filename_hint)
+        elif provider == 'kugelaudio':
+            return self.generate_audio_kugelaudio(text, character_name, filename_hint)
+        else:
+            print(f"Unknown audio provider: {provider}")
+            print("Valid providers: 'speecht5', 'xtts', 'kugelaudio'")
+            return None
+
+    def _get_default_xtts_speaker(self) -> Optional[str]:
+        """Get or download a default speaker sample for XTTS.
+
+        Returns path to a cached default speaker WAV file.
+        """
+        # Cache path for default speaker
+        cache_dir = Path.home() / ".cache" / "asset_generator"
+        cache_dir.mkdir(parents=True, exist_ok=True)
+        default_speaker_path = cache_dir / "xtts_default_speaker.wav"
+
+        # If already cached, return it
+        if default_speaker_path.exists():
+            return str(default_speaker_path)
+
+        # Download a sample speaker from XTTS examples
+        try:
+            import requests
+            print("Downloading default XTTS speaker sample (one-time)...")
+            # Use a female voice sample from the XTTS-v2 examples on HuggingFace
+            url = "https://huggingface.co/coqui/XTTS-v2/resolve/main/samples/en_sample.wav"
+            response = requests.get(url, timeout=30)
+            response.raise_for_status()
+
+            # Save to cache
+            with open(default_speaker_path, 'wb') as f:
+                f.write(response.content)
+
+            print(f"✓ Default speaker cached to: {default_speaker_path}")
+            return str(default_speaker_path)
+
+        except Exception as e:
+            print(f"Error downloading default speaker: {e}")
+            return None
+
+    def generate_audio_speecht5(self, text: str, character_name: str = None, filename_hint: str = "") -> Optional[bytes]:
+        """Generate audio using Microsoft SpeechT5 model.
+
+        Args:
+            text: Text to convert to speech
+            character_name: Character name for voice selection
+            filename_hint: Hint for logs
+
+        Returns:
+            bytes: WAV audio data or None if failed
+        """
+        # Lazy import to avoid loading on startup
+        try:
+            import torch
+            from transformers import SpeechT5Processor, SpeechT5ForTextToSpeech, SpeechT5HifiGan
+            from datasets import load_dataset
+            import soundfile as sf
+        except ImportError as e:
+            print("Error: SpeechT5 dependencies not installed.")
+            print("Install with: pip install transformers datasets soundfile")
+            return None
+
+        print(f"Generating audio with SpeechT5...")
+        if character_name:
+            print(f"Character: {character_name}")
+        print(f"Text: {text[:80]}..." if len(text) > 80 else f"Text: {text}")
+
+        try:
+            # Get settings from config
+            audio_settings = self.config.get('audio_settings', {}).get('speecht5', {})
+            model_name = audio_settings.get('model', 'microsoft/speecht5_tts')
+            vocoder_name = audio_settings.get('vocoder', 'microsoft/speecht5_hifigan')
+            sample_rate = audio_settings.get('sample_rate', 16000)
+
+            # Get character-specific voice settings
+            voice_settings = self._get_voice_settings(character_name or 'default', 'speecht5')
+            speaker_id = voice_settings.get('speaker_id', 7306)  # Default to neutral female
+
+            # Get HF token
+            hf_token = self.config.get('huggingface_api_key')
+            if not hf_token or hf_token == 'your-huggingface-token-here':
+                hf_token = os.getenv('HF_TOKEN')
+
+            # Prepare kwargs for model loading
+            model_kwargs = {}
+            if hf_token and hf_token != 'your-huggingface-token-here':
+                model_kwargs['token'] = hf_token
+
+            # Initialize model (cache in instance to avoid reloading)
+            if not hasattr(self, '_speecht5_processor'):
+                print("Loading SpeechT5 model (first time, may take a minute)...")
+                device = "cuda" if torch.cuda.is_available() else "cpu"
+
+                try:
+                    # Load tokenizer explicitly first (workaround for transformers bug)
+                    from transformers import SpeechT5Tokenizer
+                    print("  Loading tokenizer...")
+                    tokenizer = SpeechT5Tokenizer.from_pretrained(
+                        model_name,
+                        trust_remote_code=True,
+                        **model_kwargs
+                    )
+
+                    # Now load processor with tokenizer
+                    print("  Loading processor...")
+                    self._speecht5_processor = SpeechT5Processor.from_pretrained(
+                        model_name,
+                        tokenizer=tokenizer,
+                        trust_remote_code=True,
+                        **model_kwargs
+                    )
+
+                    print("  Loading model...")
+                    self._speecht5_model = SpeechT5ForTextToSpeech.from_pretrained(
+                        model_name,
+                        trust_remote_code=True,
+                        **model_kwargs
+                    ).to(device)
+
+                    print("  Loading vocoder...")
+                    self._speecht5_vocoder = SpeechT5HifiGan.from_pretrained(
+                        vocoder_name,
+                        trust_remote_code=True,
+                        **model_kwargs
+                    ).to(device)
+
+                    # Load speaker embeddings dataset
+                    print("  Loading speaker embeddings...")
+                    # Enable trust_remote_code for datasets library (required for newer versions)
+                    os.environ['HF_DATASETS_TRUST_REMOTE_CODE'] = '1'
+                    self._speecht5_embeddings_dataset = load_dataset(
+                        "Matthijs/cmu-arctic-xvectors",
+                        split="validation",
+                        **model_kwargs
+                    )
+
+                    self._speecht5_device = device
+                    print("✓ Model loaded successfully")
+
+                except Exception as e:
+                    print(f"Error during model initialization: {e}")
+                    import traceback
+                    traceback.print_exc()
+                    # Clean up partial state
+                    if hasattr(self, '_speecht5_processor'):
+                        delattr(self, '_speecht5_processor')
+                    if hasattr(self, '_speecht5_model'):
+                        delattr(self, '_speecht5_model')
+                    if hasattr(self, '_speecht5_vocoder'):
+                        delattr(self, '_speecht5_vocoder')
+                    if hasattr(self, '_speecht5_embeddings_dataset'):
+                        delattr(self, '_speecht5_embeddings_dataset')
+                    return None
+
+            # Verify all components loaded
+            if not hasattr(self, '_speecht5_embeddings_dataset'):
+                print("Error: Model components not fully loaded. Try again.")
+                return None
+
+            # Get speaker embeddings for this character
+            speaker_embeddings = torch.tensor(
+                self._speecht5_embeddings_dataset[speaker_id]["xvector"]
+            ).unsqueeze(0).to(self._speecht5_device)
+
+            # Prepare input
+            inputs = self._speecht5_processor(text=text, return_tensors="pt")
+            inputs = {k: v.to(self._speecht5_device) for k, v in inputs.items()}
+
+            # Generate speech
+            with torch.no_grad():
+                speech = self._speecht5_model.generate_speech(
+                    inputs["input_ids"],
+                    speaker_embeddings,
+                    vocoder=self._speecht5_vocoder
+                )
+
+            # Convert to bytes
+            import tempfile
+            with tempfile.NamedTemporaryFile(suffix='.wav', delete=False) as tmp_file:
+                tmp_path = tmp_file.name
+
+            # Save as WAV
+            sf.write(tmp_path, speech.cpu().numpy(), samplerate=sample_rate)
+
+            # Read bytes
+            with open(tmp_path, 'rb') as f:
+                audio_bytes = f.read()
+
+            # Clean up temp file
+            os.unlink(tmp_path)
+
+            print("✓ Audio generated successfully!")
+            self._increment_usage()
+            return audio_bytes
+
+        except Exception as e:
+            print(f"Error generating audio: {e}")
+            import traceback
+            traceback.print_exc()
+            return None
+
+    def generate_audio_xtts(self, text: str, character_name: str = None, filename_hint: str = "") -> Optional[bytes]:
+        """Generate audio using Coqui XTTS-v2 model.
+
+        Args:
+            text: Text to convert to speech
+            character_name: Character name for voice cloning/selection
+            filename_hint: Hint for logs
+
+        Returns:
+            bytes: WAV audio data or None if failed
+        """
+        # Lazy import to avoid loading on startup
+        try:
+            from TTS.api import TTS
+        except ImportError:
+            print("Error: Coqui TTS not installed.")
+            print("Install with: pip install TTS")
+            return None
+
+        print(f"Generating audio with XTTS-v2...")
+        if character_name:
+            print(f"Character: {character_name}")
+        print(f"Text: {text[:80]}..." if len(text) > 80 else f"Text: {text}")
+
+        try:
+            # Get settings from config
+            audio_settings = self.config.get('audio_settings', {}).get('xtts', {})
+            model_name = audio_settings.get('model', 'tts_models/multilingual/multi-dataset/xtts_v2')
+            language = audio_settings.get('language', 'en')
+
+            # Get character-specific voice settings
+            voice_settings = self._get_voice_settings(character_name or 'default', 'xtts')
+            speaker_wav = voice_settings.get('speaker_wav')
+
+            # Initialize model (cache in instance to avoid reloading)
+            if not hasattr(self, '_xtts_model'):
+                print("Loading XTTS-v2 model (first time, may take a minute)...")
+                self._xtts_model = TTS(model_name)
+                print("✓ Model loaded successfully")
+
+            # Generate speech to temporary file
+            import tempfile
+            with tempfile.NamedTemporaryFile(suffix='.wav', delete=False) as tmp_file:
+                tmp_path = tmp_file.name
+
+            if speaker_wav and os.path.exists(speaker_wav):
+                # Voice cloning mode with character-specific reference
+                print(f"Using voice cloning with: {speaker_wav}")
+                self._xtts_model.tts_to_file(
+                    text=text,
+                    speaker_wav=speaker_wav,
+                    language=language,
+                    file_path=tmp_path
+                )
+            else:
+                # XTTS requires a speaker reference for voice cloning
+                # Fallback to generic female voice sample from XTTS examples
+                print("⚠️  No speaker_wav configured - using default voice")
+                print("   Tip: Configure character voices in tools/voice_config.yaml for better results!")
+
+                # Download and cache a default speaker sample
+                default_speaker = self._get_default_xtts_speaker()
+                if default_speaker and os.path.exists(default_speaker):
+                    self._xtts_model.tts_to_file(
+                        text=text,
+                        speaker_wav=default_speaker,
+                        language=language,
+                        file_path=tmp_path
+                    )
+                else:
+                    print("Error: Could not load default speaker. Please configure speaker_wav in voice_config.yaml")
+                    return None
+
+            # Read bytes
+            with open(tmp_path, 'rb') as f:
+                audio_bytes = f.read()
+
+            # Clean up temp file
+            os.unlink(tmp_path)
+
+            print("✓ Audio generated successfully!")
+            self._increment_usage()
+            return audio_bytes
+
+        except Exception as e:
+            print(f"Error generating audio: {e}")
+            import traceback
+            traceback.print_exc()
+            return None
+
+    def generate_audio_kugelaudio(self, text: str, character_name: str = None, filename_hint: str = "") -> Optional[bytes]:
+        """Generate audio using KugelAudio model from HuggingFace.
+
+        Args:
+            text: Text to convert to speech
+            character_name: Character name for voice selection
+            filename_hint: Hint for logs
+
+        Returns:
+            bytes: WAV audio data or None if failed
+        """
+        # Lazy import to avoid loading on startup
+        try:
+            import torch
+            from kugelaudio_open import (
+                KugelAudioForConditionalGenerationInference,
+                KugelAudioProcessor,
+            )
+        except ImportError:
+            print("Error: kugelaudio-open not installed.")
+            print("Install: git clone https://github.com/Kugelaudio/kugelaudio-open.git")
+            print("        cd kugelaudio-open && uv sync")
+            return None
+
+        # Check token
+        hf_token = self.config.get('huggingface_api_key')
+        if not hf_token or hf_token == 'your-huggingface-token-here':
+            hf_token = os.getenv('HF_TOKEN')
+        if not hf_token or hf_token == 'your-huggingface-token-here':
+            print("Error: Please set HF_TOKEN in .env file")
+            print("Get a FREE token at: https://huggingface.co/settings/tokens")
+            return None
+
+        print(f"Generating audio with KugelAudio...")
+        if character_name:
+            print(f"Character: {character_name}")
+        print(f"Text: {text[:80]}..." if len(text) > 80 else f"Text: {text}")
+
+        try:
+            # Get settings from config
+            audio_settings = self.config.get('audio_settings', {}).get('kugelaudio', {})
+            cfg_scale = audio_settings.get('cfg_scale', 3.0)
+            max_new_tokens = audio_settings.get('max_new_tokens', 2048)
+
+            # Get character-specific voice settings
+            voice_settings = self._get_voice_settings(character_name or 'default', 'kugelaudio')
+            voice = voice_settings.get('voice', 'default')
+
+            # Initialize model (cache in instance to avoid reloading)
+            if not hasattr(self, '_kugelaudio_model'):
+                print("Loading KugelAudio model (first time, may take a minute)...")
+                device = "cuda" if torch.cuda.is_available() else "cpu"
+
+                self._kugelaudio_model = KugelAudioForConditionalGenerationInference.from_pretrained(
+                    "kugelaudio/kugelaudio-0-open",
+                    torch_dtype=torch.bfloat16,
+                    token=hf_token
+                ).to(device)
+                self._kugelaudio_model.eval()
+
+                # Strip encoder weights to save VRAM
+                self._kugelaudio_model.model.strip_encoders()
+
+                self._kugelaudio_processor = KugelAudioProcessor.from_pretrained(
+                    "kugelaudio/kugelaudio-0-open",
+                    token=hf_token
+                )
+                self._kugelaudio_device = device
+                print("✓ Model loaded successfully")
+
+            # Prepare input
+            inputs = self._kugelaudio_processor(
+                text=text,
+                voice=voice,
+                return_tensors="pt"
+            )
+            inputs = {
+                k: v.to(self._kugelaudio_device) if isinstance(v, torch.Tensor) else v
+                for k, v in inputs.items()
+            }
+
+            # Generate speech
+            with torch.no_grad():
+                outputs = self._kugelaudio_model.generate(
+                    **inputs,
+                    cfg_scale=cfg_scale,
+                    max_new_tokens=max_new_tokens
+                )
+
+            # Save to temporary file and read bytes
+            import tempfile
+            with tempfile.NamedTemporaryFile(suffix='.wav', delete=False) as tmp_file:
+                tmp_path = tmp_file.name
+
+            self._kugelaudio_processor.save_audio(outputs.speech_outputs[0], tmp_path)
+
+            # Read bytes
+            with open(tmp_path, 'rb') as f:
+                audio_bytes = f.read()
+
+            # Clean up temp file
+            os.unlink(tmp_path)
+
+            print("✓ Audio generated successfully!")
+            self._increment_usage()
+            return audio_bytes
+
+        except Exception as e:
+            print(f"Error generating audio: {e}")
+            import traceback
+            traceback.print_exc()
+            return None
+
+    def save_audio(self, audio_data: bytes, character_name: str, dialog_id: str) -> Optional[Path]:
+        """Save audio file to dialogs directory.
+
+        Args:
+            audio_data: WAV audio bytes
+            character_name: Character name (e.g., 'librarian')
+            dialog_id: Dialog node ID (e.g., 'start', 'description-locked')
+
+        Returns:
+            Path to saved file or None
+        """
+        audio_dir = Path("assets/sounds/dialogs")
+        audio_dir.mkdir(parents=True, exist_ok=True)
+
+        # Clean names
+        clean_character = character_name.lower().replace(' ', '_').replace('-', '_')
+        clean_dialog = dialog_id.lower().replace(' ', '_')
+
+        filename = f"{clean_character}-{clean_dialog}.wav"
+        filepath = audio_dir / filename
+
+        # Handle duplicates (add counter)
+        counter = 1
+        while filepath.exists():
+            filename = f"{clean_character}-{clean_dialog}_{counter}.wav"
+            filepath = audio_dir / filename
+            counter += 1
+
+        try:
+            with open(filepath, 'wb') as f:
+                f.write(audio_data)
+
+            print(f"✓ Audio saved to: {filepath}")
+            return filepath
+        except Exception as e:
+            print(f"Error saving audio: {e}")
+            return None
+
+    def parse_dialog_yaml(self, yaml_path: Path) -> Dict[str, List[tuple[str, str]]]:
+        """Parse dialog YAML and extract all text that needs audio.
+
+        Args:
+            yaml_path: Path to dialog YAML file
+
+        Returns:
+            Dict mapping dialog_id to list of (text, suggested_filename) tuples
+            Example: {
+                'description-locked': [('The librarian...', 'librarian-description-locked')],
+                'start': [('Ah, Death\'s daughter...', 'librarian-start')]
+            }
+        """
+        with open(yaml_path, 'r') as f:
+            dialog_data = yaml.safe_load(f)
+
+        if not dialog_data:
+            print(f"Warning: Empty or invalid YAML file: {yaml_path}")
+            return {}
+
+        # Extract character name from filename
+        character_name = yaml_path.stem  # e.g., 'librarian' from 'librarian.yaml'
+
+        texts_to_generate = {}
+
+        # Process description section
+        if 'description' in dialog_data:
+            desc = dialog_data['description']
+
+            # Locked description
+            if 'locked' in desc and 'line' in desc['locked']:
+                line = desc['locked']['line']
+                if line and line.strip():
+                    dialog_id = 'description-locked'
+                    texts_to_generate[dialog_id] = [(line, f"{character_name}-{dialog_id}")]
+
+            # Unlocked description
+            if 'unlocked' in desc and 'line' in desc['unlocked']:
+                line = desc['unlocked']['line']
+                if line and line.strip():
+                    dialog_id = 'description-unlocked'
+                    texts_to_generate[dialog_id] = [(line, f"{character_name}-{dialog_id}")]
+
+        # Process dialog nodes
+        for node_id, node_data in dialog_data.items():
+            # Skip description (already processed)
+            if node_id == 'description':
+                continue
+
+            # Check if this is a dialog node (has 'line' key)
+            if isinstance(node_data, dict) and 'line' in node_data:
+                line = node_data['line']
+
+                # Handle both single strings and arrays
+                if isinstance(line, str):
+                    if line and line.strip():
+                        texts_to_generate[node_id] = [(line, f"{character_name}-{node_id}")]
+                elif isinstance(line, list):
+                    # Array of lines - generate separate files
+                    valid_lines = [(text, f"{character_name}-{node_id}-{idx}")
+                                   for idx, text in enumerate(line)
+                                   if text and text.strip()]
+                    if valid_lines:
+                        texts_to_generate[node_id] = valid_lines
+
+        return texts_to_generate
+
+    def generate_dialog_audio(self, character_name: str, skip_confirmation: bool = False):
+        """Generate audio for all dialog lines of a character.
+
+        Args:
+            character_name: Name of the character (must match YAML filename)
+            skip_confirmation: If True, skip the confirmation prompt (for CLI use)
+        """
+        # Find dialog YAML file
+        yaml_path = Path(f"assets/dialogs/{character_name}.yaml")
+
+        if not yaml_path.exists():
+            print(f"Error: Dialog file not found: {yaml_path}")
+            print(f"\nAvailable dialogs:")
+            dialog_dir = Path("assets/dialogs")
+            if dialog_dir.exists():
+                for yaml_file in sorted(dialog_dir.glob("*.yaml")):
+                    print(f"  - {yaml_file.stem}")
+            return
+
+        print(f"\n=== Generating Audio for {character_name} ===\n")
+
+        # Parse YAML
+        print("Parsing dialog YAML...")
+        texts = self.parse_dialog_yaml(yaml_path)
+
+        if not texts:
+            print("No dialog text found to generate audio for.")
+            return
+
+        total_lines = sum(len(lines) for lines in texts.values())
+        print(f"Found {len(texts)} dialog nodes with {total_lines} total lines\n")
+
+        # Confirm before proceeding (can be expensive)
+        if not skip_confirmation:
+            confirm = input(f"Generate {total_lines} audio files? This may take several minutes. (y/n): ").strip().lower()
+            if confirm != 'y':
+                print("Cancelled.")
+                return
+        else:
+            print(f"Generating {total_lines} audio files...")
+
+        # Generate audio for each line
+        generated_count = 0
+        failed_count = 0
+
+        for node_id, lines in texts.items():
+            for text, suggested_filename in lines:
+                print(f"\n[{generated_count + failed_count + 1}/{total_lines}] Generating: {node_id}")
+
+                # Generate audio with character-specific voice
+                audio_data = self.generate_audio(text, character_name, suggested_filename)
+
+                if audio_data:
+                    # Save audio
+                    filepath = self.save_audio(audio_data, character_name, node_id)
+                    if filepath:
+                        generated_count += 1
+                    else:
+                        failed_count += 1
+                else:
+                    print(f"✗ Failed to generate audio for: {node_id}")
+                    failed_count += 1
+
+        # Summary
+        print(f"\n=== Generation Complete ===")
+        print(f"✓ Successfully generated: {generated_count}/{total_lines}")
+        if failed_count > 0:
+            print(f"✗ Failed: {failed_count}/{total_lines}")
+
     def save_asset(self, image_data: bytes, asset_type: str, name: str):
         """Save asset to appropriate directory."""
         asset_dir = Path(self.ASSET_TYPES[asset_type])
@@ -507,7 +1167,7 @@ class AssetGenerator:
         """Generate a single asset.
 
         Args:
-            asset_type: Type of asset (npc, room, item, door, action)
+            asset_type: Type of asset (npc, room, item, door)
             description: Text description of the asset
             name: Filename for the asset
             remove_bg: Override background removal setting (None = use config)
@@ -528,9 +1188,7 @@ class AssetGenerator:
 
         # Remove background based on config (unless explicitly overridden)
         if remove_bg is None:
-            # Check config for this asset type
-            bg_config = self.config.get('remove_background', {})
-            remove_bg = bg_config.get(asset_type, asset_type in ['npc', 'item', 'action'])
+            remove_bg = self._should_remove_background(asset_type)
 
         if remove_bg:
             image_data = self.remove_background(image_data)
@@ -551,7 +1209,7 @@ class AssetGenerator:
         """Generate two variations of the same asset with improved consistency.
 
         Args:
-            asset_type: Type of asset (npc, room, item, door, action)
+            asset_type: Type of asset (npc, room, item, door)
             base_description: Description of the base/original asset
             variation_description: Description of the variation
             base_name: Filename for base asset
@@ -642,17 +1300,7 @@ class AssetGenerator:
                 ('castle_door', 'Large ornate castle door'),
                 ('dungeon_door', 'Prison cell door with bars'),
                 ('magic_door', 'Mystical door with runes'),
-            ],
-            'action': [
-                ('lever', 'Mechanical lever or switch'),
-                ('button', 'Push button or pressure plate'),
-                ('statue', 'Interactive statue or monument'),
-                ('chest', 'Treasure chest or container'),
-                ('fountain', 'Decorative fountain'),
-                ('altar', 'Ritual altar or shrine'),
-                ('telescope', 'Viewing telescope or spyglass'),
-                ('throne', 'Royal throne or seat'),
-            ],
+            ]
         }
 
         if asset_type:
@@ -672,20 +1320,62 @@ class AssetGenerator:
         print("\n=== Asset Generator - Interactive Mode ===\n")
 
         while True:
+            # Display asset types
             print("\nAsset Types:")
             for i, atype in enumerate(self.ASSET_TYPES.keys(), 1):
                 print(f"  {i}. {atype.upper()}")
-            print(f"  {len(self.ASSET_TYPES) + 1}. DOUBLE-ASSET")
-            print(f"  {len(self.ASSET_TYPES) + 2}. Exit")
 
-            choice = input(f"\nSelect asset type (1-{len(self.ASSET_TYPES) + 2}): ").strip()
+            # Display additional menu items
+            base_num = len(self.ASSET_TYPES)
+            for i, menu_item in enumerate(self.MENU_ITEMS, base_num + 1):
+                print(f"  {i}. {menu_item}")
 
-            if choice == str(len(self.ASSET_TYPES) + 2):
+            total_options = base_num + len(self.MENU_ITEMS)
+            choice = input(f"\nSelect asset type (1-{total_options}): ").strip()
+
+            # Exit check
+            exit_num = base_num + len(self.MENU_ITEMS)
+            if choice == str(exit_num):
                 print("Goodbye!")
                 break
 
+            # Audio generation mode
+            audio_num = base_num + 2  # Position of AUDIO-FILES in menu
+            if choice == str(audio_num):
+                print("\n--- Audio Generation Mode ---\n")
+
+                # List available characters
+                dialog_dir = Path("assets/dialogs")
+                if dialog_dir.exists():
+                    yaml_files = sorted(dialog_dir.glob("*.yaml"))
+                    print("Available characters:")
+                    for i, yaml_file in enumerate(yaml_files, 1):
+                        print(f"  {i}. {yaml_file.stem}")
+                    print()
+
+                character_name = input("Enter character name (or number from list): ").strip()
+
+                # Handle numeric selection
+                if character_name.isdigit() and dialog_dir.exists():
+                    yaml_files = sorted(dialog_dir.glob("*.yaml"))
+                    idx = int(character_name) - 1
+                    if 0 <= idx < len(yaml_files):
+                        character_name = yaml_files[idx].stem
+                    else:
+                        print("Invalid selection!")
+                        continue
+
+                if character_name:
+                    self.generate_dialog_audio(character_name)
+
+                another = input("\nGenerate audio for another character? (y/n): ").strip().lower()
+                if another != 'y':
+                    break
+                continue
+
             # Double-asset mode
-            if choice == str(len(self.ASSET_TYPES) + 1):
+            double_asset_num = base_num + 1  # Position of DOUBLE-ASSET in menu
+            if choice == str(double_asset_num):
                 print("\n--- Double-Asset Mode ---\n")
 
                 # Ask for asset type with number selection
@@ -745,7 +1435,7 @@ class AssetGenerator:
                 if asset_type in ['room', 'door']:
                     bg_choice = input("Remove background? (y/n, default=n): ").strip().lower()
                     remove_bg = bg_choice == 'y'
-                elif asset_type in ['npc', 'item', 'action']:
+                elif asset_type in ['npc', 'item']:
                     bg_choice = input("Remove background? (y/n, default=y): ").strip().lower()
                     if bg_choice == 'n':
                         remove_bg = False
@@ -794,7 +1484,7 @@ class AssetGenerator:
             if asset_type in ['room', 'door']:
                 bg_choice = input("Remove background? (y/n, default=n): ").strip().lower()
                 remove_bg = bg_choice == 'y'
-            elif asset_type in ['npc', 'item', 'action']:
+            elif asset_type in ['npc', 'item']:
                 bg_choice = input("Remove background? (y/n, default=y): ").strip().lower()
                 if bg_choice == 'n':
                     remove_bg = False
@@ -823,18 +1513,21 @@ Examples:
   # Generate an item
   python tools/asset_generator.py item "golden key with ornate design" key_ornate
 
-  # Generate an action object
-  python tools/asset_generator.py action "ancient stone lever" lever
+  # Generate a door
+  python tools/asset_generator.py door "heavy wooden door with iron hinges" door_main
 
   # Interactive mode (asks for size)
   python tools/asset_generator.py --interactive
+
+  # Generate dialog audio for a character
+  python tools/asset_generator.py --generate-audio librarian
 
   # List templates
   python tools/asset_generator.py --list-templates
         """
     )
 
-    parser.add_argument('asset_type', nargs='?', choices=['npc', 'room', 'item', 'door', 'action'],
+    parser.add_argument('asset_type', nargs='?', choices=['npc', 'room', 'item', 'door'],
                        help='Type of asset to generate')
     parser.add_argument('description', nargs='?', help='Description of the asset')
     parser.add_argument('name', nargs='?', help='Name for the asset file')
@@ -848,10 +1541,16 @@ Examples:
                        help='List available templates')
     parser.add_argument('--check-usage', action='store_true',
                        help='Check current usage')
+    parser.add_argument('--generate-audio', metavar='CHARACTER',
+                       help='Generate audio for character dialog (e.g., librarian)')
 
     args = parser.parse_args()
 
     generator = AssetGenerator()
+
+    if args.generate_audio:
+        generator.generate_dialog_audio(args.generate_audio, skip_confirmation=True)
+        return
 
     if args.check_usage:
         generator.check_usage_limit()

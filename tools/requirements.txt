@@ -8,3 +8,24 @@ rembg>=2.0.50
 huggingface_hub>=0.20.0
 # Environment variable management
 python-dotenv>=1.0.0
+
+# Audio generation dependencies (install based on chosen provider)
+# PyTorch is required for all TTS providers
+torch>=2.0.0,<2.6  # Pin <2.6 for TTS compatibility
+
+# For SpeechT5 provider (recommended - lightweight, CPU-friendly):
+#   Uncomment the following lines:
+# transformers>=4.30.0,<5.0.0  # Pin to 4.x for TTS compatibility (specifically 4.33.0 recommended)
+# datasets>=2.14.0,<4.0.0  # Pin to <4.0.0 for dataset script support
+# soundfile>=0.12.0
+# sentencepiece>=0.1.99  # Required for SpeechT5 tokenizer
+
+# For XTTS provider (voice cloning, high quality):
+#   Uncomment the following lines:
+# TTS>=0.22.0
+# transformers==4.33.0  # XTTS requires exactly 4.33.0 for BeamSearchScorer compatibility
+# Note: XTTS requires torch<2.6 (incompatible with 2.6+ weights_only default)
+
+# For KugelAudio provider (highest quality, requires git clone):
+#   git clone https://github.com/Kugelaudio/kugelaudio-open.git
+#   cd kugelaudio-open && uv sync

@@ -1,0 +1,38 @@
+# Voice Configuration for Characters
+# Copy this to voice_config.yaml and customize for your characters
+#
+# For SpeechT5: Use speaker_id (0-7325 from CMU Arctic dataset)
+#   Common options:
+#     - 7306: Female, neutral
+#     - 3575: Male, deeper
+#     - 1088: Female, younger
+#     - 5142: Male, older
+#
+# For XTTS: Use speaker_wav path for voice cloning
+#   - speaker_wav: Path to 6-30 second reference audio WAV file
+#   - description: Text description (used if speaker_wav is missing)
+#
+# For KugelAudio: Use voice preset
+#   - Options: "default", "warm", "clear"
+
+characters:
+  example_character:
+    description: "Brief description of character voice"
+    speecht5:
+      speaker_id: 7306  # See list above
+    xtts:
+      speaker_wav: "path/to/reference_voice.wav"  # Optional
+      description: "text description of voice characteristics"
+    kugelaudio:
+      voice: "default"
+
+  # Default voice for characters not listed
+  default:
+    description: "Generic neutral voice"
+    speecht5:
+      speaker_id: 7306
+    xtts:
+      speaker_wav: null
+      description: "neutral voice"
+    kugelaudio:
+      voice: "default"

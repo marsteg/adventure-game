@@ -1,104 +1,223 @@
-# Asset Generator Tool
+# Asset Generator - Quick Start Guide
 
-AI-powered asset generation tool for the Point & Click Adventure Game Engine. Generate NPCs, rooms, items, and doors using Hugging Face's free unlimited API with consistent, customizable art styles.
-
-## Setup 
-
-### 1. **Install Dependencies**
-   ```bash
-   pip install 'numpy<2'
-   pip install -r tools/requirements.txt
-   ```
-**Key dependencies:** `huggingface_hub`, `python-dotenv`, `Pillow`, `PyYAML`, `rembg` (for background removal)
-
-### 2. **Get Free API Key**
-   - Go to: https://huggingface.co/settings/tokens
-   - Click "New token" (select "Read" access)
-   - Copy your token
-   - **No credit card required!** Truly free and unlimited!
-
-### 3. **Configure API**
-   ```bash
-   cp tools/config.yaml.example tools/config.yaml
-   nano tools/config.yaml  # Add your Hugging Face API key
-   ```
-
-   Set `provider: "huggingface"` (already the default) and add your token:
-   ```yaml
-   provider: "huggingface"
-   huggingface_api_key: "hf_your_token_here"
-   ```
-
-### 4. **Configure Your Game's Art Style** 
-   ```bash
-   cp tools/style_config.yaml.example tools/style_config.yaml
-   nano tools/style_config.yaml  # Customize for your game
-   ```
-
-   **This is VERY important!** The style config controls:
-   - ✅ 2D vs 3D style (avoid 3D renders)
-   - ✅ Cartoon vs realistic
-   - ✅ Color palette
-   - ✅ Level of detail
-
-   Edit `master_style.negative_keywords` to exclude unwanted styles like "3D render, CGI, photorealistic"
-
-### 5. **Done!** You're ready to generate assets.
-
-## Usage
-
-### Interactive Mode (Easiest)
-```bash
-python3 tools/asset_generator.py --interactive
-```
-
-### Command Line
-```bash
-# Generate NPC with your style
-python3 tools/asset_generator.py npc "zombie character" zombie
-
-# Generate Room
-python3 tools/asset_generator.py room "dark mysterious cave" cave_dark
-
-# Check usage
-python3 tools/asset_generator.py --check-usage
-```
-
-## Example Workflow
-
-```bash
-# 1. Check remaining quota (not really needed for HF but shows tracking)
-python3 tools/asset_generator.py --check-usage
-# Output: Monthly usage: 0/999 (Remaining: 999)
-
-# 2. Generate assets (all FREE with Hugging Face!)
-python3 tools/asset_generator.py npc "elderly librarian" librarian_old
-python3 tools/asset_generator.py room "ancient library" library_ancient
-python3 tools/asset_generator.py item "magic book" book_magic
-
-# 3. Assets saved to:
-# assets/npcs/librarian_old.png
-# assets/rooms/library_ancient.png
-# assets/items/book_magic.png
-```
-
-## Tips
-
-1. **Be specific** - "friendly shopkeeper with apron" not just "person"
-2. **Use style keywords** - "cartoon style", "illustrated", "detailed"
-3. **Unlimited generation** - Hugging Face has no credit limits!
-4. **Preview prompts** - Use `--list-templates` for ideas
-5. **Switch providers** - Set `provider: "stability"` in config.yaml if needed
-
-## Need Help?
-
-See `tools/README.md` for:
-- Complete documentation
-- Troubleshooting guide
-- Advanced usage
-- Prompt writing tips
-- API configuration
+## Table of Contents
+- [Image Generation Setup](#image-generation-setup)
+- [Audio Generation Setup](#audio-generation-setup)
+- [First Steps](#first-steps)
+- [Troubleshooting](#troubleshooting)
 
 ---
 
-**You're all set! Start generating assets for your adventure game! 🎮**
+## Image Generation Setup
+
+### 1. Install Dependencies
+```bash
+pip install 'numpy<2'
+pip install -r tools/requirements.txt
+```
+
+**Core dependencies**: `huggingface_hub`, `python-dotenv`, `Pillow`, `PyYAML`, `requests`, `rembg`
+
+### 2. Get Free HuggingFace API Token
+- Go to: https://huggingface.co/settings/tokens
+- Click "New token" → Select "Read" access
+- Copy your token
+- **No credit card required!** Truly free and unlimited!
+
+### 3. Configure API Keys
+```bash
+cp .env.example .env
+nano .env
+```
+
+Add your token:
+```bash
+HF_TOKEN=hf_your_token_here
+```
+
+### 4. Configure Settings
+```bash
+cp tools/config.yaml.example tools/config.yaml
+cp tools/style_config.yaml.example tools/style_config.yaml
+```
+
+**Important**: Edit `style_config.yaml` to set your game's art style!
+
+---
+
+## Audio Generation Setup
+
+### 1. Choose Your TTS Provider
+
+**Option A: SpeechT5 (Recommended - Easiest)**
+- ✅ Lightweight (~500MB)
+- ✅ CPU-friendly
+- ✅ Good quality
+- ✅ Multiple voices available
+
+```bash
+pip install torch transformers 'datasets<4.0.0' soundfile sentencepiece
+```
+
+**Option B: XTTS-v2 (Voice Cloning)**
+- ⭐ Excellent quality
+- ⭐ Can clone voices from samples
+- ⚠️ Larger download (~2GB)
+- ⚠️ GPU recommended
+- ⚠️ Requires specific versions: torch<2.6, transformers==4.33.0
+
+```bash
+pip install 'torch>=2.0.0,<2.6' TTS
+pip install 'transformers==4.33.0'
+```
+
+**Option C: KugelAudio (Highest Quality)**
+- 🌟 Best quality
+- ⚠️ GPU only (~19GB VRAM)
+- ⚠️ Manual installation
+
+```bash
+git clone https://github.com/Kugelaudio/kugelaudio-open.git
+cd kugelaudio-open && uv sync
+```
+
+### 2. Select Provider in config.yaml
+```yaml
+# Choose one:
+audio_provider: "speecht5"  # Easiest, CPU-friendly
+# audio_provider: "xtts"     # Voice cloning
+# audio_provider: "kugelaudio"  # Highest quality
+```
+
+### 3. Configure Character Voices (Optional)
+```bash
+cp tools/voice_config.yaml.example tools/voice_config.yaml
+nano tools/voice_config.yaml
+```
+
+Customize voices for each character. See [VOICE_CONFIG_GUIDE.md](VOICE_CONFIG_GUIDE.md) for details.
+
+---
+
+## First Steps
+
+### Test Image Generation
+```bash
+# Interactive mode (recommended for first use)
+python tools/asset_generator.py --interactive
+
+# Or command line:
+python tools/asset_generator.py npc "test character" test
+```
+
+Generated images go to: `assets/npcs/`, `assets/rooms/`, etc.
+
+### Test Audio Generation
+```bash
+# Generate audio for one character
+python tools/asset_generator.py --generate-audio librarian
+
+# Or use interactive mode
+python tools/asset_generator.py --interactive
+# Select option 7: AUDIO-FILES
+```
+
+Generated audio goes to: `assets/sounds/dialogs/`
+
+### Check Usage
+```bash
+python tools/asset_generator.py --check-usage
+```
+
+---
+
+## Troubleshooting
+
+### Image Generation Issues
+
+**"ModuleNotFoundError: No module named 'huggingface_hub'"**
+```bash
+pip install huggingface_hub python-dotenv
+```
+
+**"Error: Please set HF_TOKEN in .env file"**
+1. Create `.env`: `cp .env.example .env`
+2. Get token: https://huggingface.co/settings/tokens
+3. Add to `.env`: `HF_TOKEN=hf_your_token_here`
+
+**"NumPy 2.x detected" Error**
+```bash
+pip install 'numpy<2'
+pip install rembg
+```
+
+**"Still getting 3D-looking images"**
+- Edit `tools/style_config.yaml`
+- Add more keywords to `negative_keywords`:
+  ```yaml
+  negative_keywords: "3D render, photorealistic, realistic, CGI, octane render, ray tracing"
+  ```
+
+### Audio Generation Issues
+
+**"cannot import name 'BeamSearchScorer' from 'transformers'"** (XTTS)
+```bash
+# Install exact compatible version
+pip install 'transformers==4.33.0'
+```
+
+**"Weights only load failed"** or **"UnpicklingError"** (XTTS with PyTorch 2.6+)
+```bash
+# Downgrade torch to 2.5.x
+pip install 'torch<2.6' 'torchaudio<2.6'
+```
+
+**"Model is multi-speaker but no `speaker` is provided"** (XTTS)
+- This is expected - XTTS requires voice samples for cloning
+- The tool will automatically download a default speaker on first use
+- For better results, configure character voices in `tools/voice_config.yaml`
+
+**"sentencepiece not found"** (SpeechT5)
+```bash
+pip install sentencepiece
+```
+
+**"Dataset scripts are no longer supported"**
+```bash
+pip install 'datasets<4.0.0'
+```
+
+**"CUDA out of memory"** (GPU models)
+- Use SpeechT5 instead (CPU-friendly)
+- Or reduce batch size
+- Or use smaller model
+
+**"Model takes forever to load"**
+- First time downloads ~500MB-2GB
+- Subsequent runs reuse cached models (fast!)
+- Be patient on first run
+
+### General Issues
+
+**"Command not found: python"**
+```bash
+# Try python3 instead:
+python3 tools/asset_generator.py --interactive
+```
+
+**"Permission denied"**
+```bash
+chmod +x tools/asset_generator.py
+```
+
+---
+
+## Next Steps
+
+- **[README.md](README.md)** - Complete tool documentation
+- **[STYLE_CONFIG_GUIDE.md](STYLE_CONFIG_GUIDE.md)** - Master your art style
+- **[VOICE_CONFIG_GUIDE.md](VOICE_CONFIG_GUIDE.md)** - Customize character voices
+
+---
+
+**Ready to create! 🎨🎮🔊**
