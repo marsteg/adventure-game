@@ -81,9 +81,10 @@ These files contain the engine code and should remain unchanged:
 
 ### 2. Replace All Game Content
 - Replace all assets in `assets/` directories
-- Rewrite the game content section in `main.py` (keep pygame setup, replace room creation)
+- Create a `game.py` file with your game content (see template below)
 - Create new dialog YAML files
 - Delete existing `save.yaml`
+- **DO NOT MODIFY `main.py`** - it's part of the engine framework
 
 ### 3. Asset Requirements and Organization
 
@@ -117,6 +118,124 @@ assets/
 - **Backgrounds**: Will be automatically scaled to screen size (1024x768)
 - **Sprites**: Size according to your game's scale and style
 - **Player Animation**: Requires 6 frames each for left/right walking
+
+---
+
+## Game.py Template Structure
+
+All game content should be defined in a `game.py` file. **Never modify `main.py`** - it's part of the engine framework.
+
+### Required Functions in game.py
+
+Your `game.py` must implement these three functions:
+
+```python
+def get_metadata():
+    """
+    Returns basic game information.
+    Returns: (title, player_start_position_percent)
+    """
+    title = "Your Game Title"
+    player_start_position_percent = (30, 75)  # (x%, y%) where player spawns
+    return title, player_start_position_percent
+
+
+def get_player_config():
+    """
+    Returns player character configuration.
+    Returns: (player_sprite_path, player_name)
+    """
+    player_sprite = "assets/player/your_character_waiting.png"  # Idle sprite
+    player_name = "player"  # Internal name (usually "player")
+    return player_sprite, player_name
+
+
+def create_game_content(player, inventory):
+    """
+    Creates all game content: rooms, NPCs, items, actions, doors.
+    Returns: (rooms_dict, starting_room, intro_cutscene)
+    """
+    intro = TextCutscene("assets/textcutscenes/intro.yaml")
+
+    # Clear existing content
+    Room.rooms = {}
+
+    # Create your game here...
+    # (See full example below)
+
+    return Room.rooms, starting_room, intro
+```
+
+### Complete game.py Example
+
+```python
+# Your Game Title - Game Content
+from constants import WHITE, YELLOW, PURPLE
+import actionfuncs
+from room import Room
+from npc import NPC
+from item import Item
+from action import Action
+from door import Door
+from textcutscene import TextCutscene
+
+
+def get_metadata():
+    title = "Mystery Mansion"
+    player_start_position_percent = (20, 80)
+    return title, player_start_position_percent
+
+
+def get_player_config():
+    player_sprite = "assets/player/detective_waiting.png"
+    player_name = "player"
+    return player_sprite, player_name
+
+
+def create_game_content(player, inventory):
+    intro = TextCutscene("assets/textcutscenes/intro.yaml")
+    Room.rooms = {}
+
+    # 1. ROOMS
+    entrance = Room(player, "assets/rooms/entrance.png", "Entrance Hall",
+                   "assets/sounds/background/mystery.wav")
+    library = Room(player, "assets/rooms/library.png", "Library",
+                  "assets/sounds/background/quiet.wav")
+
+    # 2. ITEMS
+    key = Item(300, 400, 40, 50, "assets/items/key.png", "Old Key", True)
+    key.add_description("A rusty old key", "assets/sounds/items/key.wav")
+
+    # 3. NPCs
+    butler = NPC(500, 300, 80, 120, "assets/npcs/butler.png", "Butler",
+                False, None, WHITE, "assets/dialogs/butler.yaml")
+
+    # 4. ACTIONS
+    puzzle_box = Action(600, 350, 70, 70, "assets/actions/box.png",
+                       "Puzzle Box", True, key)
+    puzzle_box.add_description("Locked box", "You open it!",
+                              "locked.wav", "unlocked.wav")
+
+    # 5. DOORS
+    library_door = Door(700, 400, 80, 120, None, "Library Door",
+                       library, (100, 400), True, puzzle_box)
+    library_door.add_description("Door is locked", "To the library!",
+                                "locked.wav", "unlocked.wav")
+
+    # 6. ACTION FUNCTIONS
+    puzzle_box.add_function(actionfuncs.UnlockDoor, puzzle_box, library_door)
+    puzzle_box.add_function(actionfuncs.LogText, "The door unlocks!")
+
+    # 7. ASSIGN TO ROOMS
+    entrance.npcs[butler.name] = butler
+    entrance.items[key.name] = key
+    entrance.actions[puzzle_box.name] = puzzle_box
+    entrance.doors[library_door.name] = library_door
+
+    return Room.rooms, entrance, intro
+```
+
+---
 
 ## Code Patterns and Examples
 
