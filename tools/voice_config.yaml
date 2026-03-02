@@ -12,6 +12,22 @@
 #   - speaker_wav: Path to 6-30 second reference audio
 #   - description: Text description of voice (fallback)
 #
+# For Bark: Use voice_preset (100+ voices available)
+#   - Format: v2/{language}_speaker_{number}
+#   - Examples: v2/en_speaker_0 to v2/en_speaker_9
+#   - Full list: https://suno-ai.notion.site/8b8e8749ed514b0cbf3f699013548683
+#   - Common presets:
+#       v2/en_speaker_0: Male, clear
+#       v2/en_speaker_1: Female, warm
+#       v2/en_speaker_2: Male, deep
+#       v2/en_speaker_3: Female, professional
+#       v2/en_speaker_4: Male, young
+#       v2/en_speaker_5: Female, soft
+#       v2/en_speaker_6: Female, neutral (default)
+#       v2/en_speaker_7: Male, rough
+#       v2/en_speaker_8: Female, energetic
+#       v2/en_speaker_9: Male, authoritative
+#
 # For KugelAudio: Use voice preset
 #   - Options: "default", "warm", "clear"
 
@@ -23,6 +39,8 @@ characters:
     xtts:
       speaker_wav: None # Could add reference audio here
       description: "mature woman, mysterious, librarian"
+    bark:
+      voice_preset: "v2/en_speaker_9"  # Female, professional
     kugelaudio:
       voice: "default"
 
@@ -33,6 +51,8 @@ characters:
     xtts:
       speaker_wav: "assets/sounds/default-voices/ben.wav"  # Could add reference audio here
       description: "powerful male, deep voice, god-like authority"
+    bark:
+      voice_preset: "v2/en_speaker_3"  # Male, authoritative
     kugelaudio:
       voice: "default"
 
@@ -43,6 +63,8 @@ characters:
     xtts:
       speaker_wav: null
       description: "gruff male, chef, working class"
+    bark:
+      voice_preset: "v2/en_speaker_7"  # Male, rough
     kugelaudio:
       voice: "default"
 
@@ -53,6 +75,8 @@ characters:
     xtts:
       speaker_wav: null
       description: "mystical female, oracle, wise and ethereal"
+    bark:
+      voice_preset: "v2/en_speaker_9"  # Female, soft
     kugelaudio:
       voice: "clear"
 
@@ -63,6 +87,8 @@ characters:
     xtts:
       speaker_wav: null
       description: "young male, energetic, quick speaking"
+    bark:
+      voice_preset: "v2/en_speaker_8"  # Male, young
     kugelaudio:
       voice: "default"
 
@@ -73,6 +99,8 @@ characters:
     xtts:
       speaker_wav: null
       description: "nervous male, shopkeeper, slightly anxious"
+    bark:
+      voice_preset: "v2/en_speaker_1"  
     kugelaudio:
       voice: "default"
 
@@ -83,6 +111,8 @@ characters:
     xtts:
       speaker_wav: null
       description: "authoritative male, dean, formal and imposing"
+    bark:
+      voice_preset: "v2/en_speaker_9"  # Male, authoritative
     kugelaudio:
       voice: "default"
 
@@ -93,6 +123,8 @@ characters:
     xtts:
       speaker_wav: null
       description: "elderly male, professor, academic and patient"
+    bark:
+      voice_preset: "v2/en_speaker_2"  # Male, deep
     kugelaudio:
       voice: "default"
 
@@ -103,6 +135,8 @@ characters:
     xtts:
       speaker_wav: null
       description: "young boy, ghost, playful and innocent"
+    bark:
+      voice_preset: "v2/en_speaker_4"  # Male, young
     kugelaudio:
       voice: "clear"
 
@@ -113,6 +147,8 @@ characters:
     xtts:
       speaker_wav: null
       description: "athletic male, coach, energetic and motivational"
+    bark:
+      voice_preset: "v2/en_speaker_0"  # Male, clear
     kugelaudio:
       voice: "default"
 
@@ -123,6 +159,8 @@ characters:
     xtts:
       speaker_wav: null
       description: "older male, janitor, weary, conspiratorial"
+    bark:
+      voice_preset: "v2/en_speaker_7"  # Male, rough
     kugelaudio:
       voice: "default"
 
@@ -133,6 +171,8 @@ characters:
     xtts:
       speaker_wav: null
       description: "friendly male, bartender, casual and welcoming"
+    bark:
+      voice_preset: "v2/en_speaker_0"  # Male, clear
     kugelaudio:
       voice: "default"
 
@@ -143,6 +183,8 @@ characters:
     xtts:
       speaker_wav: null
       description: "wise plant, gender-neutral, slightly condescending"
+    bark:
+      voice_preset: "v2/en_speaker_6"  # Female, neutral (works for plants)
     kugelaudio:
       voice: "clear"
 
@@ -153,6 +195,8 @@ characters:
     xtts:
       speaker_wav: null
       description: "elderly aristocrat, formal, dramatic and theatrical"
+    bark:
+      voice_preset: "v2/en_speaker_9"  # Male, authoritative
     kugelaudio:
       voice: "default"
 
@@ -163,6 +207,8 @@ characters:
     xtts:
       speaker_wav: null
       description: "mechanical golem, robotic, loud and punctual"
+    bark:
+      voice_preset: "v2/en_speaker_2"  # Male, deep (robotic)
     kugelaudio:
       voice: "default"
 
@@ -173,6 +219,8 @@ characters:
     xtts:
       speaker_wav: null
       description: "teenage female vampire, eternally young, slightly ominous"
+    bark:
+      voice_preset: "v2/en_speaker_8"  # Female, energetic
     kugelaudio:
       voice: "clear"
 
@@ -183,6 +231,8 @@ characters:
     xtts:
       speaker_wav: null
       description: "young male werewolf, casual, laid-back student"
+    bark:
+      voice_preset: "v2/en_speaker_4"  # Male, young
     kugelaudio:
       voice: "default"
 
@@ -193,6 +243,8 @@ characters:
     xtts:
       speaker_wav: null
       description: "young male werewolf, vain, fashion-conscious"
+    bark:
+      voice_preset: "v2/en_speaker_4"  # Male, young
     kugelaudio:
       voice: "default"
 
@@ -204,5 +256,7 @@ characters:
     xtts:
       speaker_wav: null
       description: "neutral voice"
+    bark:
+      voice_preset: "v2/en_speaker_6"  # Female, neutral
     kugelaudio:
       voice: "default"

@@ -1,34 +1,79 @@
-# Image Generation Provider Configuration
-# API keys are now in .env file (copy .env.example to .env and add your keys)
+# Example Image Generation Provider Configuration
+# Supported providers:
+#   - huggingface: Hugging Face Inference API (free, fast, unlimited)
+#   - stability: Stability AI API (paid, limited free tier)
+#   - local: Run models locally on your GPU/CPU (free, unlimited, private)
+provider: "local"
 
-# Provider: 'huggingface' (FREE unlimited) or 'stability' (limited)
-provider: "huggingface"
+# Image settings per provider
+image_settings:
+  # Hugging Face API settings
+  huggingface:
+    model: "black-forest-labs/FLUX.1-schnell"
 
-# === HUGGING FACE ===
-# Set HF_TOKEN in .env file
-# Get FREE token at: https://huggingface.co/settings/tokens (no credit card!)
-huggingface_model: "black-forest-labs/FLUX.1-schnell"
+  # Stability AI API settings
+  stability:
+    model: "sd3"  # sd3 or sdxl
 
-# === STABILITY AI ===
-# Set STABILITY_API_KEY in .env file (if using stability provider)
-# Get key at: https://platform.stability.ai/
-# Warning: Only ~3 images/month on free tier
+  # Local model settings (requires: pip install diffusers transformers accelerate torch)
+  local:
+    # Active model - change this to switch between models
+    # Options: "flux", "sdxl", "kandinsky"
+    active_model: "flux"
 
-# Image dimensions per asset type [width, height]
-# These are defaults - can be overridden per-call with --width and --height
-# In interactive mode, you'll be prompted for size (press Enter for default)
+    # Model-specific configurations
+    models:
+      flux:
+        model_id: "black-forest-labs/FLUX.1-schnell"
+        num_inference_steps: 4 # 4 is the recommended setting
+        guidance_scale: 0.0 # 0.0 is the recommended setting
+        description: "Fast generation (4 steps), works on Apple Silicon with bfloat16."
+
+      sdxl:
+        model_id: "stabilityai/stable-diffusion-xl-base-1.0"
+        num_inference_steps: 25          # 25-30 steps recommended for best quality (lower is faster but less detailed)
+        guidance_scale: 7.5          # 7.5 is a good default for strong adherence to prompt (lower = more creative, higher = more literal)
+        description: "High quality, uses float32 on Apple Silicon"
+
+      kandinsky:
+        model_id: "kandinsky-community/kandinsky-2-2-decoder"
+        num_inference_steps: 25  # 25-30 steps recommended for best quality (lower is faster but less detailed)
+        guidance_scale: 7.5 # 7.5 is a good default for Kandinsky (lower = more creative, higher = more literal)
+        description: "Artistic style, good balance of speed and quality"
+
+    # Refiner model for Double-Asset feature (img2img refinement)
+    # Set to null to disable refinement (uses base model for both)
+    refiner_model: "stabilityai/stable-diffusion-xl-refiner-1.0"
+    refiner_steps: 20           # Refinement steps (15-25 recommended)
+    refiner_strength: 0.3       # How much to change (0.2-0.4 recommended, lower=more consistent)
+
+    # Device: "auto" (recommended), "cuda", "mps", or "cpu"
+    device: "auto"
+
+    # Memory optimization (enable for <12GB VRAM)
+    enable_model_cpu_offload: false   # Offload to CPU when idle (don't use with FLUX on MPS)
+    enable_vae_slicing: true          # Reduce VRAM usage
+    enable_attention_slicing: true    # Further VRAM reduction
+
+    # Cache settings
+    cache_dir: "~/.cache/huggingface"
+    use_safetensors: true
+
+# Image dimensions per asset type
 dimensions:
-  npc: [1024, 1024]      # Square for characters
-  item: [1024, 1024]     # Square for items
-  door: [512, 768]       # Portrait for doors
-  room: [1024, 1024]     # Square (or try [1920, 1080] for widescreen)
+  npc: [1024, 1024]      # for characters
+  item: [1024, 1024]     # for items
+  door: [1024, 1024]     # for doors
+  room: [1920, 1080]     # for rooms (widescreen backgrounds)
+  action: [1024, 1024]     # for action icons/cursors (smaller size)
 
-# Background removal per asset type
+# default Background removal per asset type
 remove_background:
-  npc: true              # Remove background for NPCs (transparent)
-  item: true             # Remove background for items (transparent)
-  door: false            # Keep background for doors
+  npc: true              # Remove background for NPCs
+  item: true             # Remove background for items
+  door: true             # Remove background for doors
   room: false            # Keep background for rooms
+  action: true           # Remove background for actions
 
 # Audio Generation Provider Configuration
 # Supported providers:

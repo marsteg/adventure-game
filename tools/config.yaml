@@ -1,15 +1,71 @@
 # Image Generation Provider Configuration
-provider: "huggingface"
+# Supported providers:
+#   - huggingface: Hugging Face Inference API (free, fast, unlimited)
+#   - stability: Stability AI API (paid, limited free tier)
+#   - local: Run models locally on your GPU/CPU (free, unlimited, private)
+provider: "local"
 
-# Hugging Face Model (FLUX is fast and high quality)
-huggingface_model: "black-forest-labs/FLUX.1-schnell"
+# Image settings per provider
+image_settings:
+  # Hugging Face API settings
+  huggingface:
+    model: "black-forest-labs/FLUX.1-schnell"
+
+  # Stability AI API settings
+  stability:
+    model: "sd3"  # sd3 or sdxl
+
+  # Local model settings (requires: pip install diffusers transformers accelerate torch)
+  local:
+    # Active model - change this to switch between models
+    # Options: "flux", "sdxl", "kandinsky"
+    active_model: "kandinsky"
+
+    # Model-specific configurations
+    models:
+      flux:
+        model_id: "black-forest-labs/FLUX.1-schnell"
+        num_inference_steps: 4 # 4 is the recommended setting
+        guidance_scale: 0.0 # 0.0 is the recommended setting
+        description: "Fast generation (4 steps), works on Apple Silicon with bfloat16."
+
+      sdxl:
+        model_id: "stabilityai/stable-diffusion-xl-base-1.0"
+        num_inference_steps: 25          # 25-30 steps recommended for best quality (lower is faster but less detailed)
+        guidance_scale: 7.5          # 7.5 is a good default for strong adherence to prompt (lower = more creative, higher = more literal)
+        description: "High quality, uses float32 on Apple Silicon"
+
+      kandinsky:
+        model_id: "kandinsky-community/kandinsky-2-2-decoder"
+        num_inference_steps: 25  # 25-30 steps recommended for best quality (lower is faster but less detailed)
+        guidance_scale: 7.5 # 7.5 is a good default for Kandinsky (lower = more creative, higher = more literal)
+        description: "Artistic style, good balance of speed and quality"
+
+    # Refiner model for Double-Asset feature (img2img refinement)
+    # Set to null to disable refinement (uses base model for both)
+    refiner_model: "stabilityai/stable-diffusion-xl-refiner-1.0"
+    refiner_steps: 20           # Refinement steps (15-25 recommended)
+    refiner_strength: 0.3       # How much to change (0.2-0.4 recommended, lower=more consistent)
+
+    # Device: "auto" (recommended), "cuda", "mps", or "cpu"
+    device: "auto"
+
+    # Memory optimization (enable for <12GB VRAM)
+    enable_model_cpu_offload: false   # Offload to CPU when idle (don't use with FLUX on MPS)
+    enable_vae_slicing: true          # Reduce VRAM usage
+    enable_attention_slicing: true    # Further VRAM reduction
+
+    # Cache settings
+    cache_dir: "~/.cache/huggingface"
+    use_safetensors: true
 
 # Image dimensions per asset type
 dimensions:
   npc: [1024, 1024]      # for characters
   item: [1024, 1024]     # for items
-  door: [1024, 1024]       # for doors (adjust if needed)
-  room: [1920, 1080]     # for rooms (could use [1920, 1080] for widescreen backgrounds)
+  door: [1024, 1024]     # for doors
+  room: [1920, 1080]     # for rooms (widescreen backgrounds)
+  action: [512, 512]     # for action icons/cursors (smaller size)
 
 # default Background removal per asset type
 remove_background:
@@ -23,8 +79,10 @@ remove_background:
 # Supported providers:
 #   - speecht5: Microsoft SpeechT5 (pip install, ~500MB, CPU-friendly, good quality)
 #   - xtts: Coqui XTTS-v2 (pip install TTS, ~2GB, GPU recommended, excellent quality, voice cloning)
+#   - bark: Suno Bark (pip install, ~22GB full model, GPU recommended, expressive, 100+ voices)
+#   - bark-small: Suno Bark Small (pip install, ~8GB model, GPU recommended, expressive, 100+ voices)
 #   - kugelaudio: KugelAudio (git clone required, ~13GB, GPU only, highest quality)
-audio_provider: "speecht5"
+audio_provider: "bark"
 
 # Audio settings per provider
 audio_settings:
@@ -51,3 +109,21 @@ audio_settings:
     cfg_scale: 3.0
     max_new_tokens: 2048
     sample_rate: 24000
+
+  # Bark settings (Suno Bark - Full model)
+  bark:
+    model: "suno/bark"  # Full model (12GB VRAM)
+    sample_rate: 24000
+    chunk_size: 200  # Max characters per chunk (~13 seconds of speech)
+    temperature: 0.7  # 0.0-1.0, higher = more variation
+    # Voice presets: v2/en_speaker_0 through v2/en_speaker_9
+    # Full list: https://suno-ai.notion.site/8b8e8749ed514b0cbf3f699013548683
+
+  # Bark Small settings (Suno Bark - Small model)
+  bark-small:
+    model: "suno/bark-small"  # Small model (8GB VRAM)
+    sample_rate: 24000
+    chunk_size: 200  # Max characters per chunk (~13 seconds of speech)
+    temperature: 0.7  # 0.0-1.0, higher = more variation
+    # Voice presets: v2/en_speaker_0 through v2/en_speaker_9
+    # Full list: https://suno-ai.notion.site/8b8e8749ed514b0cbf3f699013548683

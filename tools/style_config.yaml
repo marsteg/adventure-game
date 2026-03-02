@@ -14,13 +14,13 @@ master_style:
   detail_level: "simple, clean lines, not photorealistic, not 3D rendered"
 
   # Color palette guidance
-  color_style: "vibrant colors, bold outlines, adventure game aesthetic"
+  color_style: "bold outlines, adventure game aesthetic"
 
   # What to AVOID (very important for consistency!)
-  negative_keywords: "3D render, photorealistic, realistic, cinema4d, unreal engine, 3D animated, CGI, octane render, ray tracing, volumetric lighting, depth of field"
+  negative_keywords: "3D render, photorealistic, realistic, cinema4d, 3D animated, CGI, volumetric lighting, depth of field"
 
   # Additional style notes
-  additional: "similar to classic point-and-click adventure games like Monkey Island or Day of the Tentacle"
+  additional: "similar to point-and-click games like Day of the Tentacle or Edna's Journey"
 
 # ============================================================================
 # ASSET-SPECIFIC STYLE OVERRIDES

@@ -13,6 +13,15 @@ python-dotenv>=1.0.0
 # PyTorch is required for all TTS providers
 torch>=2.0.0,<2.6  # Pin <2.6 for TTS compatibility
 
+# Local Image Generation (optional - only for provider: "local")
+# Uncomment these to run models locally on your GPU/CPU:
+# diffusers>=0.30.0
+# transformers>=4.44.0
+# accelerate>=0.34.0
+# sentencepiece>=0.2.0
+# Note: For NVIDIA GPU, install PyTorch with CUDA first:
+#   pip install torch --index-url https://download.pytorch.org/whl/cu121
+
 # For SpeechT5 provider (recommended - lightweight, CPU-friendly):
 #   Uncomment the following lines:
 # transformers>=4.30.0,<5.0.0  # Pin to 4.x for TTS compatibility (specifically 4.33.0 recommended)
