@@ -3,7 +3,7 @@
 #   - huggingface: Hugging Face Inference API (free, fast, unlimited)
 #   - stability: Stability AI API (paid, limited free tier)
 #   - local: Run models locally on your GPU/CPU (free, unlimited, private)
-provider: "local"
+provider: "huggingface"
 
 # Image settings per provider
 image_settings:
@@ -19,7 +19,7 @@ image_settings:
   local:
     # Active model - change this to switch between models
     # Options: "flux", "sdxl", "kandinsky"
-    active_model: "kandinsky"
+    active_model: "flux"
 
     # Model-specific configurations
     models:
