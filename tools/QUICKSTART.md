@@ -2,6 +2,8 @@
 
 ## Table of Contents
 - [Image Generation Setup](#image-generation-setup)
+  - [Option A: Local Models (Private, Unlimited)](#option-a-local-models-private-unlimited)
+  - [Option B: API Providers (Easy, Fast)](#option-b-api-providers-easy-fast)
 - [Audio Generation Setup](#audio-generation-setup)
 - [First Steps](#first-steps)
 - [Troubleshooting](#troubleshooting)
@@ -10,21 +12,64 @@
 
 ## Image Generation Setup
 
-### 1. Install Dependencies
+Choose one or both options:
+
+### Option A: Local Models (Private, Unlimited)
+
+Run AI models directly on your machine - 100% private, no API limits!
+
+**Requirements:**
+- 32GB RAM (recommended)
+- Apple Silicon (M1/M2/M3) or NVIDIA GPU
+- 20-30GB free disk space for models
+
+**1. Install Local Dependencies:**
+```bash
+pip install 'numpy<2'
+pip install torch diffusers transformers accelerate sentencepiece
+pip install -r tools/requirements.txt
+```
+
+**2. Configure Local Provider:**
+```bash
+cp tools/config.yaml.example tools/config.yaml
+nano tools/config.yaml
+```
+
+Set provider to local:
+```yaml
+provider: "local"
+
+image_settings:
+  local:
+    active_model: "flux"  # or "sdxl" or "kandinsky"
+```
+
+**Available Models:**
+- **flux** - Fast (4 steps, ~30-60 sec), 12GB model
+- **sdxl** - High quality (25 steps, ~2-3 min), 7GB model
+- **kandinsky** - Artistic (25 steps, ~2-3 min), 6GB model
+
+**First-time use**: Models download automatically to `~/.cache/huggingface/` (~6-12GB per model). Subsequent generations use cached models.
+
+---
+
+### Option B: API Providers (Easy, Fast)
+
+Use cloud APIs - fast setup, no hardware requirements!
+
+**1. Install Dependencies:**
 ```bash
 pip install 'numpy<2'
 pip install -r tools/requirements.txt
 ```
 
-**Core dependencies**: `huggingface_hub`, `python-dotenv`, `Pillow`, `PyYAML`, `requests`, `rembg`
-
-### 2. Get Free HuggingFace API Token
+**2. Get Free HuggingFace API Token:**
 - Go to: https://huggingface.co/settings/tokens
 - Click "New token" → Select "Read" access
-- Copy your token
-- **No credit card required!** Truly free and unlimited!
+- Copy your token (no credit card required!)
 
-### 3. Configure API Keys
+**3. Configure API Keys:**
 ```bash
 cp .env.example .env
 nano .env
@@ -35,13 +80,26 @@ Add your token:
 HF_TOKEN=hf_your_token_here
 ```
 
-### 4. Configure Settings
+**4. Select Provider:**
 ```bash
 cp tools/config.yaml.example tools/config.yaml
-cp tools/style_config.yaml.example tools/style_config.yaml
+nano tools/config.yaml
 ```
 
-**Important**: Edit `style_config.yaml` to set your game's art style!
+```yaml
+provider: "huggingface"  # or "stability"
+```
+
+---
+
+### Configure Visual Style (Both Options)
+
+```bash
+cp tools/style_config.yaml.example tools/style_config.yaml
+nano tools/style_config.yaml
+```
+
+**Important**: Define your game's art style here! See [STYLE_CONFIG_GUIDE.md](STYLE_CONFIG_GUIDE.md) for details.
 
 ---
 

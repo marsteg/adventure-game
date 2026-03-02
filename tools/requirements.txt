@@ -35,6 +35,12 @@ torch>=2.0.0,<2.6  # Pin <2.6 for TTS compatibility
 # transformers==4.33.0  # XTTS requires exactly 4.33.0 for BeamSearchScorer compatibility
 # Note: XTTS requires torch<2.6 (incompatible with 2.6+ weights_only default)
 
+# For Bark provider (expressive, 100+ voices, nonverbal sounds):
+#   Uncomment the following lines:
+# transformers>=4.31.0  # Bark support added in 4.31.0
+# scipy>=1.10.0  # For WAV file handling
+# accelerate>=0.20.0  # Optional: enables CPU offloading to reduce VRAM usage
+
 # For KugelAudio provider (highest quality, requires git clone):
 #   git clone https://github.com/Kugelaudio/kugelaudio-open.git
 #   cd kugelaudio-open && uv sync

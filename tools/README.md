@@ -18,12 +18,14 @@ AI-powered asset generation tool for the Point & Click Adventure Game Engine. Ge
 ## Features
 
 ### Image Generation
-✅ **FREE Unlimited AI Image Generation** - Uses Hugging Face FLUX.1-schnell model (no credit limits!)
+✅ **FREE Unlimited AI Image Generation** - Multiple providers available
+✅ **Local Model Support** - Run FLUX, SDXL, or Kandinsky models on your own hardware (Apple Silicon optimized!)
+✅ **API Providers** - Hugging Face (free, unlimited) or Stability AI (limited free tier)
 ✅ **Centralized Style Control** - Define your game's art style once in `style_config.yaml`
 ✅ **Negative Prompts** - Exclude unwanted styles (3D, photorealistic, CGI, etc.)
 ✅ **Configurable Dimensions** - Set default sizes per asset type, override per-generation
 ✅ **Automatic Background Removal** - Transparent backgrounds for NPCs and items
-✅ **Multiple Providers** - Switch between Hugging Face (free) and Stability AI (limited)
+✅ **Double-Asset Generation** - Create consistent variations with img2img refinement
 
 ### Audio Generation
 ✅ **Text-to-Speech for NPC Dialogs** - Generate voice audio for all character dialog lines
@@ -353,15 +355,44 @@ tools/
 
 ### Image Generation Providers
 
-| Feature | Hugging Face (Default) | Stability AI |
-|---------|----------------------|--------------|
-| **Cost** | FREE | FREE |
-| **Limits** | Unlimited* | ~3 images/month |
-| **Model** | FLUX.1-schnell | Stable Diffusion 3.5 |
-| **Speed** | 20-60 sec | 5-15 sec |
-| **Setup** | Easy (API token) | Easy (API token) |
+| Feature | Local Models | Hugging Face API | Stability AI |
+|---------|-------------|------------------|--------------|
+| **Cost** | FREE | FREE | FREE |
+| **Limits** | Unlimited | Unlimited* | ~3 images/month |
+| **Models** | FLUX.1, SDXL, Kandinsky | FLUX.1-schnell | SD 3.5 |
+| **Speed** | Fast (local GPU) | 20-60 sec | 5-15 sec |
+| **Setup** | Install packages | API token | API token |
+| **Privacy** | 100% private | Online API | Online API |
+| **Requirements** | 32GB RAM, Apple Silicon or NVIDIA GPU | Internet | Internet |
 
 *Rate limited but very generous for personal use
+
+### Local Model Details
+
+**FLUX.1-schnell** (Recommended for speed)
+- Fast generation: 4 steps, ~30-60 seconds
+- Model size: ~12GB
+- Works on Apple Silicon (M1/M2/M3) with bfloat16
+- Best for: Quick iterations, testing
+
+**SDXL-base** (Recommended for quality)
+- High quality: 25 steps, ~2-3 minutes
+- Model size: ~7GB
+- Works on Apple Silicon with float32
+- Best for: Final assets, detailed images
+
+**Kandinsky 2.2** (Recommended for artistic style)
+- Artistic results: 25 steps, ~2-3 minutes
+- Model size: ~6GB
+- Works on Apple Silicon
+- Best for: Unique artistic styles
+
+**Switching Models:**
+Edit `tools/config.yaml` and change `active_model`:
+```yaml
+local:
+  active_model: "flux"  # or "sdxl" or "kandinsky"
+```
 
 ### Audio Generation Providers
 

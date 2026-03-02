@@ -7,20 +7,20 @@
 # This is applied to EVERY asset generated. Be as specific as possible!
 
 master_style:
-  # Primary style descriptors (choose what fits your game)
-  art_style: "2D cartoon illustration, hand-drawn style, flat colors, cel-shaded"
+  # Primary style descriptors (keep SHORT for SDXL - max 77 tokens!)
+  art_style: "2D cartoon, hand-drawn, flat colors, cel-shaded"
 
   # Detail level
-  detail_level: "simple, clean lines, not photorealistic, not 3D rendered"
+  detail_level: "simple, clean lines"
 
   # Color palette guidance
-  color_style: "bold outlines, adventure game aesthetic"
+  color_style: "vibrant colors, bold outlines"
 
   # What to AVOID (very important for consistency!)
-  negative_keywords: "3D render, photorealistic, realistic, cinema4d, 3D animated, CGI, volumetric lighting, depth of field"
+  negative_keywords: "3D render, photorealistic, CGI, blurry, low quality"
 
-  # Additional style notes
-  additional: "similar to point-and-click games like Day of the Tentacle or Edna's Journey"
+  # Additional style notes (SHORTENED)
+  additional: "adventure game style"
 
 # ============================================================================
 # ASSET-SPECIFIC STYLE OVERRIDES
@@ -28,29 +28,29 @@ master_style:
 # Fine-tune style for specific asset types while keeping master style
 
 npcs:
-  style: "full body character sprite, front view, standing pose"
-  negative: "side view, multiple poses, action pose, dynamic pose"
-  additional: "simple character design, clear silhouette"
+  style: "full body sprite, front view"
+  negative: "side view, dynamic pose"
+  additional: "clear silhouette"
 
 rooms:
-  style: "interior background scene, wide angle view, game background art"
-  negative: "character in scene, portrait orientation, close-up, character in foreground"
-  additional: "atmospheric, detailed environment, clear depth"
+  style: "interior background, wide angle"
+  negative: "character in scene, portrait"
+  additional: "atmospheric environment"
 
 items:
-  style: "game item icon, single object, centered, clear and recognizable"
-  negative: "multiple objects, scene, background elements, text, UI elements"
-  additional: "inventory item style, easily identifiable"
+  style: "game item icon, centered"
+  negative: "multiple objects, text"
+  additional: "inventory style"
 
 doors:
-  style: "front-facing door, architectural element, view-from-angle"
-  negative: "perspective view, open door, front view"
-  additional: "clear and centered, game asset style"
+  style: "front-facing door"
+  negative: "open door"
+  additional: "game asset"
 
 actions:
-  style: "interactive object in background, single object, centered, clear and recognizable"
-  negative: "multiple objects, scene, background elements, text, UI elements"
-  additional: "Object in Background style, easily identifiable"
+  style: "single object, centered"
+  negative: "multiple objects, text"
+  additional: "clear icon"
 
 # ============================================================================
 # PROMPT ENHANCEMENT SETTINGS
@@ -58,25 +58,19 @@ actions:
 
 enhancement:
   # Strength of style enforcement (0.0 to 1.0)
-  # Higher = more strict adherence to style
   style_weight: 0.9
 
-  # Add these quality boosters to all prompts
+  # Add these quality boosters (SHORTENED)
   quality_boosters:
     - "high quality"
     - "clean artwork"
-    - "professional game art"
 
-  # Always exclude these from generated images
+  # Always exclude these (SHORTENED)
   universal_negatives:
     - "blurry"
     - "low quality"
     - "distorted"
     - "watermark"
-    - "signature"
-    - "text"
-    - "logo"
-    - "amateur"
 
 # ============================================================================
 # REFERENCE EXAMPLES (Optional)
